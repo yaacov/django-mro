@@ -4,7 +4,6 @@ Maintenance, Repair, and Operations
 A Django progect for managing Maintenance, Repair, and Operations.
 
 Tweaks to the standard Django settings
---------------------------------------
 
 # import the global settings
 import django.conf.global_settings as DEFAULT_SETTINGS
@@ -13,7 +12,6 @@ import django.conf.global_settings as DEFAULT_SETTINGS
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 External helper applications
-----------------------------
 
 crispy_forms - help render forms
 django_tables2 - help render tables
@@ -24,7 +22,6 @@ Notes on building a new Django project
 ======================================
 
 Create a new virtual env
-------------------------
 
 # Install python and the virtualenv python package
 
@@ -39,7 +36,6 @@ source ./bin/activate
 pip install <requirements>
 
 Create the new django project
------------------------------
 
 # Start a new project
 django-admin.py startproject <project-name>
@@ -64,7 +60,6 @@ mkdir locale
 ./manage.py migrate
 
 Running the new application
----------------------------
 
 ./manage.py runserver
 
