@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load mro %}
+{% load mro_bootstrap %}
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mro</title>
+    {% add_header_css %}
+    {% add_header_js %}
+    
+    {% block extra_css %}
+    {% endblock %}
+    
+    {% block extra_js %}
+    {% endblock %}
+</head>
+<body>
+    <!-- navbar -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">{% project_name %}</a>
+        </div>
+      </div>
+    </div>
+    <!-- end navbar -->
+    {% bootstrap_breadcrumbs %}
+    
+    <div class="container">
+    {% bootstrap_header headers %}
+    
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+    </div>
+    
+    <hr>
+    <footer class="footer">
+        <div class="container">
+            {% block footer %}
+            <p>{% copyright_notice %}</p>
+            {% endblock %}
+        </div>
+    </footer>
+</body>
+</html>

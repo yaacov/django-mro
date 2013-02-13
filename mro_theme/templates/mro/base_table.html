@@ -1,0 +1,52 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<form id="search-form">
+    <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
+    <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
+    <ul class="nav nav-pills">
+        <li>
+            <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
+        </li>
+        
+        {% if filters %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{ current_filter_string }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="filters" data-val="">{% trans 'All' %}</a></li>
+                    {% for filter in filters %}
+                    <li><a class="filters" data-val="{{ filter.pk }}">{{ filter.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</form>
+
+{% render_table table %}
+
+<div class="form-actions">
+    {% if add_action %}
+    <a class="btn btn-primary btn-success pull-right" href="add/" >{% trans 'Add' %}</a>
+    {% endif %}
+</div>
+
+<script>
+$(function() {
+    $('.filters').on("click", function(event){
+        $('#form-filter').val($(this).data('val'));
+        $('#search-form').submit();
+    });
+    
+    $('.paginators').on("click", function(event){
+        $('#form-page').val($(this).data('page'));
+        $('#search-form').submit();
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+body {
+    padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+}
+
+.breadcrumb,
+.form-actions {
+    margin: 0;
+    background-color: inherit; /* inherit removes the contrast between breadcrumbs and background */
+}
+
+.page-header {
+    margin: 20px 0 0 0;
+    padding-bottom: 0;
+}
+
+p.lead {
+    margin-bottom: 10px;
+}
+
+p.lead.space {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.help-inline {
+    display: none;
+}
+
+textarea.wide,
+input.wide {
+    width: 70%;
+}
+
+textarea.ltr,
+input.ltr {
+    direction: ltr;
+}
+
+.form-horizontal .control-group {
+    margin-bottom: 5px;
+}

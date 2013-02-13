@@ -1,0 +1,39 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load mro_bootstrap %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
+        type="text/css" media="screen" rel="stylesheet" />
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}filer/js/popup_handling.js"></script>
+    <script>
+    // use bootstrap datepicker for redering 
+    django.jQuery(function(){
+        django.jQuery('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+    });
+    </script>
+{% endblock %}
+    
+{% block content %}
+
+{% crispy form %}
+
+<script>
+django.jQuery(function() {
+    django.jQuery('.filters').on("click", function(event){
+        django.jQuery('#form-filter').val(django.jQuery(this).data('val'));
+        django.jQuery('#search-form').submit();
+    });
+});
+</script>
+
+{% endblock %}

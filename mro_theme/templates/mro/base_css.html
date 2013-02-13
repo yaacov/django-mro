@@ -1,0 +1,11 @@
+{% load i18n %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}bootstrap/less/bootstrap.less" />
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}bootstrap/less/responsive.less" />
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}datepicker/less/datepicker.less" />
+
+<link rel="stylesheet" href="{{ STATIC_URL }}mro/extra.css" />
+{% if LANGUAGE_BIDI %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}mro/extra.rtl.css" />
+{% endif %}

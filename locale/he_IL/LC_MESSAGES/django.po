@@ -1,0 +1,320 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-13 11:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: mro/urls.py:36
+msgid "contacts"
+msgstr "אנשי קשר"
+
+#: mro/urls.py:37 mro_warehouse/urls.py:34
+msgid "warehouse"
+msgstr "מחסן"
+
+#: mro_contact/forms.py:44 mro_contact/forms.py:69
+#: mro_theme/templates/mro/base_form.html:34
+#: mro_warehouse/templates/mro_warehouse/manage_items.html:102
+#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:138
+msgid "Submit"
+msgstr "שלח"
+
+#: mro_contact/forms.py:45 mro_contact/forms.py:70
+msgid "Update"
+msgstr "עדכן"
+
+#: mro_contact/forms.py:46 mro_contact/forms.py:71
+msgid "Delete"
+msgstr "מחק"
+
+#: mro_contact/models.py:35 mro_contact/models.py:36
+#: mro_warehouse/models.py:43
+msgid "Description"
+msgstr "תאור"
+
+#: mro_contact/models.py:40 mro_contact/models.py:75
+#: mro_warehouse/models.py:47 mro_warehouse/models.py:88
+msgid "Image"
+msgstr "תמונה"
+
+#: mro_contact/models.py:47 mro_contact/models.py:79 mro_contact/models.py:126
+msgid "Department"
+msgstr "מחלקה"
+
+#: mro_contact/models.py:48 mro_contact/models.py:87 mro_contact/models.py:134
+#: mro_contact/tables.py:33 mro_contact/tables.py:62
+msgid "Departments"
+msgstr "מחלקות"
+
+#: mro_contact/models.py:58
+msgid "First Name"
+msgstr "שם פרטי"
+
+#: mro_contact/models.py:60
+msgid "Last Name"
+msgstr "שם משפחה"
+
+#: mro_contact/models.py:64 mro_contact/models.py:109 mro_contact/tables.py:37
+#: mro_contact/tables.py:66 mro_warehouse/models.py:79
+msgid "Phone"
+msgstr "טלפון"
+
+#: mro_contact/models.py:66
+msgid "Cell Phone"
+msgstr "נייד"
+
+#: mro_contact/models.py:68 mro_contact/models.py:113
+#: mro_warehouse/models.py:81
+msgid "Address"
+msgstr "כתובת"
+
+#: mro_contact/models.py:70 mro_contact/models.py:115
+#: mro_warehouse/models.py:83
+msgid "Email"
+msgstr "דוא\"ל"
+
+#: mro_contact/models.py:94
+msgid "Employee"
+msgstr "עובד"
+
+#: mro_contact/models.py:95 mro_contact/views.py:58
+msgid "Employees"
+msgstr "עובדים"
+
+#: mro_contact/models.py:105 mro_contact/tables.py:30 mro_contact/tables.py:59
+#: mro_warehouse/models.py:39
+msgid "Name"
+msgstr "שם"
+
+#: mro_contact/models.py:111
+msgid "Fax"
+msgstr "פקס"
+
+#: mro_contact/models.py:117
+msgid "Web Site"
+msgstr "אתר"
+
+#: mro_contact/models.py:122
+msgid "Logo"
+msgstr "לוגו"
+
+#: mro_contact/models.py:141
+msgid "Suplier"
+msgstr "ספק"
+
+#: mro_contact/models.py:142 mro_contact/views.py:53
+msgid "Supliers"
+msgstr "ספקים"
+
+#: mro_contact/tables.py:41
+msgid "Cell phone"
+msgstr "נייד"
+
+#: mro_contact/urls.py:37
+msgid "employees"
+msgstr "עובדים"
+
+#: mro_contact/urls.py:38
+msgid "supliers"
+msgstr "ספקים"
+
+#: mro_contact/urls.py:39
+msgid "add"
+msgstr "הוסף"
+
+#: mro_contact/views.py:41 mro_contact/views.py:64
+msgid "Contacts"
+msgstr "אנשי קשר"
+
+#: mro_contact/views.py:42 mro_contact/views.py:65
+msgid "Edit and add suppliers and employees."
+msgstr "ערוך והוסף אנשי קשר"
+
+#: mro_contact/views.py:54
+msgid "Edit and create supliers contacts."
+msgstr "ערוך והוסף ספקים"
+
+#: mro_contact/views.py:59
+msgid "Edit and create employees contacts."
+msgstr "ערוך והוסף עובדים"
+
+#: mro_contact/views.py:95 mro_contact/views.py:177
+#: mro_contact/templates/mro_contact/base_table.html:21
+#: mro_theme/templates/mro/base_table.html:21
+#: mro_warehouse/templates/mro_warehouse/manage_items.html:54
+#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:63
+msgid "All"
+msgstr "הכל"
+
+#: mro_contact/views.py:111
+msgid "Employees list"
+msgstr "רשימת עובדים"
+
+#: mro_contact/views.py:146
+msgid "Edit employee contact info"
+msgstr "ערוך פרטי עובד"
+
+#: mro_contact/views.py:193
+msgid "Supliers list"
+msgstr "רשימת ספקים"
+
+#: mro_contact/views.py:229
+msgid "Edit suplier contact info"
+msgstr "ערוך פרטי ספק"
+
+#: mro_contact/templates/mro_contact/base_table.html:35
+#: mro_theme/templates/mro/base_table.html:35
+msgid "Add"
+msgstr "הוסף"
+
+#: mro_theme/models.py:31
+msgid "Title"
+msgstr "כותרת"
+
+#: mro_theme/models.py:32
+msgid "Copyright"
+msgstr "זכויות יוצרים"
+
+#: mro_theme/models.py:39
+msgid "Project"
+msgstr "פרויקט"
+
+#: mro_theme/models.py:40
+msgid "Projects"
+msgstr "פרויקט"
+
+#: mro_theme/views.py:63
+msgid "Start"
+msgstr "התחל"
+
+#: mro_theme/views.py:64
+msgid "Organizer start page. Choose the operation."
+msgstr "דף פתיחה, בחר את הפעולה הרצויה"
+
+#: mro_theme/templatetags/mro_bootstrap.py:42
+msgid "edit"
+msgstr "ערוך"
+
+#: mro_theme/templatetags/mro_bootstrap.py:46
+#: mro_theme/templatetags/mro_bootstrap.py:48
+msgid "home"
+msgstr "בית"
+
+#: mro_theme/templatetags/mro_bootstrap.py:94
+#: mro_theme/templatetags/mro_bootstrap.py:97
+msgid "Prev"
+msgstr "קודם"
+
+#: mro_theme/templatetags/mro_bootstrap.py:111
+#: mro_theme/templatetags/mro_bootstrap.py:114
+msgid "Next"
+msgstr "הבא"
+
+#: mro_warehouse/models.py:32
+msgid "pcs"
+msgstr "יח'"
+
+#: mro_warehouse/models.py:33
+msgid "lit"
+msgstr "ל'"
+
+#: mro_warehouse/models.py:34
+msgid "Kg"
+msgstr "ק\"ג"
+
+#: mro_warehouse/models.py:35
+msgid "m"
+msgstr "מ'"
+
+#: mro_warehouse/models.py:40
+msgid "Item catalog number"
+msgstr "מספר קטלוגי"
+
+#: mro_warehouse/models.py:42 mro_warehouse/models.py:60
+msgid "Unit"
+msgstr "יחידה"
+
+#: mro_warehouse/models.py:64
+msgid "C.N."
+msgstr "מק\"ט"
+
+#: mro_warehouse/models.py:67 mro_warehouse/models.py:110
+msgid "Item"
+msgstr "פריט"
+
+#: mro_warehouse/models.py:68 mro_warehouse/views.py:57
+#: mro_warehouse/views.py:108
+msgid "Items"
+msgstr "פריטים"
+
+#: mro_warehouse/models.py:76
+msgid "Warehouse Name"
+msgstr "שם מחסן"
+
+#: mro_warehouse/models.py:92 mro_warehouse/models.py:126
+msgid "Warehouse Item"
+msgstr "פריט במחסן"
+
+#: mro_warehouse/models.py:98 mro_warehouse/models.py:108
+#: mro_warehouse/views.py:39 mro_warehouse/views.py:52
+#: mro_warehouse/views.py:64 mro_warehouse/views.py:151
+msgid "Warehouse"
+msgstr "מחסן"
+
+#: mro_warehouse/models.py:99
+msgid "Warehouses"
+msgstr "מחסנים"
+
+#: mro_warehouse/models.py:113
+msgid "Shelve"
+msgstr "מדף"
+
+#: mro_warehouse/models.py:114
+msgid "Batch"
+msgstr "אצווה"
+
+#: mro_warehouse/models.py:118
+msgid "Entered"
+msgstr "נכנס"
+
+#: mro_warehouse/models.py:120
+msgid "Expires"
+msgstr "תפוגה"
+
+#: mro_warehouse/models.py:123
+msgid "Amount"
+msgstr "כמות"
+
+#: mro_warehouse/models.py:127
+msgid "Warehouse Items"
+msgstr "פריטים במחסן"
+
+#: mro_warehouse/urls.py:33
+msgid "items"
+msgstr "פריטים"
+
+#: mro_warehouse/views.py:40 mro_warehouse/views.py:65
+msgid "Edit and add items in warehouse."
+msgstr "ערוך והוסף פריטים במחסן"
+
+#: mro_warehouse/views.py:53 mro_warehouse/views.py:152
+msgid "Edit items in warehouse."
+msgstr "ערוך והוסף פריטים במחסן"
+
+#: mro_warehouse/views.py:58 mro_warehouse/views.py:109
+msgid "Edit and create items."
+msgstr "ערוך והוסף פריטים"

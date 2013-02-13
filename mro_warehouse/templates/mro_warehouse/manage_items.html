@@ -1,0 +1,119 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load mro_bootstrap %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+<link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
+    type="text/css" media="screen" rel="stylesheet" />
+<style type="text/css">
+input, select {
+    width: 95%;
+}
+.name, .catalogic_number, .unit {
+    width: 130px;
+}
+.DELETE {
+    width: 30px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}filer/js/popup_handling.js"></script>
+<script>
+// use bootstrap datepicker for redering 
+django.jQuery(function(){
+    django.jQuery('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+});
+</script>
+{% endblock %}
+    
+{% block content %}
+
+<form id="search-form">
+    <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
+    <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
+    <ul class="nav nav-pills">
+        <li>
+            <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
+        </li>
+        
+        {% if filters %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{ current_filter_string }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="filters" data-val="">{% trans 'All' %}</a></li>
+                    {% for filter in filters %}
+                    <li><a class="filters" data-val="{{ filter.pk }}">{{ filter.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</form>
+
+<form method="post" id="formset" action="">
+    {% csrf_token %}
+    <input type="hidden" id="form-page" name="page" value="">
+
+    {{ formset.management_form }}
+
+    <table class="table table-striped">
+    <tr>
+    {% for field in formset.forms.0 %}
+        {% if not field.is_hidden %}
+            <th class="{{ field.name }}">{{ field.label }}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+
+    {% for form in formset %}
+    <tr>
+        {%for field in form %} 
+            {% if not field.is_hidden %}
+                {% if field.errors %}
+                <td valign="bottom" class="control-group error">
+                {% else %}
+                <td valign="bottom" class="control-group {{ field.name }}">
+                {% endif %}
+                    {{field}}
+                </td>
+            {%else%}
+                {{field}}
+            {% endif %}
+        {%endfor%}
+    </td>
+    {% endfor %}
+    </table>
+</form>
+
+{% bootstrap_paginator objects %}
+
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+</div>
+
+<script>
+django.jQuery(function() {
+    django.jQuery('.filters').on("click", function(event){
+        django.jQuery('#form-filter').val(django.jQuery(this).data('val'));
+        django.jQuery('#search-form').submit();
+    });
+    
+    django.jQuery('.paginators').on("click", function(event){
+        django.jQuery('#form-page').val(django.jQuery(this).data('page'));
+        django.jQuery('#search-form').submit();
+    });
+});
+</script>
+
+{% endblock %}

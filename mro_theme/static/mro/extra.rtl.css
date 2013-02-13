@@ -1,0 +1,42 @@
+body {
+    direction: rtl;
+}
+
+.thumbnails > li {
+    float: right;
+}
+
+.table td, 
+.table th {
+    text-align: right;
+}
+
+.form-horizontal .controls {
+    margin-right: 180px;
+}
+
+.form-horizontal .control-label {
+    float: right;
+    text-align: left;
+}
+
+.form-horizontal .form-actions {
+    padding-right: 180px;
+}
+
+.dl-horizontal dd {
+    margin-right: 180px;
+}
+
+.dl-horizontal dt {
+    clear: right;
+    float: right;
+}
+
+.pull-right {
+    float: left;
+}
+
+.pull-left {
+    float: right;
+}
