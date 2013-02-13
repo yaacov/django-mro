@@ -9,7 +9,7 @@ Tweaks to the standard Django settings
     import django.conf.global_settings as DEFAULT_SETTINGS
 
 get the project install path
-SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+    SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 External helper applications
 
@@ -26,13 +26,16 @@ Create a new virtual env
 Install python and the virtualenv python package
 
 Init a new virtualenv 
+
     virtualenv django-<project-name>
     cd django-<project-name>
 
 Activate the virtual environment
+
     source ./bin/activate
 
 Install required software
+
     pip install <requirements>
 
 Create the new django project
@@ -43,19 +46,23 @@ Create the new django project
     chmod ugo+x manage.py
 
 Add an application to the project
+
     ./manage.py startapp <app-name>
 
 Localization
+
     mkdir locale
     ./manage.py makemessages -l he
     ./manage.py compilemessages
 
 Init Data Base and migrations
+
     ./manage.py schemamigration --initial <app-name>
     ./manage.py syncdb
     ./manage.py migrate
 
 Update Data Base and migrations
+
     ./manage.py schemamigration --auto <app-name>
     ./manage.py migrate
 
