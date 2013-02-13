@@ -12,7 +12,8 @@ Get the project install path
 
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-Add a gettext locale path
+Add another gettext locale path
+
     LOCALE_PATHS = (os.path.join(SITE_ROOT, '..', 'locale'),)
 
 External helper applications
