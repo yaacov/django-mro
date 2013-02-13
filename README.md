@@ -8,9 +8,12 @@ Tweaks to the standard Django settings
     import the global settings
     import django.conf.global_settings as DEFAULT_SETTINGS
 
-get the project install path
+Get the project install path
 
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+Add a gettext locale path
+    LOCALE_PATHS = (os.path.join(SITE_ROOT, '..', 'locale'),)
 
 External helper applications
 
