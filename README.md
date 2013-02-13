@@ -9,6 +9,7 @@ Tweaks to the standard Django settings
     import django.conf.global_settings as DEFAULT_SETTINGS
 
 get the project install path
+
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 External helper applications
