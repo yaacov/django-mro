@@ -5,10 +5,10 @@ A Django progect for managing Maintenance, Repair, and Operations.
 
 Tweaks to the standard Django settings
 
-# import the global settings
+import the global settings
 import django.conf.global_settings as DEFAULT_SETTINGS
 
-# get the project install path
+get the project install path
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 External helper applications
@@ -23,39 +23,39 @@ Notes on building a new Django project
 
 Create a new virtual env
 
-# Install python and the virtualenv python package
+Install python and the virtualenv python package
 
-# Init a new virtualenv 
+Init a new virtualenv 
 virtualenv django-<project-name>
 cd django-<project-name>
 
-# Activate the virtual environment
+Activate the virtual environment
 source ./bin/activate
 
-# Install required software
+Install required software
 pip install <requirements>
 
 Create the new django project
 
-# Start a new project
+Start a new project
 django-admin.py startproject <project-name>
 cd <project-name>
 chmod ugo+x manage.py
 
-# Add an application to the project
+Add an application to the project
 ./manage.py startapp <app-name>
 
-# Localization
+Localization
 mkdir locale
 ./manage.py makemessages -l he
 ./manage.py compilemessages
 
-# Init Data Base and migrations
+Init Data Base and migrations
 ./manage.py schemamigration --initial <app-name>
 ./manage.py syncdb
 ./manage.py migrate
 
-# Update Data Base and migrations
+Update Data Base and migrations
 ./manage.py schemamigration --auto <app-name>
 ./manage.py migrate
 
