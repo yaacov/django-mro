@@ -29,17 +29,12 @@ class EquipmentTable(tables.Table):
         '<a href="/equipment/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Name')
     
-    maintenance = tables.TemplateColumn(
-        '<a href="/equipment/{{ record.pk }}/maintenance/" >%s</a>' % _('Maintenance'))
-    maintenance.verbose_name = _('Maintenance')
-    
     class Meta:
         model = Equipment
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
             'name', 
-            'maintenance', 
             'serial_number', 
             'department', 
             'phone', 
@@ -63,7 +58,6 @@ class MaintenanceTable(tables.Table):
             'equipment', 
             'priority', 
             'work_cycle_str', 
-            'assign_to', 
             'estimated_work_time', 
             'last_maintenance')
 

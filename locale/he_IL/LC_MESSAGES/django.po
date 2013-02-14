@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-14 08:10+0200\n"
+"POT-Creation-Date: 2013-02-14 10:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: mro/urls.py:37
-msgid "contacts"
+#: mro/urls.py:39
+msgid "contact"
 msgstr "אנשי קשר"
 
-#: mro/urls.py:38
+#: mro/urls.py:40
 msgid "warehouse"
 msgstr "מחסן"
 
+#: mro/urls.py:41
+msgid "order"
+msgstr "פקודה"
+
 #: mro_contact/forms.py:44 mro_contact/forms.py:69 mro_equipment/forms.py:64
+#: mro_equipment/templates/mro_equipment/equipment_form.html:37
+#: mro_order/templates/formset.html:45
 #: mro_theme/templates/mro/base_form.html:34
 #: mro_warehouse/templates/mro_warehouse/manage_items.html:102
 #: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:157
@@ -37,7 +43,8 @@ msgstr "שלח"
 msgid "Update"
 msgstr "עדכן"
 
-#: mro_contact/forms.py:46 mro_contact/forms.py:71
+#: mro_contact/forms.py:46 mro_contact/forms.py:71 mro_equipment/forms.py:66
+#: mro_equipment/templates/mro_equipment/equipment_form.html:38
 msgid "Delete"
 msgstr "מחק"
 
@@ -90,7 +97,7 @@ msgstr "כתובת"
 msgid "Email"
 msgstr "דוא\"ל"
 
-#: mro_contact/models.py:94
+#: mro_contact/models.py:94 mro_order/models.py:158
 msgid "Employee"
 msgstr "עובד"
 
@@ -187,6 +194,7 @@ msgstr "הוסף"
 
 #: mro_equipment/models.py:38 mro_equipment/models.py:48
 #: mro_equipment/models.py:49 mro_equipment/models.py:121
+#: mro_order/models.py:64
 msgid "Priority"
 msgstr "דחיפות"
 
@@ -196,7 +204,7 @@ msgstr "מספר ימים מירבי להמתנה"
 
 #: mro_equipment/models.py:60
 msgid "Serial number"
-msgstr "מספר קטלוגי"
+msgstr "מספר סידורי"
 
 #: mro_equipment/models.py:85
 msgid "Installed"
@@ -204,7 +212,7 @@ msgstr "מותקן"
 
 #: mro_equipment/models.py:97 mro_equipment/models.py:98
 #: mro_equipment/models.py:117 mro_equipment/views.py:39
-#: mro_equipment/views.py:119
+#: mro_equipment/views.py:119 mro_order/models.py:53
 msgid "Equipment"
 msgstr "ציוד"
 
@@ -228,15 +236,15 @@ msgstr "שנה"
 msgid "Work hour"
 msgstr "שעת עבודה"
 
-#: mro_equipment/models.py:125
+#: mro_equipment/models.py:125 mro_order/models.py:68
 msgid "Assign to"
 msgstr "נמסר ל"
 
-#: mro_equipment/models.py:128
+#: mro_equipment/models.py:128 mro_order/models.py:60
 msgid "Estimated work hours"
 msgstr "מספר שעות עבודה משוער"
 
-#: mro_equipment/models.py:131
+#: mro_equipment/models.py:131 mro_order/models.py:87
 msgid "Work description"
 msgstr "תאור"
 
@@ -245,7 +253,7 @@ msgid "MaintenanceItem Item"
 msgstr "פריט תחזוקה"
 
 #: mro_equipment/models.py:139 mro_equipment/models.py:164
-#: mro_equipment/tables.py:55
+#: mro_equipment/tables.py:50
 msgid "Work cycle"
 msgstr "מחזור תחזוקה"
 
@@ -268,35 +276,44 @@ msgid "%(count)d %(cycle)s"
 msgstr "%(count)d %(cycle)s"
 
 #: mro_equipment/models.py:173 mro_equipment/models.py:174
-#: mro_equipment/models.py:183 mro_equipment/tables.py:33
-#: mro_equipment/tables.py:34 mro_equipment/views.py:204
+#: mro_equipment/models.py:183 mro_equipment/views.py:186
+#: mro_order/models.py:47 mro_order/views.py:50
 msgid "Maintenance"
 msgstr "תחזוקה"
 
-#: mro_equipment/models.py:185 mro_warehouse/models.py:67
-#: mro_warehouse/models.py:110
+#: mro_equipment/models.py:185 mro_order/models.py:131
+#: mro_warehouse/models.py:67 mro_warehouse/models.py:110
 msgid "Item"
 msgstr "פריט"
 
-#: mro_equipment/models.py:188 mro_warehouse/models.py:123
+#: mro_equipment/models.py:188 mro_order/models.py:136
+#: mro_warehouse/models.py:123
 msgid "Amount"
 msgstr "כמות"
 
 #: mro_equipment/models.py:191
 msgid "Maintenance Item"
-msgstr ""
+msgstr "פריט תחזוקה"
 
 #: mro_equipment/models.py:192
 msgid "Maintenance Items"
 msgstr "פריט תחזוקה"
 
-#: mro_equipment/tables.py:52
+#: mro_equipment/tables.py:47
 msgid "Maintenance Instruction"
 msgstr "הוראות תחזוקה"
 
-#: mro_equipment/urls.py:34
+#: mro_equipment/urls.py:38
 msgid "equipment"
 msgstr "ציוד"
+
+#: mro_equipment/urls.py:39 mro_order/urls.py:34
+msgid "maintenance"
+msgstr "תחזוקה"
+
+#: mro_equipment/urls.py:40
+msgid "delete"
+msgstr "מחק"
 
 #: mro_equipment/views.py:40 mro_equipment/views.py:82
 msgid "Edit and add equipment."
@@ -310,15 +327,170 @@ msgstr "רשימת ציוד"
 msgid "Edit equipment information."
 msgstr "ערוך פרטי ציוד"
 
-#: mro_equipment/views.py:133 mro_equipment/views.py:166
+#: mro_equipment/views.py:133
 #, python-format
 msgid "Maintenance for %s"
 msgstr "תחזוקה עבור %s"
 
-#: mro_equipment/views.py:134 mro_equipment/views.py:167
-#: mro_equipment/views.py:205
+#: mro_equipment/views.py:134 mro_equipment/views.py:187
 msgid "Edit maintenance instruction information."
 msgstr "ערוך הוראות תחזוקה"
+
+#: mro_equipment/templates/mro_equipment/equipment_form.html:41
+msgid "Add maintenance instruction"
+msgstr "הוסף הוראות תחזוקה"
+
+#: mro_order/models.py:38
+msgid "Reported"
+msgstr "דווח"
+
+#: mro_order/models.py:39 mro_order/models.py:82
+msgid "Assigned"
+msgstr "נמסר"
+
+#: mro_order/models.py:40 mro_order/models.py:84
+msgid "Completed"
+msgstr "הושלם"
+
+#: mro_order/models.py:41
+msgid "Holding"
+msgstr "מעוקב"
+
+#: mro_order/models.py:42
+msgid "Canceled"
+msgstr "מבוטל"
+
+#: mro_order/models.py:46
+msgid "New"
+msgstr "חדש"
+
+#: mro_order/models.py:48 mro_order/views.py:55
+msgid "Fracture"
+msgstr "שבר"
+
+#: mro_order/models.py:57 mro_order/models.py:177
+msgid "Work type"
+msgstr "סוג עבודה"
+
+#: mro_order/models.py:72 mro_order/models.py:112
+msgid "Work state"
+msgstr "מצב עבודה"
+
+#: mro_order/models.py:76
+msgid "Estimated completion"
+msgstr "זמן סיום משוער"
+
+#: mro_order/models.py:80
+msgid "Created"
+msgstr "נוצר"
+
+#: mro_order/models.py:90
+msgid "Special notes"
+msgstr "הערות"
+
+#: mro_order/models.py:94 mro_order/models.py:180
+msgid "Order employee"
+msgstr "עובדים"
+
+#: mro_order/models.py:98
+msgid "Order item"
+msgstr "פריטים"
+
+#: mro_order/models.py:119 mro_order/models.py:129 mro_order/models.py:156
+msgid "Order"
+msgstr "פקודה"
+
+#: mro_order/models.py:120
+msgid "Orders"
+msgstr "פקודות"
+
+#: mro_order/models.py:135
+msgid "Issued"
+msgstr "נופק"
+
+#: mro_order/models.py:139
+msgid "Order Item"
+msgstr "פריט בפקודת עבודה"
+
+#: mro_order/models.py:140
+msgid "Order Items"
+msgstr "פריטים בפקודת עבודה"
+
+#: mro_order/models.py:150
+msgid "On site"
+msgstr "באתר"
+
+#: mro_order/models.py:151
+msgid "Office"
+msgstr "במשרד"
+
+#: mro_order/models.py:163
+msgid "Order type"
+msgstr "סוג עבודה"
+
+#: mro_order/models.py:164
+msgid "Order hours"
+msgstr "שעות עבודה"
+
+#: mro_order/models.py:181
+msgid "Order employees"
+msgstr "עובדים"
+
+#: mro_order/urls.py:35
+msgid "fracture"
+msgstr "שבר"
+
+#: mro_order/urls.py:36
+msgid "new"
+msgstr "חדש"
+
+#: mro_order/views.py:38
+msgid "Work Orders"
+msgstr "פקודות עבודה"
+
+#: mro_order/views.py:39 mro_order/views.py:68 mro_order/views.py:107
+msgid "Edit and add work orders."
+msgstr "ערוך והוסף פקודות עבודה"
+
+#: mro_order/views.py:51
+msgid "Edit and create maintenance orders."
+msgstr "ערוך והוסף הוראות תחזוקה"
+
+#: mro_order/views.py:56
+msgid "Edit and create fracture maintenance orders."
+msgstr "ערוך והוסף פקודות תחזוקת שבר"
+
+#: mro_order/views.py:60 mro_order/views.py:84
+msgid "New System"
+msgstr "ציוד חדש"
+
+#: mro_order/views.py:61
+msgid "Edit and create work orders for new systems."
+msgstr "ערוך והוסף פקודות עבודה עבור מערכת חדשה"
+
+#: mro_order/views.py:67 mro_order/views.py:106
+msgid "Work orders"
+msgstr "פקודות עבודה"
+
+#: mro_order/views.py:85
+msgid "Edit and create work orders for new systems.."
+msgstr "ערוך והוסף פקודות עבודה עבור מערכת חדשה"
+
+#: mro_order/views.py:123
+msgid "Schedual Maintenance"
+msgstr "תחזוקה שוטפת"
+
+#: mro_order/views.py:124
+msgid "Edit and create schedual maintenance work orders."
+msgstr "ערוך והוסף פקודות עבודה עבור תחזוקה שוטפת"
+
+#: mro_order/views.py:139
+msgid "Fracture Maintenance"
+msgstr "אחזקת שבר"
+
+#: mro_order/views.py:140
+msgid "Edit and create fracture maintenance work orders."
+msgstr "ערוך והוסף פקודת עבודה עבור אחזקת שבר"
 
 #: mro_theme/models.py:31
 msgid "Title"

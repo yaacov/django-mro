@@ -10,7 +10,7 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 LOCALE_PATHS = (
     os.path.join(SITE_ROOT, '..', 'locale'),
 )
-USE_MINIFY = False
+USE_MINIFY = True
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'mro',
     'mro_icons',
     'mro_theme',
+    'mro_order',
     'mro_equipment',
     'mro_contact',
     'mro_warehouse',

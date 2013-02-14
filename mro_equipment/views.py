@@ -103,14 +103,14 @@ def manage_equipment(request, num = None):
                 equipment.delete()
             except:
                 pass
-            return HttpResponseRedirect('/start/equipment/') # Redirect after POST
+            return HttpResponseRedirect('/equipment/') # Redirect after POST
         
         # save / update ?
         form = EquipmentForm(request.POST, instance = equipment) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             form.save()
             
-            return HttpResponseRedirect('/start/equipment/') # Redirect after POST
+            return HttpResponseRedirect('/equipment/') # Redirect after POST
     else:
         form = EquipmentForm(instance = equipment)
     
@@ -137,57 +137,39 @@ def manage_equipment(request, num = None):
     else:
         response_dict['table'] = None
         
-    return render(request, 'mro/base_form.html', response_dict)
+    return render(request, 'mro_equipment/equipment_form.html', response_dict)
 
-def  maintenance(request, equipment_pk = None):
+def manage_equipment_delete(request, num = None):
     '''
     '''
     
-    # get the employee data from the data base
-    equipment = Equipment.objects.get(pk = equipment_pk)
-    objs = Maintenance.objects.filter(equipment = equipment_pk)
+    # try to get an equipment object
+    try:
+        equipment = Equipment.objects.get(pk = num)
+        equipment.delete()
+    except:
+        pass
     
-    # filter employees using the search form
-    search = request.GET.get('search', '')
-    
-    # create a table object for the employee data
-    table = MaintenanceTable(objs)
-    RequestConfig(request, paginate={"per_page": 40}).configure(table)
-    
-    # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
-    response_dict['filters'] = False
-    
-    response_dict['table'] = table
-    response_dict['add_action'] = True
-    
-    response_dict['headers'] = {
-        'header': _('Maintenance for %s') % equipment,
-        'lead': _('Edit maintenance instruction information.'),
-        'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-    }
-    
-    return render(request, 'mro/base_table.html', response_dict)
+    return HttpResponseRedirect('/equipment/') # Redirect after POST
 
-def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
+def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
     '''
     '''
     try:
-        equipment_pk = int(equipment_pk)
+        num = int(num)
         maintenance = Maintenance.objects.get(pk = maintenance_pk)
     except:
         maintenance = Maintenance()
-        maintenance.equipment = Equipment.objects.get(pk = equipment_pk)
+        maintenance.equipment = Equipment.objects.get(pk = num)
         
     if request.method == 'POST': # If the form has been submitted...
         # delete ?
         if request.POST.get('delete'):
             try:
-                maintenance_instruction.delete()
+                maintenance.delete()
             except:
                 pass
-            return HttpResponseRedirect('/mro/equipment/%d/' % equipment_pk) # Redirect after POST
+            return HttpResponseRedirect('/equipment/%d/' % num) # Redirect after POST
         
         # save / update ?
         form = MaintenanceForm(request.POST, instance = maintenance) # A form bound to the POST data
@@ -195,7 +177,7 @@ def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
             form.save()
             
             if request.POST.get('submit'):
-                return HttpResponseRedirect('/mro/equipment/%d/' % equipment_pk) # Redirect after POST
+                return HttpResponseRedirect('/equipment/%d/' % num) # Redirect after POST
     else:
         form = MaintenanceForm(instance = maintenance)
     
@@ -208,6 +190,7 @@ def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
     
     response_dict['form'] = form
     response_dict['table'] = None
-    
+    response_dict['delete'] = True
+
     return render(request, 'mro/base_form.html', response_dict)
 

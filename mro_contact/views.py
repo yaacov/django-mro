@@ -36,7 +36,7 @@ response_dict = {}
 
 # a thumbnail button to show in the projects start page
 thumb = {
-    'link': '/contacts/',
+    'link': '/contact/',
     'image_url': '/static/tango/150x150/categories/users.png',
     'name': ugettext_noop('Contacts'),
     'description': ugettext_noop('Edit and add suppliers and employees.'), 
@@ -48,12 +48,12 @@ def contact(request):
     '''
     
     thumbs = [
-        {   'link': '/contacts/supliers/',
+        {   'link': '/contact/supliers/',
             'image_url': '/static/tango/150x150/categories/user-organisational-unit.png',
             'name': ugettext_noop('Supliers'),
             'description': ugettext_noop('Edit and create supliers contacts.'), 
         }, {
-            'link': '/contacts/employees/',
+            'link': '/contact/employees/',
             'image_url': '/static/tango/150x150/categories/user-employee.png',
             'name': ugettext_noop('Employees'),
             'description': ugettext_noop('Edit and create employees contacts.'), 
@@ -130,7 +130,7 @@ def contact_employees_edit(request, num = None):
                 employee.delete()
             except:
                 pass
-            return HttpResponseRedirect('/contacts/employees/') # Redirect after POST
+            return HttpResponseRedirect('/contact/employees/') # Redirect after POST
         
         # save / update ?
         form = EmployeeForm(request.POST, request.FILES, instance = employee) # A form bound to the POST data
@@ -138,7 +138,7 @@ def contact_employees_edit(request, num = None):
             form.save()
             
             if request.POST.get('submit'):
-                return HttpResponseRedirect('/contacts/employees/') # Redirect after POST
+                return HttpResponseRedirect('/contact/employees/') # Redirect after POST
     else:
         form = EmployeeForm(instance = employee)
     
@@ -213,7 +213,7 @@ def contact_supliers_edit(request, num = None):
                 suplier.delete()
             except:
                 pass
-            return HttpResponseRedirect('/contacts/supliers/') # Redirect after POST
+            return HttpResponseRedirect('/contact/supliers/') # Redirect after POST
         
         # save / update ?
         form = SuplierForm(request.POST, request.FILES, instance = suplier) # A form bound to the POST data
@@ -221,7 +221,7 @@ def contact_supliers_edit(request, num = None):
             form.save()
             
             if request.POST.get('submit'):
-                return HttpResponseRedirect('/contacts/supliers/') # Redirect after POST
+                return HttpResponseRedirect('/contact/supliers/') # Redirect after POST
     else:
         form = SuplierForm(instance = suplier)
     

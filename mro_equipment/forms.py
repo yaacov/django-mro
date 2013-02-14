@@ -63,7 +63,7 @@ class MaintenanceForm(ModelForm):
         
         self.helper.add_input(Submit('submit', _('Submit'), css_class='btn'))
         #self.helper.add_input(Submit('update', _('Update'), css_class='btn-success'))
-        #self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
+        self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
         
         self.fields['work_description'].widget.attrs.update({'class' : 'wide', 'rows': '4'})
         
