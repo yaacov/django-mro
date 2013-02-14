@@ -4,15 +4,17 @@ Maintenance, Repair, and Operations
 A Django progect for managing Maintenance, Repair, and Operations.
 
 Tweaks to the standard Django settings
+======================================
 
-    import the global settings
+Import the global settings
+
     import django.conf.global_settings as DEFAULT_SETTINGS
 
 Get the project install path
 
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-Add another gettext locale path
+FIXME: Add another gettext locale path ?
 
     LOCALE_PATHS = (os.path.join(SITE_ROOT, '..', 'locale'),)
 
@@ -54,7 +56,7 @@ Add an application to the project
 
     ./manage.py startapp <app-name>
 
-Localization
+Localization (FIXME?)
 
     mkdir locale
     ./manage.py makemessages -l he

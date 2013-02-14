@@ -32,10 +32,12 @@ from mro_equipment.tables import MaintenanceTable
 
 from mro_equipment.forms import EquipmentForm, MaintenanceForm
 
-# init a default response_dict
-from main import settings
-response_dict = {
-    'settings_use_minify': settings.USE_MINIFY
+# a thumbnail button to show in the projects start page
+thumb = {
+    'link': '/equipment/',
+    'image_url': '/static/tango/150x150/actions/run.png',
+    'name': ugettext_noop('Equipment'),
+    'description': ugettext_noop('Edit and add equipment.'), 
 }
 
 def equipment(request):
@@ -66,6 +68,7 @@ def equipment(request):
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
     # base_table.html response_dict rendering information
+    response_dict = {}
     response_dict['search'] = search
     response_dict['filters'] = Department.objects.all()
     response_dict['current_filter_pk'] = filter_pk
@@ -80,7 +83,7 @@ def equipment(request):
         'thumb': '/static/tango/48x48/actions/run.png',
     }
     
-    return render(request, 'start/base_table.html', response_dict)
+    return render(request, 'mro/base_table.html', response_dict)
 
 def manage_equipment(request, num = None):
     '''
@@ -111,6 +114,7 @@ def manage_equipment(request, num = None):
     else:
         form = EquipmentForm(instance = equipment)
     
+    response_dict = {}
     response_dict['headers'] = {
         'header': _('Equipment'),
         'lead': _('Edit equipment information.'),
@@ -133,7 +137,7 @@ def manage_equipment(request, num = None):
     else:
         response_dict['table'] = None
         
-    return render(request, 'equipment_form.html', response_dict)
+    return render(request, 'mro/base_form.html', response_dict)
 
 def  maintenance(request, equipment_pk = None):
     '''
@@ -151,6 +155,7 @@ def  maintenance(request, equipment_pk = None):
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
     # base_table.html response_dict rendering information
+    response_dict = {}
     response_dict['search'] = search
     response_dict['filters'] = False
     
@@ -163,7 +168,7 @@ def  maintenance(request, equipment_pk = None):
         'thumb': '/static/tango/48x48/status/flag-green-clock.png',
     }
     
-    return render(request, 'start/base_table.html', response_dict)
+    return render(request, 'mro/base_table.html', response_dict)
 
 def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
     '''
@@ -182,7 +187,7 @@ def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
                 maintenance_instruction.delete()
             except:
                 pass
-            return HttpResponseRedirect('/start/equipment/%d/' % equipment_pk) # Redirect after POST
+            return HttpResponseRedirect('/mro/equipment/%d/' % equipment_pk) # Redirect after POST
         
         # save / update ?
         form = MaintenanceForm(request.POST, instance = maintenance) # A form bound to the POST data
@@ -190,10 +195,11 @@ def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
             form.save()
             
             if request.POST.get('submit'):
-                return HttpResponseRedirect('/start/equipment/%d/' % equipment_pk) # Redirect after POST
+                return HttpResponseRedirect('/mro/equipment/%d/' % equipment_pk) # Redirect after POST
     else:
         form = MaintenanceForm(instance = maintenance)
-        
+    
+    response_dict = {}
     response_dict['headers'] = {
         'header': _('Maintenance'),
         'lead': _('Edit maintenance instruction information.'),
@@ -203,5 +209,5 @@ def manage_maintenance(request, equipment_pk = None, maintenance_pk = None):
     response_dict['form'] = form
     response_dict['table'] = None
     
-    return render(request, 'start/base_form.html', response_dict)
+    return render(request, 'mro/base_form.html', response_dict)
 

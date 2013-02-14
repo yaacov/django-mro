@@ -49,9 +49,9 @@ def warehouse(request):
     
     thumbs = [ 
         {
-            'link': '/warehouse/warehouse/',
+            'link': '/warehouse/warehouse_items/',
             'image_url': '/static/tango/150x150/actions/log-in.png',
-            'name': ugettext_noop('Warehouse'),
+            'name': ugettext_noop('Warehouse Items'),
             'description': ugettext_noop('Edit items in warehouse.'), 
         },
         {   'link': '/warehouse/items/',
@@ -124,7 +124,10 @@ def manage_warehouse_items(request, warehouse_id = 1):
     if  warehouse_id == None:
         warehouse = Warehouse()
     else:
-        warehouse = Warehouse.objects.get(id = warehouse_id)
+        try:
+            warehouse = Warehouse.objects.get(id = warehouse_id)
+        except:
+            warehouse = Warehouse()
 
     ItemFormSet    = inlineformset_factory(Warehouse, WarehouseItem, extra = 1, can_delete=True)
     queryset = WarehouseItem.objects.all() 
@@ -176,11 +179,11 @@ def manage_warehouse_items(request, warehouse_id = 1):
 
             # Redirect to somewhere
             if '_save' in request.POST:
-                return HttpResponseRedirect('/warehouse/warehouse/')
+                return HttpResponseRedirect('/warehouse/warehouse_items/')
             if '_addanother' in request.POST:
-                return HttpResponseRedirect('/warehouse/warehouse/')
+                return HttpResponseRedirect('/warehouse/warehouse_items/')
 
-            return HttpResponseRedirect('/warehouse/warehouse/')
+            return HttpResponseRedirect('/warehouse/warehouse_items/')
         else:
             messages.error(request, _('Error updating database.'))
 
@@ -192,7 +195,7 @@ def manage_warehouse_items(request, warehouse_id = 1):
 
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Warehouse'),
+        'header': _('Warehouse Items'),
         'lead': _('Edit items in warehouse.'),
         'thumb': '/static/tango/48x48/actions/log-in.png',
     }

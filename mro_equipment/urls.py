@@ -26,6 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 urlpatterns = patterns('mro_equipment.views',
     
     url(r'^$', 'equipment'),
+    url(r'^add/$', 'manage_equipment'),
     url(r'^(?P<num>\d+)/$', 'manage_equipment'),
 )
 

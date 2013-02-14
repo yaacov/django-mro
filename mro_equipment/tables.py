@@ -26,16 +26,16 @@ from mro_equipment.models import Equipment, Maintenance
 class EquipmentTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     name = tables.TemplateColumn(
-        '<a href="/start/equipment/{{ record.pk }}/" >{{ record }}</a>')
+        '<a href="/equipment/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Name')
     
     maintenance = tables.TemplateColumn(
-        '<a href="/start/equipment/{{ record.pk }}/maintenance/" >%s</a>' % _('Maintenance'))
+        '<a href="/equipment/{{ record.pk }}/maintenance/" >%s</a>' % _('Maintenance'))
     maintenance.verbose_name = _('Maintenance')
     
     class Meta:
         model = Equipment
-        template = 'orgenizer/table.html'
+        template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
             'name', 
@@ -48,7 +48,7 @@ class EquipmentTable(tables.Table):
 class MaintenanceTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     equipment = tables.TemplateColumn(
-        '<a href="/start/equipment/{{ record.equipment.pk }}/maintenance/{{ record.pk }}/" >{{ record }}</a>')
+        '<a href="/equipment/{{ record.equipment.pk }}/maintenance/{{ record.pk }}/" >{{ record }}</a>')
     equipment.verbose_name = _('Maintenance Instruction')
     
     work_cycle_str = tables.TemplateColumn('{{ value }}')
@@ -57,7 +57,7 @@ class MaintenanceTable(tables.Table):
     class Meta:
         model = Maintenance
         orderable = False
-        template = 'orgenizer/table.html'
+        template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
             'equipment', 

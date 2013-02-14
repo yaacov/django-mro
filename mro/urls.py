@@ -29,6 +29,7 @@ urlpatterns += patterns('',
 urlpatterns += patterns('',
     url(r'^contacts/', include('mro_contact.urls')),
     url(r'^warehouse/', include('mro_warehouse.urls')),
+    url(r'^equipment/', include('mro_equipment.urls')),
 )
 
 # breadcrumbs translation guide

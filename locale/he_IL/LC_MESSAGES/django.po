@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-13 11:34+0200\n"
+"POT-Creation-Date: 2013-02-14 08:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,18 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: mro/urls.py:36
+#: mro/urls.py:37
 msgid "contacts"
 msgstr "אנשי קשר"
 
-#: mro/urls.py:37 mro_warehouse/urls.py:34
+#: mro/urls.py:38
 msgid "warehouse"
 msgstr "מחסן"
 
-#: mro_contact/forms.py:44 mro_contact/forms.py:69
+#: mro_contact/forms.py:44 mro_contact/forms.py:69 mro_equipment/forms.py:64
 #: mro_theme/templates/mro/base_form.html:34
 #: mro_warehouse/templates/mro_warehouse/manage_items.html:102
-#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:138
+#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:157
 msgid "Submit"
 msgstr "שלח"
 
@@ -42,16 +42,18 @@ msgid "Delete"
 msgstr "מחק"
 
 #: mro_contact/models.py:35 mro_contact/models.py:36
-#: mro_warehouse/models.py:43
+#: mro_equipment/models.py:81 mro_warehouse/models.py:43
 msgid "Description"
 msgstr "תאור"
 
 #: mro_contact/models.py:40 mro_contact/models.py:75
-#: mro_warehouse/models.py:47 mro_warehouse/models.py:88
+#: mro_equipment/models.py:78 mro_warehouse/models.py:47
+#: mro_warehouse/models.py:88
 msgid "Image"
 msgstr "תמונה"
 
 #: mro_contact/models.py:47 mro_contact/models.py:79 mro_contact/models.py:126
+#: mro_equipment/models.py:64
 msgid "Department"
 msgstr "מחלקה"
 
@@ -69,21 +71,22 @@ msgid "Last Name"
 msgstr "שם משפחה"
 
 #: mro_contact/models.py:64 mro_contact/models.py:109 mro_contact/tables.py:37
-#: mro_contact/tables.py:66 mro_warehouse/models.py:79
+#: mro_contact/tables.py:66 mro_equipment/models.py:67
+#: mro_warehouse/models.py:79
 msgid "Phone"
 msgstr "טלפון"
 
-#: mro_contact/models.py:66
+#: mro_contact/models.py:66 mro_equipment/models.py:69
 msgid "Cell Phone"
 msgstr "נייד"
 
 #: mro_contact/models.py:68 mro_contact/models.py:113
-#: mro_warehouse/models.py:81
+#: mro_equipment/models.py:71 mro_warehouse/models.py:81
 msgid "Address"
 msgstr "כתובת"
 
 #: mro_contact/models.py:70 mro_contact/models.py:115
-#: mro_warehouse/models.py:83
+#: mro_equipment/models.py:73 mro_warehouse/models.py:83
 msgid "Email"
 msgstr "דוא\"ל"
 
@@ -96,6 +99,7 @@ msgid "Employees"
 msgstr "עובדים"
 
 #: mro_contact/models.py:105 mro_contact/tables.py:30 mro_contact/tables.py:59
+#: mro_equipment/models.py:59 mro_equipment/tables.py:30
 #: mro_warehouse/models.py:39
 msgid "Name"
 msgstr "שם"
@@ -154,9 +158,9 @@ msgstr "ערוך והוסף עובדים"
 
 #: mro_contact/views.py:95 mro_contact/views.py:177
 #: mro_contact/templates/mro_contact/base_table.html:21
-#: mro_theme/templates/mro/base_table.html:21
+#: mro_equipment/views.py:64 mro_theme/templates/mro/base_table.html:21
 #: mro_warehouse/templates/mro_warehouse/manage_items.html:54
-#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:63
+#: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:80
 msgid "All"
 msgstr "הכל"
 
@@ -180,6 +184,141 @@ msgstr "ערוך פרטי ספק"
 #: mro_theme/templates/mro/base_table.html:35
 msgid "Add"
 msgstr "הוסף"
+
+#: mro_equipment/models.py:38 mro_equipment/models.py:48
+#: mro_equipment/models.py:49 mro_equipment/models.py:121
+msgid "Priority"
+msgstr "דחיפות"
+
+#: mro_equipment/models.py:41
+msgid "Max delay in days"
+msgstr "מספר ימים מירבי להמתנה"
+
+#: mro_equipment/models.py:60
+msgid "Serial number"
+msgstr "מספר קטלוגי"
+
+#: mro_equipment/models.py:85
+msgid "Installed"
+msgstr "מותקן"
+
+#: mro_equipment/models.py:97 mro_equipment/models.py:98
+#: mro_equipment/models.py:117 mro_equipment/views.py:39
+#: mro_equipment/views.py:119
+msgid "Equipment"
+msgstr "ציוד"
+
+#: mro_equipment/models.py:108
+msgid "Day"
+msgstr "יום"
+
+#: mro_equipment/models.py:109
+msgid "Week"
+msgstr "שבוע"
+
+#: mro_equipment/models.py:110
+msgid "Month"
+msgstr "חודש"
+
+#: mro_equipment/models.py:111
+msgid "Year"
+msgstr "שנה"
+
+#: mro_equipment/models.py:112
+msgid "Work hour"
+msgstr "שעת עבודה"
+
+#: mro_equipment/models.py:125
+msgid "Assign to"
+msgstr "נמסר ל"
+
+#: mro_equipment/models.py:128
+msgid "Estimated work hours"
+msgstr "מספר שעות עבודה משוער"
+
+#: mro_equipment/models.py:131
+msgid "Work description"
+msgstr "תאור"
+
+#: mro_equipment/models.py:135
+msgid "MaintenanceItem Item"
+msgstr "פריט תחזוקה"
+
+#: mro_equipment/models.py:139 mro_equipment/models.py:164
+#: mro_equipment/tables.py:55
+msgid "Work cycle"
+msgstr "מחזור תחזוקה"
+
+#: mro_equipment/models.py:140
+msgid "Work cycle count"
+msgstr "מספר מחזורי תחזוקה"
+
+#: mro_equipment/models.py:145
+msgid "Last maintenance"
+msgstr "תחזוקה אחרונה"
+
+#: mro_equipment/models.py:159
+#, python-format
+msgid "One %(cycle)s"
+msgstr "%(cycle)s אחד"
+
+#: mro_equipment/models.py:161
+#, python-format
+msgid "%(count)d %(cycle)s"
+msgstr "%(count)d %(cycle)s"
+
+#: mro_equipment/models.py:173 mro_equipment/models.py:174
+#: mro_equipment/models.py:183 mro_equipment/tables.py:33
+#: mro_equipment/tables.py:34 mro_equipment/views.py:204
+msgid "Maintenance"
+msgstr "תחזוקה"
+
+#: mro_equipment/models.py:185 mro_warehouse/models.py:67
+#: mro_warehouse/models.py:110
+msgid "Item"
+msgstr "פריט"
+
+#: mro_equipment/models.py:188 mro_warehouse/models.py:123
+msgid "Amount"
+msgstr "כמות"
+
+#: mro_equipment/models.py:191
+msgid "Maintenance Item"
+msgstr ""
+
+#: mro_equipment/models.py:192
+msgid "Maintenance Items"
+msgstr "פריט תחזוקה"
+
+#: mro_equipment/tables.py:52
+msgid "Maintenance Instruction"
+msgstr "הוראות תחזוקה"
+
+#: mro_equipment/urls.py:34
+msgid "equipment"
+msgstr "ציוד"
+
+#: mro_equipment/views.py:40 mro_equipment/views.py:82
+msgid "Edit and add equipment."
+msgstr "ערוך והוסף ציוד"
+
+#: mro_equipment/views.py:81
+msgid "Equipment list"
+msgstr "רשימת ציוד"
+
+#: mro_equipment/views.py:120
+msgid "Edit equipment information."
+msgstr "ערוך פרטי ציוד"
+
+#: mro_equipment/views.py:133 mro_equipment/views.py:166
+#, python-format
+msgid "Maintenance for %s"
+msgstr "תחזוקה עבור %s"
+
+#: mro_equipment/views.py:134 mro_equipment/views.py:167
+#: mro_equipment/views.py:205
+msgid "Edit maintenance instruction information."
+msgstr "ערוך הוראות תחזוקה"
 
 #: mro_theme/models.py:31
 msgid "Title"
@@ -252,12 +391,8 @@ msgstr "יחידה"
 msgid "C.N."
 msgstr "מק\"ט"
 
-#: mro_warehouse/models.py:67 mro_warehouse/models.py:110
-msgid "Item"
-msgstr "פריט"
-
-#: mro_warehouse/models.py:68 mro_warehouse/views.py:57
-#: mro_warehouse/views.py:108
+#: mro_warehouse/models.py:68 mro_warehouse/views.py:59
+#: mro_warehouse/views.py:110
 msgid "Items"
 msgstr "פריטים"
 
@@ -270,8 +405,7 @@ msgid "Warehouse Item"
 msgstr "פריט במחסן"
 
 #: mro_warehouse/models.py:98 mro_warehouse/models.py:108
-#: mro_warehouse/views.py:39 mro_warehouse/views.py:52
-#: mro_warehouse/views.py:64 mro_warehouse/views.py:151
+#: mro_warehouse/views.py:41 mro_warehouse/views.py:66
 msgid "Warehouse"
 msgstr "מחסן"
 
@@ -295,11 +429,8 @@ msgstr "נכנס"
 msgid "Expires"
 msgstr "תפוגה"
 
-#: mro_warehouse/models.py:123
-msgid "Amount"
-msgstr "כמות"
-
-#: mro_warehouse/models.py:127
+#: mro_warehouse/models.py:127 mro_warehouse/views.py:54
+#: mro_warehouse/views.py:198
 msgid "Warehouse Items"
 msgstr "פריטים במחסן"
 
@@ -307,14 +438,30 @@ msgstr "פריטים במחסן"
 msgid "items"
 msgstr "פריטים"
 
-#: mro_warehouse/views.py:40 mro_warehouse/views.py:65
+#: mro_warehouse/urls.py:34
+msgid "warehouse_items"
+msgstr "פריטים במחסן"
+
+#: mro_warehouse/views.py:42 mro_warehouse/views.py:67
 msgid "Edit and add items in warehouse."
 msgstr "ערוך והוסף פריטים במחסן"
 
-#: mro_warehouse/views.py:53 mro_warehouse/views.py:152
+#: mro_warehouse/views.py:55 mro_warehouse/views.py:199
 msgid "Edit items in warehouse."
 msgstr "ערוך והוסף פריטים במחסן"
 
-#: mro_warehouse/views.py:58 mro_warehouse/views.py:109
+#: mro_warehouse/views.py:60 mro_warehouse/views.py:111
 msgid "Edit and create items."
 msgstr "ערוך והוסף פריטים"
+
+#: mro_warehouse/views.py:146
+msgid "Warning, bad date format."
+msgstr "אזהרה, תאריך לא מוכר."
+
+#: mro_warehouse/views.py:158
+msgid "Warning, bad amount."
+msgstr "אזהרה, כמות לא מוכרת."
+
+#: mro_warehouse/views.py:188
+msgid "Error updating database."
+msgstr "בעיה בעידכון בסיס הנתונים"

@@ -25,11 +25,11 @@ urlpatterns = patterns('mro_warehouse.views',
     
     url(r'^$', 'warehouse'),
     url(r'^items/$', 'manage_items'),
-    url(r'^warehouse/$', 'manage_warehouse_items'),
+    url(r'^warehouse_items/$', 'manage_warehouse_items'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
     _('items'),
-    _('warehouse'),
+    _('warehouse_items'),
 )

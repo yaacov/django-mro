@@ -27,11 +27,17 @@ tango_path = './static/tango'
 sections = map(os.path.basename, glob.glob('%s/scalable/*' % tango_path))
 sizes_array = ['16x16', '22x22', '32x32', '48x48', '150x150', '720x720']
 
+# take all the svg files and convert them into png file
+#
+
+# loop over all the sections
 for section in sections:
     print "Rendering section - %s" % section
 
+    # get all the svg files in this section
     svg_files = glob.glob('%s/scalable/%s/*.svg' % (tango_path, section))
 
+    # loop over all the svg files in the section
     for svg_file_name in svg_files:
         base = os.path.basename(svg_file_name)
         print " file - %s" % base
@@ -41,6 +47,7 @@ for section in sections:
         svg = rsvg.Handle(svg_file_name)
         svg_w, svg_h = svg.props.width, svg.props.height
 
+        # for each file, create png files in all the sizes
         for size in sizes_array:
             png_w, png_h = map(int, size.split('x'))
 
