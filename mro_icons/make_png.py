@@ -19,7 +19,8 @@
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
 import cairo
-import rsvg
+from gi.repository import Rsvg
+
 import glob
 import os
 
@@ -44,7 +45,7 @@ for section in sections:
 
         png_file_name = os.path.splitext(base)[0]
 
-        svg = rsvg.Handle(svg_file_name)
+        svg = Rsvg.Handle.new_from_file(svg_file_name)
         svg_w, svg_h = svg.props.width, svg.props.height
 
         # for each file, create png files in all the sizes
@@ -54,11 +55,10 @@ for section in sections:
             img = cairo.ImageSurface(cairo.FORMAT_ARGB32, png_w, png_h )
             ctx = cairo.Context(img)
             w_ratio, h_ratio = float(png_w) / float(svg_w), float(png_h) / float(svg_h)
-            ratio = min(w_ratio, h_ratio)
+            ratio = min(w_ratio, h_ratio) * 1.2
 
             ctx.scale(ratio, ratio)
-            ctx.translate(100,0)
-            ctx.scale(1.1, 1.1)
+            ctx.translate(40,-100)
 
             svg.render_cairo(ctx)
 
