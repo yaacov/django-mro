@@ -29,6 +29,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
+from mro_theme.widgets import AdminImageWidget
 from mro_equipment.models import Equipment, Maintenance
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
@@ -42,6 +43,7 @@ class EquipmentForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         
+        self.fields['image'].widget = AdminImageWidget()
         self.fields['address'].widget.attrs.update({'class' : 'wide'})
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '4'})
         

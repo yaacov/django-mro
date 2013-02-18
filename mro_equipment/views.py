@@ -106,7 +106,7 @@ def manage_equipment(request, num = None):
             return HttpResponseRedirect('/equipment/') # Redirect after POST
         
         # save / update ?
-        form = EquipmentForm(request.POST, instance = equipment) # A form bound to the POST data
+        form = EquipmentForm(request.POST, request.FILES, instance = equipment) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             form.save()
             
@@ -172,7 +172,7 @@ def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
             return HttpResponseRedirect('/equipment/%d/' % num) # Redirect after POST
         
         # save / update ?
-        form = MaintenanceForm(request.POST, instance = maintenance) # A form bound to the POST data
+        form = MaintenanceForm(request.POST, request.FILES, instance = maintenance) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             form.save()
             

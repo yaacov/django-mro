@@ -31,9 +31,6 @@ from mro_contact.models import Employee, Suplier
 from mro_contact.forms import EmployeeForm, SuplierForm
 from mro_contact.tables import EmployeeTable, SuplierTable
 
-# init a default response_dict
-response_dict = {}
-
 # a thumbnail button to show in the projects start page
 thumb = {
     'link': '/contact/',
@@ -44,29 +41,30 @@ thumb = {
 
 # views
 def contact(request):
-    '''
+    ''' contact application main view
+        
+        chose between supliers and employees
     '''
     
-    thumbs = [
-        {   'link': '/contact/supliers/',
-            'image_url': '/static/tango/150x150/categories/user-organisational-unit.png',
-            'name': ugettext_noop('Supliers'),
-            'description': ugettext_noop('Edit and create supliers contacts.'), 
-        }, {
-            'link': '/contact/employees/',
-            'image_url': '/static/tango/150x150/categories/user-employee.png',
-            'name': ugettext_noop('Employees'),
-            'description': ugettext_noop('Edit and create employees contacts.'), 
+    response_dict = {
+        'headers': {
+            'header': _('Contacts'),
+            'lead': _('Edit and add suppliers and employees.'),
+            'thumb': '/static/tango/48x48/categories/users.png',
         },
-    ]
-    
-    response_dict['headers'] = {
-        'header': _('Contacts'),
-        'lead': _('Edit and add suppliers and employees.'),
-        'thumb': '/static/tango/48x48/categories/users.png',
+        'thumbs': [
+            {   'link': '/contact/supliers/',
+                'image_url': '/static/tango/150x150/categories/user-organisational-unit.png',
+                'name': ugettext_noop('Supliers'),
+                'description': ugettext_noop('Edit and create supliers contacts.'), 
+            }, {
+                'link': '/contact/employees/',
+                'image_url': '/static/tango/150x150/categories/user-employee.png',
+                'name': ugettext_noop('Employees'),
+                'description': ugettext_noop('Edit and create employees contacts.'), 
+            },
+        ],
     }
-    
-    response_dict['thumbs'] = thumbs
     
     return render(request, 'mro_contact/base_list.html', response_dict)
 
@@ -80,7 +78,6 @@ def contact_employees(request):
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
-        
         objs &= Employee.objects.filter(first_name__icontains = search)
         objs |= Employee.objects.filter(last_name__icontains = search)
         objs |= Employee.objects.filter(email__icontains = search)
@@ -98,19 +95,19 @@ def contact_employees(request):
     table = EmployeeTable(objs)
     RequestConfig(request, paginate={"per_page": 45}).configure(table)
     
-    # base_table.html response_dict rendering information
-    response_dict['search'] = search
-    response_dict['filters'] = Department.objects.all()
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
-    
-    response_dict['table'] = table
-    response_dict['add_action'] = True
-    
-    response_dict['headers'] = {
-        'header': _('Employees list'),
-        'lead': None,
-        'thumb': '/static/tango/48x48/categories/user-employee.png',
+    response_dict = {
+        'headers': {
+            'header': _('Employees list'),
+            'lead': None,
+            'thumb': '/static/tango/48x48/categories/user-employee.png',
+        },
+        'search': search,
+        'filters': Department.objects.all(),
+        'current_filter_pk': filter_pk,
+        'current_filter_string': filter_string,
+        
+        'table': table,
+        'add_action': True,
     }
     
     return render(request, 'mro_contact/base_table.html', response_dict)
@@ -142,14 +139,15 @@ def contact_employees_edit(request, num = None):
     else:
         form = EmployeeForm(instance = employee)
     
-    response_dict['headers'] = {
-        'header': _('Edit employee contact info'),
-        'lead': None,
-        'thumb': '/static/tango/48x48/categories/user-employee.png',
+    response_dict = {
+        'headers': {
+            'header': _('Edit employee contact info'),
+            'lead': None,
+            'thumb': '/static/tango/48x48/categories/user-employee.png',
+        },
+        'form': form,
+        'table': None,
     }
-    
-    response_dict['form'] = form
-    response_dict['table'] = None
     
     return render(request, 'mro_contact/base_form.html', response_dict)
 
@@ -180,22 +178,22 @@ def contact_supliers(request):
     table = SuplierTable(objs)
     RequestConfig(request, paginate={"per_page": 45}).configure(table)
     
-    # base_table.html response_dict rendering information
-    response_dict['search'] = search
-    response_dict['filters'] = Department.objects.all()
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
-    
-    response_dict['table'] = table
-    response_dict['add_action'] = True
-    
-    response_dict['headers'] = {
-        'header': _('Supliers list'),
-        'lead': None,
-        'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
+    response_dict = {
+        'headers': {
+            'header': _('Supliers list'),
+            'lead': None,
+            'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
+        },
+        'search': search,
+        'filters': Department.objects.all(),
+        'current_filter_pk': filter_pk,
+        'current_filter_string': filter_string,
+        
+        'table': table,
+        'add_action': True,
     }
     
-    return render(request, 'mro/base_table.html', response_dict)
+    return render(request, 'mro_contact/base_table.html', response_dict)
 
 def contact_supliers_edit(request, num = None):
     '''
@@ -224,15 +222,16 @@ def contact_supliers_edit(request, num = None):
                 return HttpResponseRedirect('/contact/supliers/') # Redirect after POST
     else:
         form = SuplierForm(instance = suplier)
-    
-    response_dict['headers'] = {
-        'header': _('Edit suplier contact info'),
-        'lead': None,
-        'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
+        
+    response_dict = {
+        'headers': {
+            'header': _('Edit suplier contact info'),
+            'lead': None,
+            'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
+        },
+        'form': form,
+        'table': None,
     }
-    
-    response_dict['form'] = form
-    response_dict['table'] = None
     
     return render(request, 'mro_contact/base_form.html', response_dict)
     

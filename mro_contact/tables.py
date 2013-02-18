@@ -76,3 +76,4 @@ class SuplierTable(tables.Table):
             'fax', 
             'address', 
             'email')
+            

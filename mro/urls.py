@@ -38,5 +38,6 @@ urlpatterns += patterns('',
 breadcrumbs = (
     _('contact'),
     _('warehouse'),
+    _('equipment'),
     _('order'),
 )

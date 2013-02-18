@@ -23,13 +23,14 @@ from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 
 class Department(models.Model):
-    ''' department
-        
-        all objects in the system can be mapped to a specific department
-        
-        e.g. an equipment belongs to a department, an employee works in 
-            a department etc...
-    '''
+    """
+    department
+    
+    all objects in the system can be mapped to a specific department
+    
+    e.g. an equipment belongs to a department, an employee works in 
+        a department etc...
+    """
     
     # identification
     name = models.CharField(_('Description'), max_length = 30, unique = True)
@@ -49,10 +50,11 @@ class Department(models.Model):
         ordering = ('name',)
 
 class Employee(models.Model):
-    ''' an employee
-        
-        a contact with first and last name that works in a department
-    '''
+    """
+    an employee
+    
+    a contact with first and last name that works in a department
+    """
     
     # name
     first_name = models.CharField(_('First Name'), 
@@ -96,10 +98,11 @@ class Employee(models.Model):
         ordering = ('first_name', 'last_name',)
 
 class Suplier(models.Model):
-    ''' a suplier 
-        
-        a contact with a name that works with a department
-    '''
+    """
+    a suplier 
+    
+    a contact with a name that works with a department
+    """
     
     # name
     name = models.CharField(_('Name'),

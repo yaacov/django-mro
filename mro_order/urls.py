@@ -24,9 +24,25 @@ from django.utils.translation import ugettext_lazy as _
 urlpatterns = patterns('mro_order.views',
     url(r'^maintenance/$', 'work_maintenance'),
     url(r'^fracture/$', 'work_fracture'),
-    url(r'^new/$', 'work_new'),
     
-    url(r'^new/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order'),
+    url(r'^maintenance/(?P<department_pk>\d+)/$', 'order_table', 
+        {'action': 'table', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<department_pk>\d+)/add/$', 'manage_order', 
+        {'action': 'add', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<department_pk>\d+)/delete/$', 'manage_order', 
+        {'action': 'delete', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order', 
+        {'action': 'edit', 'work_type': 'maintenance'}),
+    
+    url(r'^fracture/(?P<department_pk>\d+)/$', 'order_table', 
+        {'action': 'table', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<department_pk>\d+)/add/$', 'manage_order', 
+        {'action': 'add', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<department_pk>\d+)/delete/$', 'manage_order', 
+        {'action': 'delete', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order', 
+        {'action': 'edit', 'work_type': 'fracture'}),
+    
     url(r'^$', 'work'),
 )
 

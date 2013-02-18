@@ -1,16 +1,10 @@
-# Django settings for orgenizer project.
+# Django settings for mro project.
 # -*- coding:utf-8 -*-
 
 import os
 import django.conf.global_settings as DEFAULT_SETTINGS
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-
-# Set an extra locale search path for the project
-LOCALE_PATHS = (
-    os.path.join(SITE_ROOT, '..', 'locale'),
-)
-USE_MINIFY = True
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -40,8 +34,8 @@ TIME_ZONE = 'Asia/Jerusalem'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-#LANGUAGE_CODE = 'en-us'
-LANGUAGE_CODE = 'he-il'
+LANGUAGE_CODE = 'en-us'
+#LANGUAGE_CODE = 'he-il'
 
 SITE_ID = 1
 
@@ -148,13 +142,24 @@ INSTALLED_APPS = (
     
     # migration manager
     'south', # must be at the END
-    #'django_wsgiserver',
+    'django_wsgiserver',
 )
 
 # add request data to the template context processors
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
 )
+
+# Set an extra locale search path for the project
+LOCALE_PATHS = (
+    os.path.join(SITE_ROOT, '..', 'locale'),
+)
+
+# use minified static files, compile_less managment command
+# create the minified files
+# USAGE:
+#   ./manage.py compile_less
+USE_MINIFY = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

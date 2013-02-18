@@ -29,6 +29,8 @@ urlpatterns = patterns('mro_equipment.views',
     url(r'^add/$', 'manage_equipment'),
     url(r'^(?P<num>\d+)/$', 'manage_equipment'),
     url(r'^(?P<num>\d+)/delete/$', 'manage_equipment_delete'),
+    url(r'^add/delete/$', 'manage_equipment_delete'),
+    
     url(r'^(?P<num>\d+)/maintenance/$', 'manage_equipment_maintenance'),
     url(r'^(?P<num>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_equipment_maintenance'),
 )

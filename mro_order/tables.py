@@ -21,3 +21,22 @@
 from django.utils.translation import ugettext_lazy as _
 import django_tables2 as tables
 
+from mro_order.models import Order
+
+class OrderTable(tables.Table):
+    name = tables.TemplateColumn(
+        '<a href="/order/{{ record.pk }}/" >{{ record }}</a>')
+    name.verbose_name = _('Name')
+    
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'equipment', 
+            'work_type', 
+            'priority', 
+            'created', 
+            'assigned', 
+            'completed')
+
