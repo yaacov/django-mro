@@ -24,13 +24,16 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from django.shortcuts import render, render_to_response
 from django.forms.models import inlineformset_factory
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
 
 from django_tables2 import RequestConfig
 
-from mro_equipment.models import Maintenance
+from mro_equipment.models import Maintenance, Equipment
 from mro_contact.models import Department, Employee, Suplier
 from mro_order.models import Order, OrderItem, OrderEmployee
 from mro_order.tables import OrderTable
+from mro_order.forms import OrderForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -105,7 +108,7 @@ def order_table(request, department_pk = None, order_id = None, action = None, w
     """
     """
     # get the employee data from the data base
-    objs = Order.objects.all()
+    objs = Order.objects.all().order_by('created','assigned','completed')
     
     objs &= Order.objects.filter(equipment__department = department_pk)
     objs &= Order.objects.filter(work_type = ['MA', 'FR'][work_type == 'fracture'])
@@ -146,29 +149,76 @@ def order_table(request, department_pk = None, order_id = None, action = None, w
     return render(request, 'mro/base_table.html', response_dict)
 
 def manage_order(request, department_pk = None, order_id = None, action = None, work_type = 'fracture'):
-    try:
-        order = Order.objects.get(pk=order_id)
-    except:
-        order = Order()
-    
-    OrderInlineFormSet = inlineformset_factory(Order, OrderItem)
-    if request.method == "POST":
-        formset = OrderInlineFormSet(request.POST, request.FILES, instance=order)
-        if formset.is_valid():
-            formset.save()
-            # Do something. Should generally end with a redirect. For example:
-            return HttpResponseRedirect('/start/order/')
+    if  order_id == None:
+        order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
     else:
-        formset = OrderInlineFormSet(instance=order)
-    
+        try:
+            order = Order.objects.get(id = order_id)
+        except:
+            order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
+
+    ItemFormSet    = inlineformset_factory(Order, OrderItem, extra = 2, can_delete=True)
+    queryset = OrderItem.objects.all() 
+
+    EmployeeFormSet    = inlineformset_factory(Order, OrderEmployee, extra = 2, can_delete=True)
+    employeequeryset = OrderEmployee.objects.all() 
+
+    redirect_url = '/order/%s/' % (work_type)
+
+    if request.method == "POST":
+        action = request.POST['form-action']
+
+        if action == '_delete':
+            order.delete()
+            return HttpResponseRedirect(redirect_url)
+
+        orderform = OrderForm(request.POST, instance=order)
+
+        itemformset = ItemFormSet(request.POST, request.FILES, instance=order)
+        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance=order)
+        
+        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid():
+            orderform.save()
+            itemformset.save()
+            employeeformset.save()
+
+            # Redirect to somewhere
+            try:
+                redirect_url = '/order/%s/%s/' % (
+                    ['maintenance','fracture'][order.work_type == 'FR'], 
+                    order.equipment.department.pk)
+            except:
+                pass
+            
+            if action == '_save':
+                return HttpResponseRedirect(redirect_url)
+            if action == '_update':
+                return HttpResponseRedirect('/order/%d' % order.pk)
+
+            if '_addanother' in request.POST:
+                return HttpResponseRedirect(redirect_url)
+
+            return HttpResponseRedirect(redirect_url)
+        else:
+            messages.error(request, _('Error updating database.'))
+
+            orderform = OrderForm(instance=order)
+            itemformset = ItemFormSet(instance=order, queryset=queryset)
+            employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
+    else:
+        orderform = OrderForm(instance=order)
+        itemformset = ItemFormSet(instance=order, queryset=queryset)
+        employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
+
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Work orders'),
-        'lead': _('Edit and add work orders.'),
-        'thumb': '/static/tango/48x48/status/awaiting-plus.png',
-        'formset': formset,
+        'header': _('Maintenanace order'),
+        'lead': _('Edit maintenanace order.'),
+        'thumb': '/static/tango/48x48/actions/log-in.png',
     }
-    response_dict['formset'] = formset
-    
-    return render(request, "formset.html", response_dict)
+    response_dict['form'] = orderform
+    response_dict['formset'] = itemformset
+    response_dict['employeeformset'] = employeeformset
+
+    return render(request, 'mro_order/manage_order_items.html', response_dict)
 

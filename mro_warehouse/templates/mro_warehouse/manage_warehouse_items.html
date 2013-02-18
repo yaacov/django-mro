@@ -87,6 +87,9 @@ django.jQuery(function(){
     </ul>
 </form>
 
+{{ form.errors }}
+{{ form.non_field_errors }}
+
 <form method="post" id="formset" action="">
     {% csrf_token %}
 

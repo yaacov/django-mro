@@ -25,6 +25,9 @@ urlpatterns = patterns('mro_order.views',
     url(r'^maintenance/$', 'work_maintenance'),
     url(r'^fracture/$', 'work_fracture'),
     
+    url(r'^(?P<order_id>\d+)/$', 'manage_order', 
+        {'action': 'edit', 'work_type': 'maintenance'}),
+
     url(r'^maintenance/(?P<department_pk>\d+)/$', 'order_table', 
         {'action': 'table', 'work_type': 'maintenance'}),
     url(r'^maintenance/(?P<department_pk>\d+)/add/$', 'manage_order', 

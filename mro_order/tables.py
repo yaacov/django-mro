@@ -26,7 +26,7 @@ from mro_order.models import Order
 class OrderTable(tables.Table):
     name = tables.TemplateColumn(
         '<a href="/order/{{ record.pk }}/" >{{ record }}</a>')
-    name.verbose_name = _('Name')
+    name.verbose_name = _('Description')
     
     class Meta:
         model = Order

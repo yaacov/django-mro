@@ -28,3 +28,15 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 
 from django.forms import ModelForm
 
+from mro_order.models import Order
+
+class OrderForm(ModelForm):
+    can_delete = True
+
+    class Meta:
+        model = Order
+        fields = ('equipment', 'work_type', 'estimated_work_time', 'priority', 
+            'assign_to', 
+            'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed', 
+            'work_description', 'work_notes',)
+    

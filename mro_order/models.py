@@ -113,7 +113,8 @@ class Order(models.Model):
     
     # model overides
     def __unicode__(self):
-        return u'%s %s' % (self.equipment.name, self.created)
+        short_desc = u' '.join(self.work_description.split()[:7])
+        return u'%s' % short_desc
     
     class Meta:
         verbose_name = _('Order')
@@ -158,7 +159,7 @@ class OrderEmployee(models.Model):
     employee.verbose_name = _('Employee')
     
     # how many hours where worked and some information
-    work_started = models.DateField(default=lambda: datetime.today())
+    work_started = models.DateField(_('Work started'), default=lambda: datetime.today())
     work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'OS')
     work_type.verbose_name = _('Order type')
     work_hours = models.IntegerField(_('Order hours'), default = 1)
