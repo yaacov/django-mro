@@ -30,15 +30,15 @@ from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
 from mro_theme.widgets import AdminImageWidget
-from mro_equipment.models import Equipment, Maintenance
+from mro_system.models import System, Maintenance
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
-class EquipmentForm(ModelForm):
+class SystemForm(ModelForm):
     ''' form for editing employee
     '''
     
     def __init__(self, *args, **kwargs):
-        super(EquipmentForm, self).__init__(*args, **kwargs)
+        super(SystemForm, self).__init__(*args, **kwargs)
         
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
@@ -48,7 +48,7 @@ class EquipmentForm(ModelForm):
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '4'})
         
     class Meta:
-        model = Equipment
+        model = System
         fields = ('name', 
             'serial_number', 
             'phone', 'department', 'address', 'image', 'description')

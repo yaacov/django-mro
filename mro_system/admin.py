@@ -22,8 +22,8 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
 
-from mro_equipment.models import Priority, Equipment, Maintenance
-from mro_equipment.models import MaintenanceItem
+from mro_system.models import Priority, System, Maintenance
+from mro_system.models import MaintenanceItem
 
 class MaintenanceItemInline(admin.TabularInline):
     fields = ('item', 'amount')
@@ -41,11 +41,11 @@ class PriorityAdmin(admin.ModelAdmin):
 
 admin.site.register(Priority, PriorityAdmin)
 
-class EquipmentAdmin(admin.ModelAdmin):
+class SystemAdmin(admin.ModelAdmin):
     
     inlines = (MaintenanceInline,)
 
-admin.site.register(Equipment, EquipmentAdmin)
+admin.site.register(System, SystemAdmin)
 
 class MaintenanceAdmin(admin.ModelAdmin):
     

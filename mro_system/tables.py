@@ -21,16 +21,16 @@
 from django.utils.translation import ugettext as _
 import django_tables2 as tables
 
-from mro_equipment.models import Equipment, Maintenance
+from mro_system.models import System, Maintenance
 
-class EquipmentTable(tables.Table):
+class SystemTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     name = tables.TemplateColumn(
-        '<a href="/equipment/{{ record.pk }}/" >{{ record }}</a>')
+        '<a href="/system/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Name')
     
     class Meta:
-        model = Equipment
+        model = System
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
@@ -42,9 +42,9 @@ class EquipmentTable(tables.Table):
 
 class MaintenanceTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
-    equipment = tables.TemplateColumn(
-        '<a href="/equipment/{{ record.equipment.pk }}/maintenance/{{ record.pk }}/" >{{ record }}</a>')
-    equipment.verbose_name = _('Maintenance Instruction')
+    system = tables.TemplateColumn(
+        '<a href="/system/{{ record.system.pk }}/maintenance/{{ record.pk }}/" >{{ record }}</a>')
+    system.verbose_name = _('Maintenance Instruction')
     
     work_cycle_str = tables.TemplateColumn('{{ value }}')
     work_cycle_str.verbose_name = _('Work cycle')
@@ -55,7 +55,7 @@ class MaintenanceTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
-            'equipment', 
+            'system', 
             'priority', 
             'work_cycle_str', 
             'estimated_work_time', 

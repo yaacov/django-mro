@@ -28,7 +28,7 @@ from mro_contact.models import Department, Employee, Suplier
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
 class Priority(models.Model):
-    ''' work/equipment priority
+    ''' work/system priority
         
         is this a priority job ?
         how many days we can leave it un-done.
@@ -49,19 +49,19 @@ class Priority(models.Model):
         verbose_name_plural = _('Priority')
         ordering = ('max_days_delay',)
 
-class Equipment(models.Model):
-    ''' an equipment site
+class System(models.Model):
+    ''' an system site
     
-        the equipment and the equipment maintainer contact information
+        the system and the system maintainer contact information
     '''
     
-    # the equipment identification
-    name = models.CharField(_('Name'), max_length = 30, unique = True)
+    # the system identification
+    name = models.CharField(_('System Name'), max_length = 30, unique = True)
     serial_number = models.CharField(_('Serial number'), max_length = 30, unique = True)
     
-    # what department if responsible for this equipment
+    # what department if responsible for this system
     department = models.ForeignKey(Department)
-    department.verbose_name = _('Department')
+    department.verbose_name = _('System Department')
     
     # contact information
     phone = models.CharField(_('Phone'), 
@@ -74,17 +74,17 @@ class Equipment(models.Model):
         max_length = 30, blank = True, null = True)
     
     # image - profile image or profile icon
-    image = models.ImageField(null=True, blank=True, upload_to='equipment/')
-    image.verbose_name = _('Image')
+    image = models.ImageField(null=True, blank=True, upload_to='system/')
+    image.verbose_name = _('System Image')
     
     # more information about this equpment
-    description = models.TextField(_('Description'), null = True, blank = True)
+    description = models.TextField(_('System Description'), null = True, blank = True)
     
     # install date
     installed = models.DateField(default=lambda: datetime.today())
     installed.verbose_name = _('Installed')
     
-    # we do not delete equipment from the data base,
+    # we do not delete system from the data base,
     # but if this equpment is not active, we do not show
     # it on tables and reports
     is_active = models.BooleanField('Active', default = True)
@@ -94,8 +94,8 @@ class Equipment(models.Model):
         return '%s' % (self.name)
     
     class Meta:
-        verbose_name = _('Equipment')
-        verbose_name_plural = _('Equipment')
+        verbose_name = _('System')
+        verbose_name_plural = _('System')
         ordering = ('name',)
 
 class Maintenance(models.Model):
@@ -112,9 +112,9 @@ class Maintenance(models.Model):
         ('WH', _('Work hour')),
     )
     
-    # this work is on this equipment
-    equipment = models.ForeignKey(Equipment)
-    equipment.verbose_name = _('Equipment')
+    # this work is on this system
+    system = models.ForeignKey(System)
+    system.verbose_name = _('System')
     
     # is this a priority job
     priority = models.ForeignKey(Priority, default = 1)
@@ -172,7 +172,7 @@ class Maintenance(models.Model):
     class Meta:
         verbose_name = _('Maintenance')
         verbose_name_plural = _('Maintenance')
-        ordering = ('equipment',)
+        ordering = ('system',)
 
 class MaintenanceItem(models.Model):
     ''' Items used for the maintenance

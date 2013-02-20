@@ -24,47 +24,47 @@ from django.utils.translation import ugettext_noop
 from django.shortcuts import render
 from django_tables2   import RequestConfig
 
-from mro_equipment.models import Equipment, Maintenance
+from mro_system.models import System, Maintenance
 from mro_contact.models import Department, Employee, Suplier
 
-from mro_equipment.tables import EquipmentTable
-from mro_equipment.tables import MaintenanceTable
+from mro_system.tables import SystemTable
+from mro_system.tables import MaintenanceTable
 
-from mro_equipment.forms import EquipmentForm, MaintenanceForm
+from mro_system.forms import SystemForm, MaintenanceForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
-    'link': '/equipment/',
+    'link': '/system/',
     'image_url': '/static/tango/150x150/actions/run.png',
-    'name': ugettext_noop('Equipment'),
-    'description': ugettext_noop('Edit and add equipment.'), 
+    'name': ugettext_noop('Systems'),
+    'description': ugettext_noop('Manage systems for maintenance, edit and add systems and equipment for maintenance.'), 
 }
 
-def equipment(request):
+def system(request):
     '''
     '''
     
     # get the employee data from the data base
-    objs = Equipment.objects.all()
+    objs = System.objects.all()
     
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
         
-        objs &= Equipment.objects.filter(name__icontains = search)
-        objs |= Equipment.objects.filter(serial_number__icontains = search)
+        objs &= System.objects.filter(name__icontains = search)
+        objs |= System.objects.filter(serial_number__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
     if filter_pk:
-        objs &= Equipment.objects.filter(department = filter_pk)
+        objs &= System.objects.filter(department = filter_pk)
         filter_string = Department.objects.get(pk = filter_pk)
     
     if not filter_string:
         filter_string = _('All')
     
     # create a table object for the employee data
-    table = EquipmentTable(objs)
+    table = SystemTable(objs)
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
     # base_table.html response_dict rendering information
@@ -78,46 +78,46 @@ def equipment(request):
     response_dict['add_action'] = True
     
     response_dict['headers'] = {
-        'header': _('Equipment list'),
-        'lead': _('Edit and add equipment.'),
+        'header': _('System list'),
+        'lead': _('Edit and add system.'),
         'thumb': '/static/tango/48x48/actions/run.png',
     }
     
     return render(request, 'mro/base_table.html', response_dict)
 
-def manage_equipment(request, num = None):
+def manage_system(request, num = None):
     '''
     '''
     
-    # try to get an equipment object
+    # try to get an system object
     try:
-        equipment = Equipment.objects.get(pk = num)
+        system = System.objects.get(pk = num)
     except:
-        equipment = Equipment()
+        system = System()
     
     # check for post data
     if request.method == 'POST': # If the form has been submitted...
         # delete ?
         if request.POST.get('delete'):
             try:
-                equipment.delete()
+                system.delete()
             except:
                 pass
-            return HttpResponseRedirect('/equipment/') # Redirect after POST
+            return HttpResponseRedirect('/system/') # Redirect after POST
         
         # save / update ?
-        form = EquipmentForm(request.POST, request.FILES, instance = equipment) # A form bound to the POST data
+        form = SystemForm(request.POST, request.FILES, instance = system) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             form.save()
             
-            return HttpResponseRedirect('/equipment/') # Redirect after POST
+            return HttpResponseRedirect('/system/') # Redirect after POST
     else:
-        form = EquipmentForm(instance = equipment)
+        form = SystemForm(instance = system)
     
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Equipment'),
-        'lead': _('Edit equipment information.'),
+        'header': _('System'),
+        'lead': _('Edit system information.'),
         'thumb': '/static/tango/48x48/actions/run.png',
     }
     
@@ -125,34 +125,34 @@ def manage_equipment(request, num = None):
     
     # create a table object for the employee data
     if num:
-        objs = Maintenance.objects.filter(equipment = num)
+        objs = Maintenance.objects.filter(system = num)
         table = MaintenanceTable(objs)
         RequestConfig(request, paginate={"per_page": 40}).configure(table)
         response_dict['table'] = table
         response_dict['table_headers'] = {
-            'header': _('Maintenance for %s') % equipment,
+            'header': _('Maintenance for %s') % system,
             'lead': _('Edit maintenance instruction information.'),
             'thumb': '/static/tango/48x48/status/flag-green-clock.png',
         }
     else:
         response_dict['table'] = None
         
-    return render(request, 'mro_equipment/equipment_form.html', response_dict)
+    return render(request, 'mro_system/system_form.html', response_dict)
 
-def manage_equipment_delete(request, num = None):
+def manage_system_delete(request, num = None):
     '''
     '''
     
-    # try to get an equipment object
+    # try to get an system object
     try:
-        equipment = Equipment.objects.get(pk = num)
-        equipment.delete()
+        system = System.objects.get(pk = num)
+        system.delete()
     except:
         pass
     
-    return HttpResponseRedirect('/equipment/') # Redirect after POST
+    return HttpResponseRedirect('/system/') # Redirect after POST
 
-def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
+def manage_system_maintenance(request, num = None, maintenance_pk = None):
     '''
     '''
     try:
@@ -160,7 +160,7 @@ def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
         maintenance = Maintenance.objects.get(pk = maintenance_pk)
     except:
         maintenance = Maintenance()
-        maintenance.equipment = Equipment.objects.get(pk = num)
+        maintenance.system = System.objects.get(pk = num)
         
     if request.method == 'POST': # If the form has been submitted...
         # delete ?
@@ -169,7 +169,7 @@ def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
                 maintenance.delete()
             except:
                 pass
-            return HttpResponseRedirect('/equipment/%d/' % num) # Redirect after POST
+            return HttpResponseRedirect('/system/%d/' % num) # Redirect after POST
         
         # save / update ?
         form = MaintenanceForm(request.POST, request.FILES, instance = maintenance) # A form bound to the POST data
@@ -177,7 +177,7 @@ def manage_equipment_maintenance(request, num = None, maintenance_pk = None):
             form.save()
             
             if request.POST.get('submit'):
-                return HttpResponseRedirect('/equipment/%d/' % num) # Redirect after POST
+                return HttpResponseRedirect('/system/%d/' % num) # Redirect after POST
     else:
         form = MaintenanceForm(instance = maintenance)
     

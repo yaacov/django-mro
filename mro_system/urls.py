@@ -23,21 +23,21 @@ from django.conf.urls.defaults import patterns, url
 from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 
-urlpatterns = patterns('mro_equipment.views',
+urlpatterns = patterns('mro_system.views',
     
-    url(r'^$', 'equipment'),
-    url(r'^add/$', 'manage_equipment'),
-    url(r'^(?P<num>\d+)/$', 'manage_equipment'),
-    url(r'^(?P<num>\d+)/delete/$', 'manage_equipment_delete'),
-    url(r'^add/delete/$', 'manage_equipment_delete'),
+    url(r'^$', 'system'),
+    url(r'^add/$', 'manage_system'),
+    url(r'^(?P<num>\d+)/$', 'manage_system'),
+    url(r'^(?P<num>\d+)/delete/$', 'manage_system_delete'),
+    url(r'^add/delete/$', 'manage_system_delete'),
     
-    url(r'^(?P<num>\d+)/maintenance/$', 'manage_equipment_maintenance'),
-    url(r'^(?P<num>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_equipment_maintenance'),
+    url(r'^(?P<num>\d+)/maintenance/$', 'manage_system_maintenance'),
+    url(r'^(?P<num>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
-    _('equipment'),
+    _('system'),
     _('maintenance'),
     _('delete'),
 )
