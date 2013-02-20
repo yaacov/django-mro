@@ -34,6 +34,12 @@ th.name, td.name input {
 #search-form li {
     margin-right: 20px;
 }
+th.amount {
+    width: 110px;
+}
+span.amount-widget input{
+    width: 50px;
+}
 </style>
 {% endblock %}
 
@@ -132,7 +138,7 @@ django.jQuery(function(){
         {%for field in form %} 
             {% if not field.is_hidden %}
                 {% if field.errors %}
-                <td valign="bottom" class="control-group error">
+                <td valign="bottom" class="control-group {{ field.name }} error">
                 {% else %}
                 <td valign="bottom" class="control-group {{ field.name }}">
                 {% endif %}

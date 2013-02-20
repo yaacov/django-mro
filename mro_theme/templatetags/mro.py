@@ -75,13 +75,13 @@ def project_name():
     {%  project_name %}
     '''
     
-    project = Project.objects.all()
+    project = Project.objects.get()
 
     # render
-    if len(project) > 0:
-        return project[0].title
-    else:
-        return u'M.R.O'
+    if project:
+        return project.name
+
+    return u'M.R.O'
 
 @register.simple_tag()
 def copyright_notice():
@@ -92,10 +92,10 @@ def copyright_notice():
     {%  copyright_notice %}
     '''
 
-    project = Project.objects.all()
+    project = Project.objects.get()
 
     # render
-    if len(project) > 0:
-        return u'&copy; %s' % project[0].copyright
-    else:
-        return u'&copy; M.R.O 2013'
+    if project:
+        return u'&copy; %s' % project.copyright
+    
+    return u'&copy; M.R.O 2013'

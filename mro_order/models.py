@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from mro_contact.models import Department, Employee, Suplier
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
-from mro_equipment.models import Equipment, Priority
+from mro_system.models import System, Priority
 
 class Order(models.Model):
     ''' work order
@@ -49,8 +49,8 @@ class Order(models.Model):
     )
     
     # this work is on this equipment
-    equipment = models.ForeignKey(Equipment)
-    equipment.verbose_name = _('Equipment')
+    equipment = models.ForeignKey(System)
+    equipment.verbose_name = _('System')
     
     # when to do the job
     work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'MA')

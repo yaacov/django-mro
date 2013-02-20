@@ -27,6 +27,7 @@ from crispy_forms.layout import Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 
 from django.forms import ModelForm
+from mro_theme.widgets import AmountWidget
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
@@ -36,3 +37,16 @@ class WarehouseForm(ModelForm):
     class Meta:
         model = Warehouse
         fields = ('name',)
+
+class WarehouseItemForm(ModelForm):
+    can_delete = True
+
+    def __init__(self, *args, **kwargs):
+        super(WarehouseItemForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.id:
+            self.fields['amount'].widget = AmountWidget()
+            self.fields['amount'].widget.attrs['unit'] = dict(instance.item.UNITS)[instance.item.unit]
+    
+    class Meta:
+        model = WarehouseItem

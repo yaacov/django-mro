@@ -36,7 +36,7 @@
 		if (this.isInput) {
 			this.element.on({
 				focus: $.proxy(this.show, this),
-				blur: $.proxy(this.hide, this),
+				blur: $.proxy(this.hide, this, 'can_clear'),
 				keyup: $.proxy(this.update, this)
 			});
 		} else {
@@ -104,7 +104,9 @@
 			});
 		},
 		
-		hide: function(){
+		hide: function(update_content){
+			update_content = update_content || 'update';
+
 			this.picker.hide();
 			$(window).off('resize', this.place);
 			this.viewMode = this.startViewMode;
@@ -112,11 +114,13 @@
 			if (!this.isInput) {
 				$(document).off('mousedown', this.hide);
 			}
-			this.set();
-			this.element.trigger({
-				type: 'hide',
-				date: this.date
-			});
+			if (update_content == 'update') {
+				this.set();
+				this.element.trigger({
+					type: 'hide',
+					date: this.date
+				});
+			}
 		},
 		
 		set: function() {

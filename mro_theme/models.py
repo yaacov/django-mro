@@ -28,7 +28,9 @@ class Project(models.Model):
     '''
     
     # identification
+    name = models.CharField(_('Application Name'), max_length = 30)
     title = models.CharField(_('Title'), max_length = 30)
+    summary = models.TextField(_('Project summary'))
     copyright = models.TextField(_('Copyright'))
     
     # model overides

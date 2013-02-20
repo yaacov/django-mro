@@ -24,6 +24,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
+from mro_theme.models import Project
+
 def collect_thumbs():
     """
     Check for header info in the installed apps
@@ -57,16 +59,19 @@ def home(request):
     display the start page as a table/list of thumbnails
     """
     
-    response_dict = {}
-
-    response_dict['headers'] = {
-        'header': _('Start'),
-        'lead': _('Organizer start page. Choose the operation.'),
-        'thumb': False,
+    response_dict = {
+        'headers': {
+            'header': _('Start'),
+            'lead': _('Organizer start page. Choose the operation.'),
+            'thumb': '/static/tango/48x48/status/maintenance-time.png',
+        },
+        'thumbs': collect_thumbs(),
     }
-    
-    # read modules thumbs data
-    response_dict['thumbs'] = collect_thumbs()
+   
+    # set the headr for this project
+    project = Project.objects.get()
+    if project:
+        response_dict['headers']['header'] = project.title
+        response_dict['headers']['lead'] = project.summary
     
     return render(request, 'mro/base_thumbs.html', response_dict)
-

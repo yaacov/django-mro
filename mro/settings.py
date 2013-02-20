@@ -34,8 +34,8 @@ TIME_ZONE = 'Asia/Jerusalem'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-#LANGUAGE_CODE = 'en-us'
-LANGUAGE_CODE = 'he-il'
+LANGUAGE_CODE = 'en-us'
+#LANGUAGE_CODE = 'he-il'
 
 SITE_ID = 1
 
@@ -136,7 +136,7 @@ INSTALLED_APPS = (
     'mro_icons',
     'mro_theme',
     'mro_order',
-    'mro_equipment',
+    'mro_system',
     'mro_contact',
     'mro_warehouse',
     
@@ -159,7 +159,7 @@ LOCALE_PATHS = (
 # create the minified files
 # USAGE:
 #   ./manage.py compile_less
-USE_MINIFY = True
+USE_MINIFY = False
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

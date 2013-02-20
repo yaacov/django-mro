@@ -29,7 +29,7 @@ from django.contrib import messages
 
 from django_tables2 import RequestConfig
 
-from mro_equipment.models import Maintenance, Equipment
+from mro_system.models import Maintenance, System
 from mro_contact.models import Department, Employee, Suplier
 from mro_order.models import Order, OrderItem, OrderEmployee
 from mro_order.tables import OrderTable

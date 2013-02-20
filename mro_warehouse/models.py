@@ -29,10 +29,10 @@ class Item(models.Model):
     '''
     
     UNITS = (
-        ('PC', _('pcs')),
-        ('LI', _('lit')),
-        ('KG', _('Kg')),
-        ('ME', _('m')),
+        ('PC', ugettext('pcs')),
+        ('LI', ugettext('lit')),
+        ('KG', ugettext('Kg')),
+        ('ME', ugettext('m')),
     )
     
     # item information
@@ -121,7 +121,7 @@ class WarehouseItem(models.Model):
     
     # how many items of this type are in the warehouse
     amount = models.IntegerField(_('Amount'), default = 1)
-    
+
     class Meta:
         verbose_name = _('Warehouse Item')
         verbose_name_plural = _('Warehouse Items')

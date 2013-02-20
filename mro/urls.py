@@ -29,15 +29,14 @@ urlpatterns += patterns('',
 urlpatterns += patterns('',
     url(r'^contact/', include('mro_contact.urls')),
     url(r'^warehouse/', include('mro_warehouse.urls')),
-    url(r'^equipment/', include('mro_equipment.urls')),
+    url(r'^system/', include('mro_system.urls')),
     url(r'^order/', include('mro_order.urls')),
-
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
     _('contact'),
     _('warehouse'),
-    _('equipment'),
+    _('system'),
     _('order'),
 )

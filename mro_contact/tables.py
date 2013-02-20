@@ -29,7 +29,7 @@ class EmployeeTable(tables.Table):
         '<a href="{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Name')
     
-    department_list = tables.Column(accessor='department_list')
+    department_list = tables.Column(accessor='department_list', orderable=False)
     department_list.verbose_name = _('Departments')
     
     phone = tables.TemplateColumn(
@@ -58,7 +58,7 @@ class SuplierTable(tables.Table):
         '<a href="{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Name')
     
-    department_list = tables.Column(accessor='department_list')
+    department_list = tables.Column(accessor='department_list', orderable=False)
     department_list.verbose_name = _('Departments')
     
     phone = tables.TemplateColumn(

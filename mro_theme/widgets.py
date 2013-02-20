@@ -50,3 +50,23 @@ class AdminImageWidget(AdminFileWidget):
 
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
+
+class AmountWidget(forms.widgets.TextInput):
+
+    template_with_initial = (u'<p class="file-upload">%(input)s</p>')
+
+    def render(self, name, value, attrs=None):
+        output = []
+
+        if self.attrs.has_key('unit'):
+            unit = self.attrs['unit']
+        else:
+            unit = _('pcs')
+
+        output.append(super(AmountWidget, self).render(name, value))
+        output.append(unit)
+
+        widget = u' '.join(output)
+        classes = u'amount-widget'
+
+        return mark_safe(u'<span class="%s">%s</span>' % (classes, widget))

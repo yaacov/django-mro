@@ -32,14 +32,14 @@ from django.contrib import messages
 from django_tables2   import RequestConfig
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
-from mro_warehouse.forms import WarehouseForm
+from mro_warehouse.forms import WarehouseForm, WarehouseItemForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
     'link': '/warehouse/',
     'image_url': '/static/tango/150x150/actions/arrange-boxes.png',
     'name': ugettext_noop('Warehouse'),
-    'description': ugettext_noop('Edit and add items in warehouse.'), 
+    'description': ugettext_noop('Manage warehouse and items. Issue and insert items to and from warehouse storage.'), 
 }
 
 # views
@@ -47,29 +47,27 @@ def warehouse(request):
     '''
     '''
     
-    thumbs = [ 
-        {
-            'link': '/warehouse/warehouse_items/',
-            'image_url': '/static/tango/150x150/actions/log-in.png',
-            'name': ugettext_noop('Warehouse Items'),
-            'description': ugettext_noop('Edit items in warehouse.'), 
+    response_dict = {
+        'headers': {
+            'header': _('Warehouse'),
+            'lead': _('Manage warehouse and items. Issue and insert items to and from warehouse storage.'),
+            'thumb': '/static/tango/48x48/actions/arrange-boxes.png',
         },
-        {   'link': '/warehouse/items/',
-            'image_url': '/static/tango/150x150/emblems/function.png',
-            'name': ugettext_noop('Items'),
-            'description': ugettext_noop('Edit and create items.'), 
-        },
-    ]
-    
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Warehouse'),
-        'lead': _('Edit and add items in warehouse.'),
-        'thumb': '/static/tango/48x48/actions/arrange-boxes.png',
+        'thumbs': [ 
+            {
+                'link': '/warehouse/warehouse_items/',
+                'image_url': '/static/tango/150x150/actions/log-in.png',
+                'name': ugettext_noop('Warehouse'),
+                'description': ugettext_noop('Manage items in warehouse. Issue and insert items to and from the warehouse.'), 
+            },
+            {   'link': '/warehouse/items/',
+                'image_url': '/static/tango/150x150/emblems/function.png',
+                'name': ugettext_noop('Item information'),
+                'description': ugettext_noop('Manage items. Edit and add item information.'), 
+            },
+        ],
     }
-    
-    response_dict['thumbs'] = thumbs
-    
+
     return render(request, 'mro_warehouse/base_list.html', response_dict)
 
 def manage_items(request):
@@ -108,7 +106,7 @@ def manage_items(request):
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Items'),
-        'lead': _('Edit and create items.'),
+        'lead': _('Manage items. Edit and add item information.'),
         'thumb': '/static/tango/48x48/emblems/function.png',
     }
     response_dict['formset'] = formset
@@ -129,7 +127,9 @@ def manage_warehouse_items(request, warehouse_id = 1):
         except:
             warehouse = Warehouse()
 
-    ItemFormSet    = inlineformset_factory(Warehouse, WarehouseItem, extra = 1, can_delete=True)
+    ItemFormSet    = inlineformset_factory(Warehouse, WarehouseItem, 
+        extra = 1, can_delete=True, form=WarehouseItemForm)
+
     queryset = WarehouseItem.objects.all() 
 
     search = request.GET.get('search', '')
@@ -177,6 +177,8 @@ def manage_warehouse_items(request, warehouse_id = 1):
             warehouseform.save()
             itemformset.save()
 
+            messages.success(request, _('Database updated.'))
+
             # Redirect to somewhere
             if '_save' in request.POST:
                 return HttpResponseRedirect('/warehouse/warehouse_items/')
@@ -186,9 +188,6 @@ def manage_warehouse_items(request, warehouse_id = 1):
             return HttpResponseRedirect('/warehouse/warehouse_items/')
         else:
             messages.error(request, _('Error updating database.'))
-
-            warehouseform = WarehouseForm(instance=warehouse)
-            itemformset = ItemFormSet(instance=warehouse, queryset=page_query)
     else:
         warehouseform = WarehouseForm(instance=warehouse)
         itemformset = ItemFormSet(instance=warehouse, queryset=page_query)
@@ -196,7 +195,7 @@ def manage_warehouse_items(request, warehouse_id = 1):
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Warehouse Items'),
-        'lead': _('Edit items in warehouse.'),
+        'lead': _('Manage items in warehouse. Issue and insert items to and from the warehouse.'),
         'thumb': '/static/tango/48x48/actions/log-in.png',
     }
     response_dict['form'] = warehouseform

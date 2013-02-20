@@ -36,7 +36,7 @@ thumb = {
     'link': '/contact/',
     'image_url': '/static/tango/150x150/categories/users.png',
     'name': ugettext_noop('Contacts'),
-    'description': ugettext_noop('Edit and add suppliers and employees.'), 
+    'description': ugettext_noop('Manage suppliers and employees. Add and edit contact information for suppliers and employees.'), 
 }
 
 # views
@@ -49,19 +49,19 @@ def contact(request):
     response_dict = {
         'headers': {
             'header': _('Contacts'),
-            'lead': _('Edit and add suppliers and employees.'),
+            'lead': _('Manage suppliers and employees. Add and edit contact information for suppliers and employees.'),
             'thumb': '/static/tango/48x48/categories/users.png',
         },
         'thumbs': [
             {   'link': '/contact/supliers/',
                 'image_url': '/static/tango/150x150/categories/user-organisational-unit.png',
                 'name': ugettext_noop('Supliers'),
-                'description': ugettext_noop('Edit and create supliers contacts.'), 
+                'description': ugettext_noop('Manage supliers contact information. Add and edit supliers.'), 
             }, {
                 'link': '/contact/employees/',
                 'image_url': '/static/tango/150x150/categories/user-employee.png',
                 'name': ugettext_noop('Employees'),
-                'description': ugettext_noop('Edit and create employees contacts.'), 
+                'description': ugettext_noop('Manage employees contact information. Add and edit employees.'), 
             },
         ],
     }
@@ -97,7 +97,7 @@ def contact_employees(request):
     
     response_dict = {
         'headers': {
-            'header': _('Employees list'),
+            'header': _('Employees contact information list'),
             'lead': None,
             'thumb': '/static/tango/48x48/categories/user-employee.png',
         },
@@ -141,7 +141,7 @@ def contact_employees_edit(request, num = None):
     
     response_dict = {
         'headers': {
-            'header': _('Edit employee contact info'),
+            'header': _('Manage employee contact information.'),
             'lead': None,
             'thumb': '/static/tango/48x48/categories/user-employee.png',
         },
@@ -180,7 +180,7 @@ def contact_supliers(request):
     
     response_dict = {
         'headers': {
-            'header': _('Supliers list'),
+            'header': _('Supliers contact information list'),
             'lead': None,
             'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
         },
@@ -225,7 +225,7 @@ def contact_supliers_edit(request, num = None):
         
     response_dict = {
         'headers': {
-            'header': _('Edit suplier contact info'),
+            'header': _('Manage suplier contact information.'),
             'lead': None,
             'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
         },
