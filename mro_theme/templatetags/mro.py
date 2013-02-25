@@ -75,8 +75,11 @@ def project_name():
     {%  project_name %}
     '''
     
-    project = Project.objects.get()
-
+    try:
+        project = Project.objects.get()
+    except:
+        project = None
+    
     # render
     if project:
         return project.name
@@ -92,7 +95,10 @@ def copyright_notice():
     {%  copyright_notice %}
     '''
 
-    project = Project.objects.get()
+    try:
+        project = Project.objects.get()
+    except:
+        project = None
 
     # render
     if project:

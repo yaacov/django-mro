@@ -74,7 +74,11 @@ def home(request):
     }
    
     # set the headr for this project
-    project = Project.objects.get()
+    try:
+        project = Project.objects.get()
+    except:
+        project = None
+    
     if project:
         response_dict['headers']['header'] = project.title
         response_dict['headers']['lead'] = project.summary
