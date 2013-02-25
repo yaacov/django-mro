@@ -56,7 +56,7 @@ class System(models.Model):
     '''
     
     # the system identification
-    name = models.CharField(_('System Name'), max_length = 30, unique = True)
+    name = models.CharField(_('System Name'), max_length = 30)
     serial_number = models.CharField(_('Serial number'), max_length = 30, unique = True)
     
     # what department if responsible for this system
@@ -78,7 +78,7 @@ class System(models.Model):
     image.verbose_name = _('System Image')
     
     # more information about this equpment
-    description = models.TextField(_('System Description'), null = True, blank = True)
+    description = models.TextField(_('System Description'))
     
     # install date
     installed = models.DateField(default=lambda: datetime.today())
@@ -89,9 +89,27 @@ class System(models.Model):
     # it on tables and reports
     is_active = models.BooleanField('Active', default = True)
     
+    # last completed maintenance round
+    # for show only, we can not calculate next maintenance becouse
+    # we do not have a maintenance cycle for system
+    # it is the responsibilty of the maintenanace model to update this form
+    def last_maintenance(self):
+        ''' calculate last maintenance
+        '''
+        
+        calculated_last_maintenance = Maintenance.objects.filter(system = self.pk).order_by(last_maintenance)
+        
+        if calculated_last_maintenance:
+            return calculated_last_maintenance[0]
+        else:
+            return None
+
+    last_maintenance.verbose_name = _('Last maintenance')
+
     # model overides
     def __unicode__(self):
-        return '%s' % (self.name)
+        short_desc = self.description.split('\n')[0].split()[:8]
+        return '%s' % (' '.join(short_desc))
     
     class Meta:
         verbose_name = _('System')
@@ -105,11 +123,11 @@ class Maintenance(models.Model):
     '''
     
     WORK_CYCLE = (
-        ('DA', _('Day')),
-        ('WE', _('Week')),
-        ('MO', _('Month')),
-        ('YE', _('Year')),
-        ('WH', _('Work hour')),
+        ('WH', _('Work hours')),
+        ('DA', _('Days')),
+        ('WE', _('Weeks')),
+        ('MO', _('Months')),
+        ('YE', _('Years')),
     )
     
     # this work is on this system
@@ -135,9 +153,9 @@ class Maintenance(models.Model):
     itmes.verbose_name = _('MaintenanceItem Item')
     
     # when to do the job
+    work_cycle_count = models.IntegerField(_('Maintenance done every'), default = 1)
     work_cycle = models.CharField(max_length = 2, choices = WORK_CYCLE, default = 'YE')
-    work_cycle.verbose_name = _('Work cycle')
-    work_cycle_count = models.IntegerField(_('Work cycle count'), default = 1)
+    work_cycle.verbose_name = _('Time periods')
     
     # last completed maintenance round
     # we use this information to calculate next maintenance time

@@ -43,10 +43,15 @@ class WarehouseItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(WarehouseItemForm, self).__init__(*args, **kwargs)
+
+        # if we have an item, we can set the amount unit widget,
+        # on items we do not know, we do not set the amount unit widget
         instance = getattr(self, 'instance', None)
         if instance and instance.id:
-            self.fields['amount'].widget = AmountWidget()
-            self.fields['amount'].widget.attrs['unit'] = dict(instance.item.UNITS)[instance.item.unit]
+            # set the widget to be amount widget
+            self.fields['amount'].widget = AmountWidget({
+                'unit': instance.item.unit_str(),
+            })
     
     class Meta:
         model = WarehouseItem

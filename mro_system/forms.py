@@ -44,14 +44,14 @@ class SystemForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         
         self.fields['image'].widget = AdminImageWidget()
-        self.fields['address'].widget.attrs.update({'class' : 'wide'})
+        #self.fields['address'].widget.attrs.update({'class' : 'wide'})
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '4'})
         
     class Meta:
         model = System
         fields = ('name', 
             'serial_number', 
-            'phone', 'department', 'address', 'image', 'description')
+            'department', 'image', 'description')
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm
@@ -71,5 +71,5 @@ class MaintenanceForm(ModelForm):
         
     class Meta:
         model = Maintenance
-        exclude = ('itmes',)
+        exclude = ('itmes', 'priority', 'assign_to',)
         

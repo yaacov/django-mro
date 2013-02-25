@@ -26,6 +26,11 @@ from django.conf import settings
 
 from mro_theme.models import Project
 
+# extra strings to translate, or ovride the default django translation
+extra_translate = [
+    ugettext_noop('Hold down "Control", or "Command" on a Mac, to select more than one.'),
+]
+
 def collect_thumbs():
     """
     Check for header info in the installed apps

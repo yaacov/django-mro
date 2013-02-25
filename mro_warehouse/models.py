@@ -109,19 +109,19 @@ class WarehouseItem(models.Model):
     item = models.ForeignKey(Item, related_name = 'warehouse_item')
     item.verbose_name = _('Item')
     
+    # how many items of this type are in the warehouse
+    amount = models.IntegerField(_('Amount'), default = 1)
+    
     # location of the item
     shelve = models.CharField(_('Shelve'), max_length = 30, null = True, blank = True)
     batch = models.CharField(_('Batch'), max_length = 30, null = True, blank = True)
     
     # dates
-    entered = models.DateField(default=lambda: datetime.today())
+    entered = models.DateField(default=lambda: datetime.today(), null = True, blank = True)
     entered.verbose_name = _('Entered')
-    expires = models.DateField(default=lambda: datetime.today() + timedelta(days = 365))
+    expires = models.DateField(default=lambda: datetime.today() + timedelta(days = 365), null = True, blank = True)
     expires.verbose_name = _('Expires')
     
-    # how many items of this type are in the warehouse
-    amount = models.IntegerField(_('Amount'), default = 1)
-
     class Meta:
         verbose_name = _('Warehouse Item')
         verbose_name_plural = _('Warehouse Items')

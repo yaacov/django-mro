@@ -101,8 +101,12 @@ def manage_items(request):
         if formset.is_valid():
             formset.save()
 
-            return HttpResponseRedirect('/warehouse/items/')
+            messages.success(request, _('Database updated.'))
 
+            return HttpResponseRedirect('/warehouse/items/')
+        else:
+            messages.error(request, _('Error updating database.'))
+            
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Items'),

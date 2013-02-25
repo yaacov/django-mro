@@ -79,7 +79,7 @@ def system(request):
     
     response_dict['headers'] = {
         'header': _('System list'),
-        'lead': _('Edit and add system.'),
+        'lead': _('Manage systems for maintenance, edit and add systems and equipment for maintenance.'),
         'thumb': '/static/tango/48x48/actions/run.png',
     }
     
@@ -116,7 +116,7 @@ def manage_system(request, num = None):
     
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('System'),
+        'header': _('System maintenance information'),
         'lead': _('Edit system information.'),
         'thumb': '/static/tango/48x48/actions/run.png',
     }

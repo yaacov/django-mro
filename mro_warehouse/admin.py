@@ -28,7 +28,6 @@ class WarehouseItemInline(admin.TabularInline):
     fields = ('item', 'shelve', 'batch', 'amount', 'entered', 'expires')
     
     model = WarehouseItem
-    extra = 0
 
 class WarehouseAdmin(admin.ModelAdmin):
     
