@@ -26,7 +26,7 @@ from crispy_forms.layout import Layout, MultiField, Fieldset, ButtonHolder
 from crispy_forms.layout import Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 
-from django.forms import ModelForm
+from django.forms import ModelForm, TextInput
 from mro_theme.widgets import AmountWidget
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
@@ -41,6 +41,14 @@ class WarehouseForm(ModelForm):
 class WarehouseItemForm(ModelForm):
     can_delete = True
 
+    def clean_item(self):
+        # As shown in the above answer.
+        instance = getattr(self, 'instance', None)
+        if instance:
+            return instance.item
+        else:
+            return self.cleaned_data.get('item', None)
+            
     def __init__(self, *args, **kwargs):
         super(WarehouseItemForm, self).__init__(*args, **kwargs)
 
@@ -52,6 +60,10 @@ class WarehouseItemForm(ModelForm):
             self.fields['amount'].widget = AmountWidget({
                 'unit': instance.item.unit_str(),
             })
-    
+            
+            # make the item widget none seateble
+            self.fields['item'].required = False
+            self.fields['item'].widget.attrs['disabled'] = 'disabled'
+
     class Meta:
         model = WarehouseItem

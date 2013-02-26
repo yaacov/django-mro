@@ -59,6 +59,12 @@ class System(models.Model):
     name = models.CharField(_('System Name'), max_length = 30)
     serial_number = models.CharField(_('Serial number'), max_length = 30, unique = True)
     
+    suplier = models.ForeignKey(Suplier, null = True, blank = True)
+    suplier.verbose_name = _('Suplier')
+
+    contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
+    contract_include_parts = models.BooleanField(_('Contract include parts'))
+
     # what department if responsible for this system
     department = models.ForeignKey(Department)
     department.verbose_name = _('System Department')
@@ -93,16 +99,8 @@ class System(models.Model):
     # for show only, we can not calculate next maintenance becouse
     # we do not have a maintenance cycle for system
     # it is the responsibilty of the maintenanace model to update this form
-    def last_maintenance(self):
-        ''' calculate last maintenance
-        '''
-        
-        calculated_last_maintenance = Maintenance.objects.filter(system = self.pk).order_by(last_maintenance)
-        
-        if calculated_last_maintenance:
-            return calculated_last_maintenance[0]
-        else:
-            return None
+    last_maintenance = models.DateField(null = True, blank = True)
+    last_maintenance.verbose_name = _('Last maintenance')
 
     last_maintenance.verbose_name = _('Last maintenance')
 
@@ -181,6 +179,20 @@ class Maintenance(models.Model):
         return cycle_as_string
     work_cycle_str.verbose_name = _('Work cycle')
     
+    def save(self, *args, **kwargs):
+        try:
+            if (self.last_maintenance and 
+                    not self.system.last_maintenance or 
+                    self.system.last_maintenance < self.last_maintenance):
+                self.system.last_maintenance = self.last_maintenance
+                self.system.save()
+        except Exception, e:
+            print e
+            pass
+        
+        # call the default save method
+        super(Maintenance, self).save(*args, **kwargs)
+
     # model overides
     def __unicode__(self):
         short_desc = self.work_description.split()[:5]

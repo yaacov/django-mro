@@ -51,7 +51,20 @@ class SystemForm(ModelForm):
         model = System
         fields = ('name', 
             'serial_number', 
-            'department', 'image', 'description')
+            'contract_number',
+            'contract_include_parts',
+            'suplier','department', 
+            'image', 'description')
+
+class SystemMaintenanceForm(ModelForm):
+    '''
+    '''
+
+    can_delete = True
+
+    class Meta:
+        model = Maintenance
+        exclude = ('itmes', 'priority', 'assign_to',)
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm

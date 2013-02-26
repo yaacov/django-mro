@@ -27,12 +27,12 @@ urlpatterns = patterns('mro_system.views',
     
     url(r'^$', 'system'),
     url(r'^add/$', 'manage_system'),
-    url(r'^(?P<num>\d+)/$', 'manage_system'),
-    url(r'^(?P<num>\d+)/delete/$', 'manage_system_delete'),
+    url(r'^(?P<system_pk>\d+)/$', 'manage_system'),
+    url(r'^(?P<system_pk>\d+)/delete/$', 'manage_system_delete'),
     url(r'^add/delete/$', 'manage_system_delete'),
     
-    url(r'^(?P<num>\d+)/maintenance/$', 'manage_system_maintenance'),
-    url(r'^(?P<num>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
+    url(r'^(?P<system_pk>\d+)/maintenance/$', 'manage_system_maintenance'),
+    url(r'^(?P<system_pk>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
 )
 
 # breadcrumbs translation guide

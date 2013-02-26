@@ -7,6 +7,11 @@
 {% block extra_css %}
 <link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
     type="text/css" media="screen" rel="stylesheet" />
+<style>
+.controls > .radio:first-child, .controls > .checkbox:first-child {
+    width: 180px;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}

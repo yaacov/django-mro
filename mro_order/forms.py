@@ -35,8 +35,8 @@ class OrderForm(ModelForm):
 
     class Meta:
         model = Order
-        fields = ('equipment', 'work_type', 'estimated_work_time', 'priority', 
-            'assign_to', 
+        fields = ('equipment', 'maintenance', 'estimated_work_time', 'priority', 
+            'contract_number', 'contract_include_parts', 'assign_to', 
             'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed', 
             'work_description', 'work_notes',)
     

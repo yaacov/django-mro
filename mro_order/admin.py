@@ -25,7 +25,7 @@ from django.contrib import admin
 from mro_order.models import Order, OrderEmployee, OrderItem
 
 class OrderEmployeeInline(admin.TabularInline):
-    fields = ('employee', 'work_started', 'work_type', 'work_hours')
+    fields = ('employee', 'work_started', 'work_hours')
     
     model = OrderEmployee
     extra = 0

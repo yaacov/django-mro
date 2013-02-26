@@ -109,6 +109,8 @@ class Suplier(models.Model):
         max_length = 30)
     
     # contact information
+    contact_name = models.CharField(_('Contact Name'), 
+        max_length = 30, blank = True, null = True)
     phone = models.CharField(_('Phone'), 
         max_length = 30, blank = True, null = True)
     fax = models.CharField(_('Fax'), 

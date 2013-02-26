@@ -24,15 +24,21 @@ from django.core.management.base import BaseCommand, CommandError
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
 class Command(BaseCommand):
-    help = 'compile less files, and minify the css and js files'
+    help = 'import items form csv file'
     
     def handle(self, *args, **options):
         ''' run the command
         '''
         
+        delimiter = ','
+
         f = open(args[0], 'r')  
+        serial_counter = 0
+        year = 2013
+
         for line in f:
-            line =  line.split(';')
+            serial_counter += 1
+            line =  line.split(delimiter)
 
             try:
                 name = line[0]
@@ -40,18 +46,37 @@ class Command(BaseCommand):
             except:
                 continue
             
+            # make the item
             item = Item()  
             item.name = name
-            item.catalogic_number = name
+
+            # make catalogic number unique
+            item.catalogic_number = u'CA-%04d-%03d' % (year, serial_counter)
+
             item.unit = 'PC'
             
-            item.save()
-            
-            warehouse_item = item
-            warehouse_item.warehouse = Warehouse.objects.get(pk = 0)
-            warehouse_item.item = item.pk
-            warehouse_id.amount = amount
+            try:
+                item.save()
+            except:
+                print 'warning: item %s can not enter db' % name
+                item = Item.objects.get(catalogic_number = name)
+
+            # make the warehouse
+            try:
+                warehouse = Warehouse.objects.get()
+            except:
+                warehouse = Warehouse(name = u'מחסן ראשי')
+                warehouse.save()
+                print 'warning: creating new warehouse'
+
+            # insert the item into the warehouse
+            warehouse_item = WarehouseItem()
+            warehouse_item.item = item
+            warehouse_item.warehouse = warehouse
+            warehouse_item.amount = amount
             
             warehouse_item.save()
             
+            print 'success: item %s, updated in db' % name
+
         f.close()

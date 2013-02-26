@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from mro_contact.models import Department, Employee, Suplier
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
-from mro_system.models import System, Priority
+from mro_system.models import System, Priority, Maintenance
 
 class Order(models.Model):
     ''' work order
@@ -42,20 +42,14 @@ class Order(models.Model):
         ('CA', _('Canceled')),
     )
     
-    WORK_TYPE = (
-        ('NE', _('New')),
-        ('MA', _('Maintenance')),
-        ('FR', _('Fracture')),
-    )
-    
     # this work is on this equipment
     equipment = models.ForeignKey(System)
     equipment.verbose_name = _('System')
     
-    # when to do the job
-    work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'MA')
-    work_type.verbose_name = _('Work type')
-    
+    # for this maintenance information
+    maintenance = models.ForeignKey(Maintenance, null = True, blank = True)
+    maintenance.verbose_name = _('Maintenance')
+
     # estimated time to complete the job
     estimated_work_time = models.IntegerField(_('Estimated work hours'), default = 8)
     
@@ -63,6 +57,10 @@ class Order(models.Model):
     priority = models.ForeignKey(Priority)
     priority.verbose_name = _('Priority')
     
+    # the job contract information
+    contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
+    contract_include_parts = models.BooleanField(_('Contract include parts'))
+
     # the job manager and contact information
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
     assign_to.verbose_name = _('Assign to')

@@ -111,7 +111,7 @@ def order_table(request, department_pk = None, order_id = None, action = None, w
     objs = Order.objects.all().order_by('created','assigned','completed')
     
     objs &= Order.objects.filter(equipment__department = department_pk)
-    objs &= Order.objects.filter(work_type = ['MA', 'FR'][work_type == 'fracture'])
+    #objs &= Order.objects.filter(work_type = ['MA', 'FR'][work_type == 'fracture'])
     
     # filter employees using the search form
     search = request.GET.get('search', '')
@@ -150,17 +150,19 @@ def order_table(request, department_pk = None, order_id = None, action = None, w
 
 def manage_order(request, department_pk = None, order_id = None, action = None, work_type = 'fracture'):
     if  order_id == None:
-        order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
+        #order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
+        order = Order()
     else:
         try:
             order = Order.objects.get(id = order_id)
         except:
             order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
+            order = Order()
 
-    ItemFormSet    = inlineformset_factory(Order, OrderItem, extra = 2, can_delete=True)
+    ItemFormSet    = inlineformset_factory(Order, OrderItem, extra = 1, can_delete=True)
     queryset = OrderItem.objects.all() 
 
-    EmployeeFormSet    = inlineformset_factory(Order, OrderEmployee, extra = 2, can_delete=True)
+    EmployeeFormSet    = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete=True)
     employeequeryset = OrderEmployee.objects.all() 
 
     redirect_url = '/order/%s/' % (work_type)

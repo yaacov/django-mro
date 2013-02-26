@@ -77,7 +77,7 @@ class SuplierForm(ModelForm):
         
     class Meta:
         model = Suplier
-        fields = ('name', 'phone', 
+        fields = ('name', 'contact_name', 'phone', 
             'fax', 'address', 'email', 
             'image', 'departments')
     

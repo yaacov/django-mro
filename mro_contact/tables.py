@@ -71,7 +71,8 @@ class SuplierTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'name', 
-            'department_list', 
+            'department_list',
+            'contact_name', 
             'phone', 
             'fax', 
             'address', 

@@ -57,7 +57,7 @@ def warehouse(request):
             {
                 'link': '/warehouse/warehouse_items/',
                 'image_url': '/static/tango/150x150/actions/log-in.png',
-                'name': ugettext_noop('Warehouse'),
+                'name': ugettext_noop('Warehouse Items'),
                 'description': ugettext_noop('Manage items in warehouse. Issue and insert items to and from the warehouse.'), 
             },
             {   'link': '/warehouse/items/',

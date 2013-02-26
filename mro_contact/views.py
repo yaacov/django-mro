@@ -81,6 +81,7 @@ def contact_employees(request):
         objs &= Employee.objects.filter(first_name__icontains = search)
         objs |= Employee.objects.filter(last_name__icontains = search)
         objs |= Employee.objects.filter(email__icontains = search)
+        objs |= Suplier.objects.filter(phone__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
@@ -161,10 +162,11 @@ def contact_supliers(request):
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
-        
         objs &= Suplier.objects.filter(name__icontains = search)
         objs |= Suplier.objects.filter(email__icontains = search)
-    
+        objs |= Suplier.objects.filter(contact_name__icontains = search)
+        objs |= Suplier.objects.filter(phone__icontains = search)
+
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
     if filter_pk:

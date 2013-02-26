@@ -34,7 +34,6 @@ class OrderTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'equipment', 
-            'work_type', 
             'priority', 
             'created', 
             'assigned', 

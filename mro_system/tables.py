@@ -26,16 +26,12 @@ from mro_system.models import System, Maintenance
 class SystemTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     name = tables.TemplateColumn(
-        '{{ record.name }}')
-    name.verbose_name = _('Name')
+        '<a href="/system/{{ record.pk }}/" >{{ record.name }}</a>')
+    name.verbose_name = _('System Name')
     
     short_description = tables.TemplateColumn(
-        '<a href="/system/{{ record.pk }}/" >{{ record }}</a>', orderable=False)
+        '{{ record }}', orderable=False)
     short_description.verbose_name = _('Description')
-
-    last_maintenance = tables.TemplateColumn(
-        '{{ record.maintenance }}', orderable=False)
-    last_maintenance.verbose_name = _('Description')
 
     class Meta:
         model = System
@@ -43,10 +39,12 @@ class SystemTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'name',
+            'suplier',
             'department',
             'short_description',
             'last_maintenance',
-            'serial_number', 
+            'contract_number',
+            'contract_include_parts', 
             )
 
 class MaintenanceTable(tables.Table):
