@@ -26,10 +26,11 @@ from django.forms.models import modelformset_factory
 from django.forms.models import inlineformset_factory
 from django.shortcuts import render
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
 
 from django_tables2   import RequestConfig
 
-from mro_system.models import System, Maintenance
+from mro_system.models import System, Maintenance, Item, MaintenanceItem
 from mro_contact.models import Department, Employee, Suplier
 
 from mro_system.tables import SystemTable
@@ -55,9 +56,12 @@ def system(request):
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
-        
         objs &= System.objects.filter(name__icontains = search)
+        objs |= System.objects.filter(suplier__name__icontains = search)
         objs |= System.objects.filter(serial_number__icontains = search)
+        objs |= System.objects.filter(description__icontains = search)
+        objs |= System.objects.filter(contract_number__icontains = search)
+        objs |= System.objects.filter(card_number__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
@@ -70,7 +74,7 @@ def system(request):
     
     # create a table object for the employee data
     table = SystemTable(objs)
-    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     # base_table.html response_dict rendering information
     response_dict = {}
@@ -109,9 +113,11 @@ def manage_system(request, system_pk = None):
 
     search = request.GET.get('search', '')
     if search:
-        queryset &= Maintenance.objects.filter(work_description__icontains = search)
+        queryset &= Maintenance.objects.filter(name__icontains = search)
+        queryset |= Maintenance.objects.filter(work_description__icontains = search)
+        queryset |= Maintenance.objects.filter(suplier__name__icontains = search)
 
-    paginator = Paginator(queryset, 45)
+    paginator = Paginator(queryset, 10)
     page = request.GET.get('page', '')
     try:
         objects = paginator.page(page)
@@ -133,10 +139,8 @@ def manage_system(request, system_pk = None):
             messages.success(request, _('Database updated.'))
 
             # Redirect to somewhere
-            if '_save' in request.POST:
-                return HttpResponseRedirect('/system/')
-            if '_addanother' in request.POST:
-                return HttpResponseRedirect('/system/')
+            if '_continue' == request.POST.get('form-action', ''):
+                return HttpResponseRedirect('/system/%s' % system_pk)
 
             return HttpResponseRedirect('/system/')
         else:
@@ -174,42 +178,65 @@ def manage_system_delete(request, system_pk = None):
 def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
     '''
     '''
-    try:
-        system_pk = int(system_pk)
-        maintenance = Maintenance.objects.get(pk = maintenance_pk)
-    except:
+
+    if maintenance_pk == None:
         maintenance = Maintenance()
-        maintenance.system = System.objects.get(pk = system_pk)
-        
-    if request.method == 'POST': # If the form has been submitted...
-        # delete ?
-        if request.POST.get('delete'):
-            try:
-                maintenance.delete()
-            except:
-                pass
-            return HttpResponseRedirect('/system/%d/' % system_pk) # Redirect after POST
-        
-        # save / update ?
-        form = MaintenanceForm(request.POST, request.FILES, instance = maintenance) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            form.save()
-            
-            if request.POST.get('submit'):
-                return HttpResponseRedirect('/system/%d/' % system_pk) # Redirect after POST
     else:
-        form = MaintenanceForm(instance = maintenance)
-    
+        try:
+            maintenance = Maintenance.objects.get(id = maintenance_pk)
+        except:
+            maintenance = Maintenance()
+
+    ItemFormSet = inlineformset_factory(Maintenance, MaintenanceItem,
+        extra = 1, can_delete=True, form=SystemMaintenanceForm)
+
+    queryset = MaintenanceItem.objects.filter(maintenance = maintenance) 
+
+    search = request.GET.get('search', '')
+    if search:
+        queryset &= MaintenanceItem.objects.filter(name__icontains = search)
+
+    paginator = Paginator(queryset, 10)
+    page = request.GET.get('page', '')
+    try:
+        objects = paginator.page(page)
+    except PageNotAnInteger:
+        objects = paginator.page(1)
+    except EmptyPage:
+        objects = paginator.page(paginator.num_pages)
+
+    page_query = MaintenanceItem.objects.filter(id__in=[object.id for object in objects])
+
+    if request.method == "POST":
+        maintenanceform = MaintenanceForm(request.POST, instance=maintenance)
+        itemformset = ItemFormSet(request.POST, request.FILES, instance=maintenance)
+        
+        if maintenanceform.is_valid() and itemformset.is_valid():
+            maintenanceform.save()
+            itemformset.save()
+
+            messages.success(request, _('Database updated.'))
+
+            # Redirect to somewhere
+            if '_continue' == request.POST.get('form-action', ''):
+                return HttpResponseRedirect('/system/%s/%s/' % (system_pk, maintenance_pk))
+
+            return HttpResponseRedirect('/system/%s/' % system_pk)
+        else:
+            messages.error(request, _('Error updating database.'))
+    else:
+        systemform = MaintenanceForm(instance=maintenance)
+        maintenanceformset = ItemFormSet(instance=maintenance, queryset=page_query)
+
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Maintenance'),
         'lead': _('Edit maintenance instruction information.'),
         'thumb': '/static/tango/48x48/status/flag-green-clock.png',
     }
-    
-    response_dict['form'] = form
-    response_dict['table'] = None
-    response_dict['delete'] = True
+    response_dict['form'] = systemform
+    response_dict['formset'] = maintenanceformset
+    response_dict['objects'] = objects
+    response_dict['search'] = search
 
-    return render(request, 'mro/base_form.html', response_dict)
-
+    return render(request, 'mro_system/manage_system_maintenance.html', response_dict)

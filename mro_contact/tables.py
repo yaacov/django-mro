@@ -24,10 +24,8 @@ import django_tables2 as tables
 from mro_contact.models import Employee, Suplier
 
 class EmployeeTable(tables.Table):
-    #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
-    name = tables.TemplateColumn(
-        '<a href="{{ record.pk }}/" >{{ record }}</a>')
-    name.verbose_name = _('Name')
+    first_name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.first_name }}</a>')
     
     department_list = tables.Column(accessor='department_list', orderable=False)
     department_list.verbose_name = _('Departments')
@@ -45,7 +43,7 @@ class EmployeeTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
-            'name', 
+            'first_name', 'last_name',
             'department_list', 
             'phone', 
             'cell_phone', 

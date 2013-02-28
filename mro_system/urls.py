@@ -30,9 +30,8 @@ urlpatterns = patterns('mro_system.views',
     url(r'^(?P<system_pk>\d+)/$', 'manage_system'),
     url(r'^(?P<system_pk>\d+)/delete/$', 'manage_system_delete'),
     url(r'^add/delete/$', 'manage_system_delete'),
-    
-    url(r'^(?P<system_pk>\d+)/maintenance/$', 'manage_system_maintenance'),
-    url(r'^(?P<system_pk>\d+)/maintenance/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
+
+    url(r'^(?P<system_pk>\d+)/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
 )
 
 # breadcrumbs translation guide

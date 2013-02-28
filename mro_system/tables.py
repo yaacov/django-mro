@@ -43,6 +43,7 @@ class SystemTable(tables.Table):
             'department',
             'short_description',
             'last_maintenance',
+            'card_number',
             'contract_number',
             'contract_include_parts', 
             )
@@ -66,5 +67,7 @@ class MaintenanceTable(tables.Table):
             'priority', 
             'work_cycle_str', 
             'estimated_work_time', 
-            'last_maintenance')
+            'last_maintenance',
+            'current_counter_value',
+            'last_maintenance_counter_value')
 

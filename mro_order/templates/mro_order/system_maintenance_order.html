@@ -2,11 +2,24 @@
 {% load i18n %}
 {% load render_table from django_tables2 %}
 
+{% block extra_css %}
+<style>
+#search-form {
+  margin-top: 80px;
+  margin-bottom: 0px;
+}
+</style>
+{% endblock %}
+
 {% block content %}
+
+<!-- h5>{% trans 'Issue new maintenance instructions' %}</h5 -->
+
+{% render_table maintenance_table %}
+
 <form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
     <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
-    <input type="hidden" id="form-sort" name="sort" value="{{ request.GET.sort }}">
     <ul class="nav nav-pills">
         <li>
             <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
@@ -20,8 +33,8 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="filters" data-val="">{% trans 'All' %}</a></li>
-                    {% for filter in filters %}
-                    <li><a class="filters" data-val="{{ filter.pk }}">{{ filter.name }}</a></li>
+                    {% for filter, name in filters %}
+                    <li><a class="filters" data-val="{{ filter }}">{{ name }}</a></li>
                     {% endfor %}
                 </ul>
             </li>
@@ -29,13 +42,9 @@
     </ul>
 </form>
 
-{% render_table table %}
+<h5>{% trans 'Edit issued maintenance work orders' %}</h5>
 
-<div class="form-actions">
-    {% if add_action %}
-    <a class="btn btn-primary btn-success pull-right" href="add/" >{% trans 'Add' %}</a>
-    {% endif %}
-</div>
+{% render_table table %}
 
 <script>
 $(function() {

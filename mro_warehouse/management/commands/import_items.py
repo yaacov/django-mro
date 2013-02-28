@@ -30,7 +30,7 @@ class Command(BaseCommand):
         ''' run the command
         '''
         
-        delimiter = ','
+        delimiter = ';'
 
         f = open(args[0], 'r')  
         serial_counter = 0
@@ -43,12 +43,14 @@ class Command(BaseCommand):
             try:
                 name = line[0]
                 amount = int(line[1])
+                unit_price = float(line[2])
             except:
                 continue
             
             # make the item
             item = Item()  
             item.name = name
+            item.unit_price = unit_price
 
             # make catalogic number unique
             item.catalogic_number = u'CA-%04d-%03d' % (year, serial_counter)
@@ -74,7 +76,7 @@ class Command(BaseCommand):
             warehouse_item.item = item
             warehouse_item.warehouse = warehouse
             warehouse_item.amount = amount
-            
+
             warehouse_item.save()
             
             print 'success: item %s, updated in db' % name

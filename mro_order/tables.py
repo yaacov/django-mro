@@ -18,14 +18,15 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 import django_tables2 as tables
 
 from mro_order.models import Order
+from mro_system.models import System, Maintenance
 
 class OrderTable(tables.Table):
     name = tables.TemplateColumn(
-        '<a href="/order/{{ record.pk }}/" >{{ record }}</a>')
+        '<a href="/order/fracture/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Description')
     
     class Meta:
@@ -33,9 +34,80 @@ class OrderTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
-            'equipment', 
+            'work_order_state', 
             'priority', 
+            'assign_to', 
+            'assign_to_suplier',
             'created', 
             'assigned', 
             'completed')
 
+class MaintenanceOrderTable(tables.Table):
+    name = tables.TemplateColumn(
+        '<a href="/order/maintenance/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>')
+    name.verbose_name = _('Description')
+    
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'work_order_state', 
+            'priority', 
+            'assign_to', 
+            'assign_to_suplier',
+            'created', 
+            'assigned', 
+            'completed')
+
+class SystemTable(tables.Table):
+    #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
+    name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.name }}</a>')
+    name.verbose_name = _('System Name')
+    
+    short_description = tables.TemplateColumn(
+        '{{ record }}', orderable=False)
+    short_description.verbose_name = _('Description')
+
+    class Meta:
+        model = System
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'name',
+            'department',
+            'short_description',
+            'last_maintenance',
+            'card_number',
+            'contract_number',
+            'contract_include_parts', 
+            )
+
+class MaintenanceTable(tables.Table):
+    #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
+    action = tables.TemplateColumn(
+        '<a class="btn btn-primary" href="/order/maintenance/{{ record.system.pk }}/add/{{ record.pk }}/" >%s</a>' % _('Issue work order'))
+    action.verbose_name = u'  '
+
+    system = tables.TemplateColumn(
+        '{{ record }}')
+    system.verbose_name = _('Maintenance Instruction')
+    
+    work_cycle_str = tables.TemplateColumn('{{ value }}')
+    work_cycle_str.verbose_name = _('Work cycle')
+    
+    class Meta:
+        model = Maintenance
+        orderable = False
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'system', 
+            'priority', 
+            'work_cycle_str', 
+            'estimated_work_time', 
+            'last_maintenance',
+            'current_counter_value',
+            'last_maintenance_counter_value',
+            'action',)

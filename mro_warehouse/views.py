@@ -75,7 +75,7 @@ def manage_items(request):
     '''
 
     ItemFormSet = modelformset_factory(Item, 
-        fields=('name', 'catalogic_number', 'unit', 'description'),
+        fields=('name', 'catalogic_number', 'unit', 'unit_price', 'description'),
         can_delete=True)
     queryset = Item.objects.all() 
 
@@ -84,7 +84,7 @@ def manage_items(request):
         queryset &= Item.objects.filter(name__icontains = search)
         queryset |= Item.objects.filter(catalogic_number__icontains = search)
 
-    paginator = Paginator(queryset, 45)
+    paginator = Paginator(queryset, 20)
     page = request.GET.get('page', '')
     try:
         objects = paginator.page(page)
@@ -162,7 +162,7 @@ def manage_warehouse_items(request, warehouse_id = 1):
             messages.warning(request, _('Warning, bad amount.'))
             amount = ''
 
-    paginator = Paginator(queryset, 45)
+    paginator = Paginator(queryset, 20)
     page = request.GET.get('page', '')
     try:
         objects = paginator.page(page)

@@ -14,9 +14,6 @@ input, select {
 .name, .catalogic_number, .unit {
     width: 130px;
 }
-.unit_price {
-    width: 100px;
-}
 .DELETE {
     width: 30px;
 }
@@ -42,7 +39,6 @@ django.jQuery(function(){
 <form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
     <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
-    <input type="hidden" id="form-sort" name="sort" value="{{ request.GET.sort }}">
     <ul class="nav nav-pills">
         <li>
             <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">

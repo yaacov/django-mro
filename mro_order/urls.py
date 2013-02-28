@@ -22,9 +22,26 @@ from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = patterns('mro_order.views',
-    url(r'^maintenance/$', 'work_maintenance'),
-    url(r'^fracture/$', 'work_fracture'),
-    
+   
+    url(r'^fracture/$', 'system', 
+        {'action': 'table', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<system_pk>\d+)/$', 'system_order', 
+        {'action': 'table', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<system_pk>\d+)/add/$', 'manage_fracture_order', 
+        {'action': 'table', 'work_type': 'fracture'}),
+    url(r'^fracture/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_fracture_order', 
+        {'action': 'table', 'work_type': 'fracture'}),
+
+    url(r'^maintenance/$', 'system', 
+        {'action': 'table', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<system_pk>\d+)/$', 'system_order', 
+        {'action': 'table', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<system_pk>\d+)/add/(?P<maintenance_pk>\d+)/$', 'manage_maintenance_order', 
+        {'action': 'table', 'work_type': 'maintenance'}),
+    url(r'^maintenance/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_maintenance_order', 
+        {'action': 'table', 'work_type': 'maintenance'}),
+
+
     url(r'^(?P<order_id>\d+)/$', 'manage_order', 
         {'action': 'edit', 'work_type': 'maintenance'}),
 
@@ -36,15 +53,6 @@ urlpatterns = patterns('mro_order.views',
         {'action': 'delete', 'work_type': 'maintenance'}),
     url(r'^maintenance/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order', 
         {'action': 'edit', 'work_type': 'maintenance'}),
-    
-    url(r'^fracture/(?P<department_pk>\d+)/$', 'order_table', 
-        {'action': 'table', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<department_pk>\d+)/add/$', 'manage_order', 
-        {'action': 'add', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<department_pk>\d+)/delete/$', 'manage_order', 
-        {'action': 'delete', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order', 
-        {'action': 'edit', 'work_type': 'fracture'}),
     
     url(r'^$', 'work'),
 )

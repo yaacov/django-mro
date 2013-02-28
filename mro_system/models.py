@@ -57,10 +57,12 @@ class System(models.Model):
     
     # the system identification
     name = models.CharField(_('System Name'), max_length = 30)
-    serial_number = models.CharField(_('Serial number'), max_length = 30, unique = True)
+    serial_number = models.CharField(_('Serial number'), max_length = 30, blank = True, null = True)
     
     suplier = models.ForeignKey(Suplier, null = True, blank = True)
-    suplier.verbose_name = _('Suplier')
+    suplier.verbose_name = _('System Suplier')
+
+    card_number = models.CharField(_('Card number'), max_length = 30, null = True, blank = True)
 
     contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
     contract_include_parts = models.BooleanField(_('Contract include parts'))
@@ -100,9 +102,7 @@ class System(models.Model):
     # we do not have a maintenance cycle for system
     # it is the responsibilty of the maintenanace model to update this form
     last_maintenance = models.DateField(null = True, blank = True)
-    last_maintenance.verbose_name = _('Last maintenance')
-
-    last_maintenance.verbose_name = _('Last maintenance')
+    last_maintenance.verbose_name = _('Last Maintenance Date')
 
     # model overides
     def __unicode__(self):
@@ -126,6 +126,7 @@ class Maintenance(models.Model):
         ('WE', _('Weeks')),
         ('MO', _('Months')),
         ('YE', _('Years')),
+        ('ON', _('Once')),
     )
     
     # this work is on this system
@@ -147,19 +148,24 @@ class Maintenance(models.Model):
     work_description = models.TextField(_('Work description'))
     
     # items needed to complete this job
-    itmes = models.ManyToManyField(Item, related_name = 'maintenance_itmes', through = 'MaintenanceItem', null = True, blank = True)
-    itmes.verbose_name = _('MaintenanceItem Item')
+    items = models.ManyToManyField(Item, related_name = 'maintenance_items', through = 'MaintenanceItem', null = True, blank = True)
+    items.verbose_name = _('MaintenanceItem Item')
     
     # when to do the job
     work_cycle_count = models.IntegerField(_('Maintenance done every'), default = 1)
-    work_cycle = models.CharField(max_length = 2, choices = WORK_CYCLE, default = 'YE')
+    work_cycle = models.CharField(max_length = 2, choices = WORK_CYCLE, default = 'WH')
     work_cycle.verbose_name = _('Time periods')
-    
+
     # last completed maintenance round
     # we use this information to calculate next maintenance time
     last_maintenance = models.DateField(null = True, blank = True)
-    last_maintenance.verbose_name = _('Last maintenance')
+    last_maintenance.verbose_name = _('Last Maintenance Date')
     
+    # command to read work hours
+    counter_command = models.CharField(_('Counter Command'), max_length = 60, null = True, blank = True)
+    current_counter_value = models.FloatField(_('Current Counter Value'), default = 0.0, null = True, blank = True)
+    last_maintenance_counter_value = models.FloatField(_('Last Maintenance Counter Value'), default = 0.0, null = True, blank = True)
+
     def work_cycle_str(self):
         ''' human readable text representing a work cycle
         '''
@@ -182,8 +188,8 @@ class Maintenance(models.Model):
     def save(self, *args, **kwargs):
         try:
             if (self.last_maintenance and 
-                    not self.system.last_maintenance or 
-                    self.system.last_maintenance < self.last_maintenance):
+                    (not self.system.last_maintenance or 
+                        self.system.last_maintenance < self.last_maintenance)):
                 self.system.last_maintenance = self.last_maintenance
                 self.system.save()
         except Exception, e:

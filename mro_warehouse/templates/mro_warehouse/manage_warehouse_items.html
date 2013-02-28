@@ -71,6 +71,7 @@ django.jQuery(function(){
 <form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
     <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
+    <input type="hidden" id="form-sort" name="sort" value="{{ request.GET.sort }}">
     <ul class="nav nav-pills">
         <li><input type="text" name="search" class="" value="{{ search }}" placeholder="Search"></li>
         <li><input type="text" name="expires" class="expires" value="{{ expires }}" placeholder="Expires"></li>

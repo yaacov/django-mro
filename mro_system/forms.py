@@ -45,16 +45,17 @@ class SystemForm(ModelForm):
         
         self.fields['image'].widget = AdminImageWidget()
         #self.fields['address'].widget.attrs.update({'class' : 'wide'})
-        self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '4'})
+        self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
         
     class Meta:
         model = System
         fields = ('name', 
             'serial_number', 
+            'card_number', 
             'contract_number',
             'contract_include_parts',
             'suplier','department', 
-            'image', 'description')
+            'image', 'description',)
 
 class SystemMaintenanceForm(ModelForm):
     '''
@@ -64,7 +65,7 @@ class SystemMaintenanceForm(ModelForm):
 
     class Meta:
         model = Maintenance
-        exclude = ('itmes', 'priority', 'assign_to',)
+        exclude = ('items', 'priority', 'assign_to', 'counter_command')
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm
@@ -80,9 +81,9 @@ class MaintenanceForm(ModelForm):
         #self.helper.add_input(Submit('update', _('Update'), css_class='btn-success'))
         self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
         
-        self.fields['work_description'].widget.attrs.update({'class' : 'wide', 'rows': '4'})
+        self.fields['work_description'].widget.attrs.update({'class' : 'wide', 'rows': '6'})
         
     class Meta:
         model = Maintenance
-        exclude = ('itmes', 'priority', 'assign_to',)
+        exclude = ('items', 'priority', 'assign_to',)
         

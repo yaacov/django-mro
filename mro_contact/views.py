@@ -81,7 +81,7 @@ def contact_employees(request):
         objs &= Employee.objects.filter(first_name__icontains = search)
         objs |= Employee.objects.filter(last_name__icontains = search)
         objs |= Employee.objects.filter(email__icontains = search)
-        objs |= Suplier.objects.filter(phone__icontains = search)
+        objs |= Employee.objects.filter(phone__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
@@ -94,7 +94,7 @@ def contact_employees(request):
     
     # create a table object for the employee data
     table = EmployeeTable(objs)
-    RequestConfig(request, paginate={"per_page": 45}).configure(table)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     response_dict = {
         'headers': {
@@ -178,7 +178,7 @@ def contact_supliers(request):
     
     # create a table object for the employee data
     table = SuplierTable(objs)
-    RequestConfig(request, paginate={"per_page": 45}).configure(table)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     response_dict = {
         'headers': {

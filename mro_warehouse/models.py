@@ -42,6 +42,9 @@ class Item(models.Model):
     unit.verbose_name = _('Unit')
     description = models.CharField(_('Description'), max_length = 200, null = True, blank = True)
     
+    unit_price = models.FloatField(null = True, blank = True, default = 0.0)
+    unit_price.verbose_name = _('Unit Price')
+
     # image - item image
     image = models.ImageField(null=True, blank=True, upload_to='warehouse')
     image.verbose_name = _('Image')

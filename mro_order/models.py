@@ -42,9 +42,9 @@ class Order(models.Model):
         ('CA', _('Canceled')),
     )
     
-    # this work is on this equipment
-    equipment = models.ForeignKey(System)
-    equipment.verbose_name = _('System')
+    # this work is on this system
+    system = models.ForeignKey(System)
+    system.verbose_name = _('System')
     
     # for this maintenance information
     maintenance = models.ForeignKey(Maintenance, null = True, blank = True)
@@ -63,10 +63,13 @@ class Order(models.Model):
 
     # the job manager and contact information
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
-    assign_to.verbose_name = _('Assign to')
+    assign_to.verbose_name = _('Assign to Employee')
     
+    assign_to_suplier = models.ForeignKey(Suplier, null = True, blank = True)
+    assign_to_suplier.verbose_name = _('Assign to Suplier')
+
     # job state
-    work_order_state = models.CharField(max_length = 2, choices = ORDER_STATE, default = 'FR')
+    work_order_state = models.CharField(max_length = 2, choices = ORDER_STATE, default = 'RE')
     work_order_state.verbose_name = _('Work state')
     
     # estimated completion can be calculated using work start and work time
@@ -92,8 +95,8 @@ class Order(models.Model):
     employees.verbose_name = _('Order employee')
     
     # items needed to complete this job
-    itmes = models.ManyToManyField(Item, related_name = 'order_itmes', through = 'OrderItem')
-    itmes.verbose_name = _('Order item')
+    items = models.ManyToManyField(Item, related_name = 'order_items', through = 'OrderItem')
+    items.verbose_name = _('Order item')
     
     def work_order_state_str(self):
         ''' human readable text representing a work_order_state
@@ -109,15 +112,49 @@ class Order(models.Model):
         
     work_order_state_str.verbose_name = _('Work state')
     
+    def save(self, *args, **kwargs):
+        
+        # check if assigned to worker / suplier
+        if (self.assign_to or self.assign_to_suplier) and self.work_order_state in ['RE']:
+            self.work_order_state = 'AS'
+
+        # adjast work state
+        if self.assigned and self.work_order_state in ['RE']:
+            self.work_order_state = 'AS'
+        if self.completed and self.work_order_state in ['RE', 'AS']:
+            self.work_order_state = 'CO'
+
+        # check dates for work state
+        if not self.assigned and self.work_order_state == 'AS':
+            self.assigned = datetime.today()
+        if not self.completed and self.work_order_state == 'CO':
+            self.completed = datetime.today()
+
+        # check if order complete
+        if self.pk is not None:
+            orig = Order.objects.get(pk=self.pk)
+            if self.maintenance and orig.work_order_state != 'CO' and  self.work_order_state == 'CO':
+                self.maintenance.last_maintenance_counter_value = self.maintenance.current_counter_value
+                self.maintenance.save()
+
+        if (self.maintenance and self.completed and
+                (not self.maintenance.last_maintenance or 
+                    self.maintenance.last_maintenance < self.completed)):
+            self.maintenance.last_maintenance = self.completed
+            self.maintenance.save()
+
+        # call the default save method
+        super(Order, self).save(*args, **kwargs)
+
     # model overides
     def __unicode__(self):
-        short_desc = u' '.join(self.work_description.split()[:7])
+        short_desc = u' '.join(self.work_description.split('\n')[0].split()[:7])
         return u'%s' % short_desc
     
     class Meta:
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
-        ordering = ('equipment',)
+        ordering = ('system',)
 
 class OrderItem(models.Model):
     ''' Items used for the Order
@@ -150,6 +187,9 @@ class OrderEmployee(models.Model):
         ('OF', _('Office')),
     )
     
+    # a number atached to this work
+    work_number = models.CharField(_('Work number'), max_length = 10, null = True, blank = True)
+
     # connection
     order = models.ForeignKey(Order)
     order.verbose_name = _('Order')
@@ -162,6 +202,10 @@ class OrderEmployee(models.Model):
     work_type.verbose_name = _('Order type')
     work_hours = models.IntegerField(_('Order hours'), default = 1)
     
+    # admin stuff
+    work_started_time = models.TimeField(_('Work start time'), blank = True, null = True)
+    work_end_time = models.TimeField(_('Work end time'), blank = True, null = True)
+
     def work_type_str(self):
         ''' human readable text representing a work_type
         '''

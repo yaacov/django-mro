@@ -8,17 +8,28 @@
 <link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
     type="text/css" media="screen" rel="stylesheet" />
 <style type="text/css">
-input, select {
+.maintenance input, .maintenance select, .maintenance textarea {
     width: 95%;
 }
-.name, .catalogic_number, .unit {
-    width: 130px;
+.maintenance textarea {
+    height: 120px;
 }
-.unit_price {
-    width: 100px;
+.system th {
+    width: 200px;
 }
-.DELETE {
+.maintenance th.edit, .maintenance th.work_cycle_count, 
+.maintenance th.estimated_work_time, .maintenance th.last_maintenance, 
+.maintenance th.current_counter_value, .maintenance th.last_maintenance_counter_value {
+    width: 80px;
+}
+.maintenance th.work_cycle {
+    width: 120px;
+}
+.maintenance td.DELETE {
     width: 30px;
+}
+#search-form li {
+    margin-right: 20px;
 }
 </style>
 {% endblock %}
@@ -32,22 +43,26 @@ input, select {
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
-    django.jQuery('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.last_maintenance input').datepicker({'format': 'yyyy-mm-dd'});
+    
+    django.jQuery('#search-form').keypress(function (e){
+        code = e.keyCode ? e.keyCode : e.which;
+          if(code.toString() == 13) {
+             django.jQuery('#search-form').submit();
+          }
+    });
 });
 </script>
 {% endblock %}
     
 {% block content %}
 
-<form id="search-form">
+<!--form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
     <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
-    <input type="hidden" id="form-sort" name="sort" value="{{ request.GET.sort }}">
     <ul class="nav nav-pills">
-        <li>
-            <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
-        </li>
-        
+        <li><input type="text" name="search" class="" value="{{ search }}" placeholder="Search"></li>
+
         {% if filters %}
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -63,15 +78,41 @@ django.jQuery(function(){
             </li>
         {% endif %}
     </ul>
-</form>
+</form-->
+
+{{ form.errors }}
+{{ form.non_field_errors }}
 
 <form method="post" id="formset" action="">
     {% csrf_token %}
+
+    <input type="hidden" id="form_action" name="form-action" value="" />
+    <table class="table system">
+    {%for field in form %}
+        <tr>
+        {% if not field.is_hidden %}
+            {% if field.errors %}
+            <th valign="bottom" class="control-group {{ field.name }} error">
+            {% else %}
+            <th valign="bottom" class="control-group {{ field.name }}">
+            {% endif %}
+                {{ field.label }}
+            </th>
+            <td class="control-group {{ field.name }}">
+                {{field}}
+            </td>
+        {%else%}
+            {{field}}
+        {% endif %}
+        </tr>
+    {%endfor%}
+    </table>
+
     <input type="hidden" id="form-page" name="page" value="">
 
     {{ formset.management_form }}
 
-    <table class="table table-striped">
+    <table class="table table-striped maintenance">
     <tr>
     {% for field in formset.forms.0 %}
         {% if not field.is_hidden %}
@@ -85,7 +126,7 @@ django.jQuery(function(){
         {%for field in form %} 
             {% if not field.is_hidden %}
                 {% if field.errors %}
-                <td valign="bottom" class="control-group error">
+                <td valign="bottom" class="control-group {{ field.name }} error">
                 {% else %}
                 <td valign="bottom" class="control-group {{ field.name }}">
                 {% endif %}
@@ -103,7 +144,23 @@ django.jQuery(function(){
 {% bootstrap_paginator objects %}
 
 <div class="form-actions">
-    <a class="btn btn-primary btn-submit" href="#" onClick="django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        // delete items with no item selected
+        django.jQuery('td').each(function() { 
+            if (django.jQuery(this).children('select').val() == '') {
+                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
+            }
+        });
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        // delete items with no item selected
+        django.jQuery('td').each(function() { 
+            if (django.jQuery(this).children('select').val() == '') {
+                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
+            }
+        });
+        django.jQuery('#form_action').val('_continue');
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
 </div>
 
 <script>
