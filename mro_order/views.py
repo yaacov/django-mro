@@ -33,7 +33,7 @@ from django_tables2 import RequestConfig
 
 from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
 from mro_contact.models import Department, Employee, Suplier
-from mro_order.models import Order, OrderItem, OrderEmployee
+from mro_order.models import Order, OrderItem, OrderEmployee, OrderDocument
 from mro_order.tables import OrderTable, SystemTable, MaintenanceOrderTable
 from mro_order.tables import MaintenanceTable
 from mro_order.forms import OrderForm, FractureOrderForm
@@ -52,15 +52,16 @@ def work(request):
     '''
     
     thumbs = [
-        {   'link': '/order/maintenance/',
-            'image_url': '/static/tango/150x150/status/flag-green-clock.png',
-            'name': ugettext_noop('Maintenance work orders'),
-            'description': ugettext_noop('Display and assigne maintenance work orders.'), 
-        }, {
+        {
             'link': '/order/fracture/',
             'image_url': '/static/tango/150x150/status/flag-red-clock.png',
             'name': ugettext_noop('Fracture work orders'),
             'description': ugettext_noop('Display and assigne fracture maintenance work orders.'), 
+        },
+        {   'link': '/order/maintenance/',
+            'image_url': '/static/tango/150x150/status/flag-green-clock.png',
+            'name': ugettext_noop('Maintenance work orders'),
+            'description': ugettext_noop('Display and assigne maintenance work orders.'), 
         },
     ]
     
@@ -353,46 +354,32 @@ def system_order(request, system_pk = None, order_id = None, action = None, work
 def manage_fracture_order(request, system_pk = None, order_pk = None, action = None, work_type = 'fracture'):
     '''
     '''
-    system = System.objects.get(pk = system_pk)
-    priority = Priority.objects.all().order_by('-max_days_delay')[0]
 
-    if  order_pk == None:
-        order = Order()
+    if order_pk:
+        order = Order.objects.get(pk = order_pk)
     else:
-        try:
-            order = Order.objects.get(id = order_pk)
-        except:
-            order = Order()
-
-    # pre-set the order system
-    order.system = system
-    order.priority = priority
-
-    ItemFormSet    = inlineformset_factory(Order, OrderItem, extra = 1, can_delete=True)
-    queryset = OrderItem.objects.all() 
-
-    EmployeeFormSet    = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete=True)
-    employeequeryset = OrderEmployee.objects.all() 
-
-    redirect_url = '/order/fracture/%s/' % (order.system.pk)
+        order = None
 
     if request.method == "POST":
-        action = request.POST['form-action']
+        ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
+        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
+        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
+        orderform = OrderForm(request.POST, request.FILES, instance = order)
+        itemformset = ItemFormSet(request.POST, request.FILES, instance = order, prefix='items')
+        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance = order, prefix='employees')
+        documentformset = DocumentFormSet(request.POST, request.FILES, instance = order, prefix='documents')
+        
+        action = request.POST['form-action']
         if action == '_delete':
             try:
-                order.delete()
+                Order.objects.get(pk = order_pk).delete()
             except Exception, e:
                 pass
 
-            return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect('/order/fracture/%s/' % (system_pk))
 
-        orderform = FractureOrderForm(request.POST, instance=order)
-
-        itemformset = ItemFormSet(request.POST, request.FILES, instance=order)
-        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance=order)
-        
-        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid():
+        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid() and documentformset.is_valid():
             order = orderform.save()
             items = itemformset.save(commit=False)
             for item in items:
@@ -404,36 +391,42 @@ def manage_fracture_order(request, system_pk = None, order_pk = None, action = N
                 employee.order = order
                 employee.save()
 
+            documents = documentformset.save(commit=False)
+            for document in documents:
+
+                document.order = order
+                document.save()
+
+            messages.success(request, _('Database updated.'))
+
             # Redirect to somewhere
-            try:
-                redirect_url = '/order/fracture/%s/' % (order.system.pk)
-            except:
-                pass
-            
-            if action == '_save':
-                return HttpResponseRedirect(redirect_url)
             if action == '_update':
-                return HttpResponseRedirect('/order/fracture/%s/%s/' % (order.system.pk, order.pk))
+                return HttpResponseRedirect('/order/fracture/%s/%s/' % (system_pk, order.pk))
 
-            if '_addanother' in request.POST:
-                return HttpResponseRedirect(redirect_url)
-
-            return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect('/order/fracture/%s/' % (system_pk))
         else:
             messages.error(request, _('Error updating database.'))
-
-            orderform = FractureOrderForm(instance=order)
-            itemformset = ItemFormSet(instance=order, queryset=queryset)
-            employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
     else:
-        order.contract_number = order.system.contract_number
-        order.contract_include_parts = order.system.contract_include_parts
-        #order.assign_to_suplier = order.system.suplier
+        ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
+        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
+        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
-        orderform = FractureOrderForm(instance=order)
-        itemformset = ItemFormSet(instance=order, queryset=queryset)
-        employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
+        system = System.objects.get(pk = system_pk)
 
+        initial = {
+            'system': system,
+            'priority': Priority.objects.all().order_by('-max_days_delay')[0],
+            'contract_number': system.contract_number,
+            'contract_include_parts': system.contract_include_parts,
+            'assign_to_suplier': system.suplier,
+        }
+
+        orderform = OrderForm(instance = order, initial = initial)
+        employeeformset = EmployeeFormSet(instance = order, prefix='employees')
+        itemformset = ItemFormSet(instance = order, prefix='items')
+        documentformset = DocumentFormSet(instance = order, prefix='documents')
+
+    system = System.objects.get(pk = system_pk)
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Fracture work order, %(department)s') % {'department': system.department.name},
@@ -443,6 +436,7 @@ def manage_fracture_order(request, system_pk = None, order_pk = None, action = N
     response_dict['form'] = orderform
     response_dict['formset'] = itemformset
     response_dict['employeeformset'] = employeeformset
+    response_dict['documentformset'] = documentformset
 
     return render(request, 'mro_order/manage_order_items.html', response_dict)
 
@@ -458,10 +452,12 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
     if request.method == "POST":
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
         EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
+        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
         orderform = OrderForm(request.POST, request.FILES, instance = order)
         itemformset = ItemFormSet(request.POST, request.FILES, instance = order, prefix='items')
         employeeformset = EmployeeFormSet(request.POST, request.FILES, instance = order, prefix='employees')
+        documentformset = DocumentFormSet(request.POST, request.FILES, instance = order, prefix='documents')
         
         action = request.POST['form-action']
         if action == '_delete':
@@ -472,7 +468,7 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
 
             return HttpResponseRedirect('/order/maintenance/%s/' % (system_pk))
 
-        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid():
+        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid() and documentformset.is_valid():
             order = orderform.save()
             items = itemformset.save(commit=False)
             for item in items:
@@ -483,6 +479,12 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
             for employee in employees:
                 employee.order = order
                 employee.save()
+
+            documents = documentformset.save(commit=False)
+            for document in documents:
+
+                document.order = order
+                document.save()
 
             messages.success(request, _('Database updated.'))
 
@@ -511,7 +513,7 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
                     'estimated_work_time': maintenance.estimated_work_time,
                     'contract_number': maintenance.system.contract_number,
                     'contract_include_parts': maintenance.system.contract_include_parts,
-                    #'assign_to_suplier': maintenance.system.suplier,
+                    'assign_to_suplier': maintenance.system.suplier,
                 }
 
                 initial_items = []
@@ -519,11 +521,12 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
                     initial_items.append({
                         'item': maintenanceitem.item.pk,
                         'amount': maintenanceitem.amount,
-                        'issued': datetime.today(),
+                        'ordered': datetime.today(),
                         })
 
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = len(initial_items) + 1, can_delete = True)
         EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
+        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
         orderform = OrderForm(instance = order, initial = initial)
         employeeformset = EmployeeFormSet(instance = order, prefix='employees')
@@ -533,6 +536,8 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
             print subform.initial
             subform.initial = data
             print '===' , subform.initial
+
+        documentformset = DocumentFormSet(instance = order, prefix='documents')
 
     system = System.objects.get(pk = system_pk)
     response_dict = {}
@@ -544,5 +549,6 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
     response_dict['form'] = orderform
     response_dict['formset'] = itemformset
     response_dict['employeeformset'] = employeeformset
+    response_dict['documentformset'] = documentformset
 
     return render(request, 'mro_order/manage_order_items.html', response_dict)

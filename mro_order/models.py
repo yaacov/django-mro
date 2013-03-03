@@ -18,7 +18,7 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.db import models
 from django.utils.translation import ugettext
@@ -73,11 +73,11 @@ class Order(models.Model):
     work_order_state.verbose_name = _('Work state')
     
     # estimated completion can be calculated using work start and work time
-    estimated_completion  = models.DateField(default=lambda: datetime.today() + timedelta(days = 2))
+    estimated_completion  = models.DateField(default=lambda: date.today() + timedelta(days = 2))
     estimated_completion .verbose_name = _('Estimated completion')
     
     # when job was reported and done
-    created = models.DateField(default=lambda: datetime.today())
+    created = models.DateField(default=lambda: date.today())
     created.verbose_name = _('Created')
     assigned = models.DateField(blank = True, null = True)
     assigned.verbose_name = _('Assigned')
@@ -98,6 +98,10 @@ class Order(models.Model):
     items = models.ManyToManyField(Item, related_name = 'order_items', through = 'OrderItem')
     items.verbose_name = _('Order item')
     
+    # documents for this job
+    documents = models.ManyToManyField('OrderDocument', related_name = 'order_documents')
+    documents.verbose_name = _('Documents')
+
     def work_order_state_str(self):
         ''' human readable text representing a work_order_state
         '''
@@ -114,8 +118,8 @@ class Order(models.Model):
     
     def save(self, *args, **kwargs):
         
-        # check if assigned to worker / suplier
-        if (self.assign_to or self.assign_to_suplier) and self.work_order_state in ['RE']:
+        # check if assigned to worker
+        if self.assign_to and self.work_order_state in ['RE']:
             self.work_order_state = 'AS'
 
         # adjast work state
@@ -126,9 +130,9 @@ class Order(models.Model):
 
         # check dates for work state
         if not self.assigned and self.work_order_state == 'AS':
-            self.assigned = datetime.today()
+            self.assigned = date.today()
         if not self.completed and self.work_order_state == 'CO':
-            self.completed = datetime.today()
+            self.completed = date.today()
 
         # check if order complete
         if self.pk is not None:
@@ -166,9 +170,15 @@ class OrderItem(models.Model):
     item = models.ForeignKey(Item, related_name = 'order_item')
     item.verbose_name = _('Item')
     
-    # amount of items used
-    issued = models.DateField(default=lambda: datetime.today())
+    # date of order
+    ordered = models.DateField(default = lambda: date.today())
+    ordered.verbose_name = _('Ordered')
+
+    # date ot delivery
+    issued = models.DateField(null = True, blank = True)
     issued.verbose_name = _('Issued')
+    
+    # amount of items used
     amount = models.IntegerField(_('Amount'), default = 1)
     
     class Meta:
@@ -197,7 +207,7 @@ class OrderEmployee(models.Model):
     employee.verbose_name = _('Employee')
     
     # how many hours where worked and some information
-    work_started = models.DateField(_('Work started'), default=lambda: datetime.today())
+    work_started = models.DateField(_('Work started'), default=lambda: date.today())
     work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'OS')
     work_type.verbose_name = _('Order type')
     work_hours = models.IntegerField(_('Order hours'), default = 1)
@@ -224,3 +234,24 @@ class OrderEmployee(models.Model):
         verbose_name_plural = _('Order employees')
         ordering = ('order',)
 
+class OrderDocument(models.Model):
+    ''' Documents used for the Order
+    '''
+    # connection
+    order = models.ForeignKey(Order)
+    order.verbose_name = _('Order')
+
+    # description
+    title = models.CharField(_('Document title'), max_length = 30)
+    description =  models.TextField(_('Document description'), blank = True, null = True)
+    created = models.DateField(default=lambda: date.today())
+    created.verbose_name = _('Created')
+    
+    # the document
+    image = models.FileField(null=True, blank=True, upload_to='documents/%Y/%m/%d')
+    image.verbose_name = _('Document')
+
+    class Meta:
+        verbose_name = _('Order Document')
+        verbose_name_plural = _('Order Documents')
+        ordering = ('title',)

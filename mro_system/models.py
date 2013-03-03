@@ -18,7 +18,7 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.db import models
 from django.utils.translation import ugettext
@@ -89,7 +89,7 @@ class System(models.Model):
     description = models.TextField(_('System Description'))
     
     # install date
-    installed = models.DateField(default=lambda: datetime.today())
+    installed = models.DateField(default=lambda: date.today())
     installed.verbose_name = _('Installed')
     
     # we do not delete system from the data base,

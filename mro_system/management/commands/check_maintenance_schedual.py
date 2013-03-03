@@ -40,8 +40,12 @@ class Command(BaseCommand):
     def create_order(self, maintenance):
 
         # if a work order is pending do set a new work order
-        waiting_order = Order.objects.filter(maintenance = maintenance).exclude(work_order_state = 'CO')
-        if waiting_order:
+        wait_before_new_order = 7
+        waiting_order = Order.objects.filter(maintenance = maintenance).exclude(work_order_state = 'CO').order_by('created')
+        if (waiting_order and 
+            waiting_order[0].created and
+            waiting_order[0].created > (date.today() - timedelta(days = wait_before_new_order))):
+
             print '            work order waiting ... '
             return
 
@@ -53,6 +57,7 @@ class Command(BaseCommand):
             estimated_work_time = maintenance.estimated_work_time,
             contract_number = maintenance.system.contract_number,
             contract_include_parts = maintenance.system.contract_include_parts,
+            assign_to_suplier = maintenance.system.suplier,
         )
 
         order.save()
@@ -62,7 +67,7 @@ class Command(BaseCommand):
                 order = order, 
                 item = maintenanceitem.item,
                 amount = maintenanceitem.amount,
-                issued = datetime.today(),
+                ordered = date.today(),
             )
             orderitem.save()
 

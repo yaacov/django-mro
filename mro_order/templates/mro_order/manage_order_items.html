@@ -18,8 +18,11 @@ td.expires, td.entered {
 td.shelve, td.batch {
     width: 110px;
 }
-td.amount {
+td.amount input{
     width: 60px;
+}
+td.issued input, td.ordered input {
+    width: 120px;
 }
 th.name, td.name input {
     width: 150px;
@@ -45,6 +48,20 @@ th.DELETE {
 .employees-table input {
     width: 100px;
 }
+.formset-sep {
+    height: 50px;
+    border-bottom: 1px solid gray;
+}
+td.image label,
+td.image input[type=checkbox] {
+    visibility: hidden;
+}
+td.description textarea {
+    min-width: 300px;
+}
+td.created input {
+    width: 120px;
+}
 </style>
 {% endblock %}
 
@@ -63,6 +80,7 @@ django.jQuery(function(){
 
     django.jQuery('.estimated_completion input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.issued input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.ordered input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.work_started input').datepicker({'format': 'yyyy-mm-dd'});
 
     django.jQuery('#search-form').keypress(function (e){
@@ -102,7 +120,7 @@ django.jQuery(function(){
 {{ form.errors }}
 {{ form.non_field_errors }}
 
-<form method="post" id="formset" action="">
+<form method="post" id="formset" action="" enctype="multipart/form-data">
     {% csrf_token %}
 
     <table class="table horizontal-form">
@@ -128,6 +146,37 @@ django.jQuery(function(){
 
     <input type="hidden" id="form-page" name="page" value="">
     <input type="hidden" id="form-action" name="form-action" value="">
+
+    {{ employeeformset.management_form }}
+
+    <h4>{% trans "Order Employee" %}</h4>
+    <table class="table table-striped employees-table">
+    <tr>
+    {% for field in employeeformset.forms.0 %}
+        {% if not field.is_hidden %}
+            <th class="{{ field.name }}">{{ field.label }}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+
+    {% for form in employeeformset %}
+    <tr>
+        {%for field in form %} 
+            {% if not field.is_hidden %}
+                {% if field.errors %}
+                <td valign="bottom" class="control-group error">
+                {% else %}
+                <td valign="bottom" class="control-group {{ field.name }}">
+                {% endif %}
+                    {{field}}
+                </td>
+            {%else%}
+                {{field}}
+            {% endif %}
+        {%endfor%}
+    </td>
+    {% endfor %}
+    </table>
 
     {{ formset.management_form }}
 
@@ -160,19 +209,52 @@ django.jQuery(function(){
     {% endfor %}
     </table>
 
-    {{ employeeformset.management_form }}
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        // delete items with no item selected
+        django.jQuery('td').each(function() { 
+            if (django.jQuery(this).children('select').val() == '') {
+                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
+            }
+        });
+        django.jQuery('#form-action').val('_save');
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        // delete items with no item selected
+        django.jQuery('td').each(function() { 
+            if (django.jQuery(this).children('select').val() == '') {
+                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
+            }
+        });
+        django.jQuery('#form-action').val('_update');
+        django.jQuery('#formset').submit();" >{% trans 'Update' %}</a>
 
-    <h4>{% trans "Order Employee" %}</h4>
-    <table class="table table-striped employees-table">
+    <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
+        // delete items with no item selected
+        django.jQuery('td').each(function() { 
+            if (django.jQuery(this).children('select').val() == '') {
+                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
+            }
+        });
+        django.jQuery('#form-action').val('_delete');
+        django.jQuery('#formset').submit();" >{% trans 'Delete' %}</a>
+</div>
+
+<div class="formset-sep"></div>
+
+    {{ documentformset.management_form }}
+
+    <h4>{% trans "Order Documents" %}</h4>
+    <table class="table table-striped">
     <tr>
-    {% for field in employeeformset.forms.0 %}
+    {% for field in documentformset.forms.0 %}
         {% if not field.is_hidden %}
             <th class="{{ field.name }}">{{ field.label }}</th>
         {% endif %}
     {% endfor %}
     </tr>
 
-    {% for form in employeeformset %}
+    {% for form in documentformset %}
     <tr>
         {%for field in form %} 
             {% if not field.is_hidden %}
