@@ -56,18 +56,18 @@ def warehouse(request):
         'thumbs': [ 
              {
                 'link': '/warehouse/warehouse_actions/',
-                'image_url': '/static/tango/150x150/actions/log-in.png',
+                'image_url': '/static/tango/48x48/actions/log-in.png',
                 'name': ugettext_noop('Store and issue Items'),
                 'description': ugettext_noop('Store and issue warehouse items. Issue and store items to and from the warehouse.'), 
             },
             {
                 'link': '/warehouse/warehouse_items/',
-                'image_url': '/static/tango/150x150/actions/arrange-boxes.png',
+                'image_url': '/static/tango/48x48/actions/arrange-boxes.png',
                 'name': ugettext_noop('Manage Warehouse'),
                 'description': ugettext_noop('Manage items in warehouse. Adjust items amount and storage palce in the warehouse.'), 
             },
             {   'link': '/warehouse/items/',
-                'image_url': '/static/tango/150x150/emblems/function.png',
+                'image_url': '/static/tango/48x48/emblems/function.png',
                 'name': ugettext_noop('Item information'),
                 'description': ugettext_noop('Manage items. Edit and add item information.'), 
             },

@@ -136,10 +136,11 @@ INSTALLED_APPS = (
     'mro_icons',
     'mro_theme',
     'mro_order',
+    'mro_report',
     'mro_system',
     'mro_contact',
     'mro_warehouse',
-    
+
     # migration manager
     'south', # must be at the END
     'django_wsgiserver',

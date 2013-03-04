@@ -54,17 +54,17 @@ def order(request):
     thumbs = [
         {
             'link': '/order/fracture/',
-            'image_url': '/static/tango/150x150/status/flag-red-clock.png',
+            'image_url': '/static/tango/48x48/status/flag-red-clock.png',
             'name': ugettext_noop('Fracture work orders'),
             'description': ugettext_noop('Display and assigne fracture maintenance work orders.'), 
         },
         {   'link': '/order/maintenance/',
-            'image_url': '/static/tango/150x150/status/flag-green-clock.png',
+            'image_url': '/static/tango/48x48/status/flag-green-clock.png',
             'name': ugettext_noop('Maintenance work orders'),
             'description': ugettext_noop('Display and assigne maintenance work orders.'), 
         }, {
             'link': '/order/table/',
-            'image_url': '/static/tango/150x150/status/maintenance-time.png',
+            'image_url': '/static/tango/48x48/status/maintenance-time.png',
             'name': ugettext_noop('All work orders'),
             'description': _('Display all the work orders. Filter by wrok state, system and work description.'),
         },

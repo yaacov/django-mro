@@ -18,27 +18,22 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from django.db import models
+from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 
-class Project(models.Model):
-    ''' Project
-        
-        project specific settings
-    '''
+urlpatterns = patterns('mro_report.views',
     
-    # identification
-    name = models.CharField(_('Application Name'), max_length = 30)
-    title = models.CharField(_('Title'), max_length = 30)
-    logo = models.CharField(_('Logo'), max_length = 90, null = True, blank = True)
-    summary = models.TextField(_('Project summary'))
-    copyright = models.TextField(_('Copyright'))
-    
-    # model overides
-    def __unicode__(self):
-        return '%s' % (self.title)
-    
-    class Meta:
-        verbose_name = _('Project')
-        verbose_name_plural = _('Projects')
-        ordering = ('title',)
+    url(r'^$', 'report'),
+    url(r'^warehouse_log/$', 'warehouse_log'),
+    url(r'^system_maintenance/$', 'system_maintenance'),
+    url(r'^system_maintenance/(?P<system_pk>\d+)/$', 'system_maintenance_report'),
+    url(r'^system_document/$', 'system_document'),
+    url(r'^system_document/(?P<system_pk>\d+)/$', 'system_document_report'),
+)
+
+# breadcrumbs translation guide
+breadcrumbs = (
+    _('warehouse_log'),
+    _('system_maintenance'),
+    _('system_document'),
+)

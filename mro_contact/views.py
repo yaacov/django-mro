@@ -54,12 +54,12 @@ def contact(request):
         },
         'thumbs': [
             {   'link': '/contact/supliers/',
-                'image_url': '/static/tango/150x150/categories/user-organisational-unit.png',
+                'image_url': '/static/tango/48x48/categories/user-organisational-unit.png',
                 'name': ugettext_noop('Supliers'),
                 'description': ugettext_noop('Manage supliers contact information. Add and edit supliers.'), 
             }, {
                 'link': '/contact/employees/',
-                'image_url': '/static/tango/150x150/categories/user-employee.png',
+                'image_url': '/static/tango/48x48/categories/user-employee.png',
                 'name': ugettext_noop('Employees'),
                 'description': ugettext_noop('Manage employees contact information. Add and edit employees.'), 
             },

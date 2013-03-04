@@ -81,10 +81,30 @@ def project_name():
         project = None
     
     # render
-    if project:
+    if project and project.name:
         return project.name
 
     return u'M.R.O'
+
+@register.simple_tag()
+def project_logo():
+    '''
+    Renders application logo
+
+    Usage:
+    {%  project_logo %}
+    '''
+    
+    try:
+        project = Project.objects.get()
+    except:
+        project = None
+    
+    # render
+    if project and project.logo:
+        return project.logo
+
+    return u'/static/tango/22x22/status/maintenance-time.png'
 
 @register.simple_tag()
 def copyright_notice():

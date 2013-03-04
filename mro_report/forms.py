@@ -18,27 +18,12 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django import forms
 
-class Project(models.Model):
-    ''' Project
-        
-        project specific settings
-    '''
-    
-    # identification
-    name = models.CharField(_('Application Name'), max_length = 30)
-    title = models.CharField(_('Title'), max_length = 30)
-    logo = models.CharField(_('Logo'), max_length = 90, null = True, blank = True)
-    summary = models.TextField(_('Project summary'))
-    copyright = models.TextField(_('Copyright'))
-    
-    # model overides
-    def __unicode__(self):
-        return '%s' % (self.title)
-    
-    class Meta:
-        verbose_name = _('Project')
-        verbose_name_plural = _('Projects')
-        ordering = ('title',)
+from django.utils.translation import ugettext_lazy as _
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, MultiField, Fieldset, ButtonHolder
+from crispy_forms.layout import Div, Submit, HTML, Button, Row, Field
+from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
+
+from django.forms import ModelForm, TextInput
