@@ -28,7 +28,8 @@ class OrderTable(tables.Table):
     name = tables.TemplateColumn(
         '<a href="/order/fracture/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Description')
-    
+    name.orderable = False
+
     class Meta:
         model = Order
         template = 'mro/table.html'
@@ -40,17 +41,48 @@ class OrderTable(tables.Table):
             'assign_to_suplier',
             'created', 
             'assigned', 
-            'completed')
+            'completed',)
+
+class AllOrderTable(tables.Table):
+    name = tables.TemplateColumn(
+        '''<a href="/order/{% if record.maintenance %}maintenance{% else %}fracture{% endif %}/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+    name.verbose_name = _('Description')
+    name.orderable = False
+
+    order_a = tables.TemplateColumn(
+        '{% if record.maintenance %}<span class="maintenance">' + 
+            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
+            _('Fracture') + '</span>{% endif %}')
+
+    order_a.verbose_name = _('Order type')
+    order_a.orderable = False
+
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'system',
+            'order_a',
+            'work_order_state', 
+            'priority', 
+            'assign_to', 
+            'assign_to_suplier',
+            'created', 
+            'assigned', 
+            'completed',)
 
 class MaintenanceOrderTable(tables.Table):
     name = tables.TemplateColumn(
         '<a href="/order/maintenance/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>')
     name.verbose_name = _('Description')
-    
+    name.orderable = False
+
     class Meta:
         model = Order
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
+
         fields = (
             'work_order_state', 
             'priority', 
@@ -58,7 +90,7 @@ class MaintenanceOrderTable(tables.Table):
             'assign_to_suplier',
             'created', 
             'assigned', 
-            'completed')
+            'completed',)
 
 class SystemTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
@@ -81,8 +113,7 @@ class SystemTable(tables.Table):
             'last_maintenance',
             'card_number',
             'contract_number',
-            'contract_include_parts', 
-            )
+            'contract_include_parts',)
 
 class MaintenanceTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')

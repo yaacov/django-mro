@@ -29,7 +29,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm, TextInput
 from mro_theme.widgets import AmountWidget
 
-from mro_warehouse.models import Item, Warehouse, WarehouseItem
+from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
 
 class WarehouseForm(ModelForm):
     can_delete = True
@@ -67,3 +67,11 @@ class WarehouseItemForm(ModelForm):
 
     class Meta:
         model = WarehouseItem
+
+class WarehouseLogForm(ModelForm):
+
+    class Meta:
+        model = WarehouseLog
+        fields = (
+            'item', 'action', 'amount',
+            'shelve', 'batch', 'expires',)

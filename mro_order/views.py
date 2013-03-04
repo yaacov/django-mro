@@ -35,7 +35,7 @@ from mro_system.models import Maintenance, System, Priority, Item, MaintenanceIt
 from mro_contact.models import Department, Employee, Suplier
 from mro_order.models import Order, OrderItem, OrderEmployee, OrderDocument
 from mro_order.tables import OrderTable, SystemTable, MaintenanceOrderTable
-from mro_order.tables import MaintenanceTable
+from mro_order.tables import MaintenanceTable, AllOrderTable
 from mro_order.forms import OrderForm, FractureOrderForm
 
 # a thumbnail button to show in the projects start page
@@ -47,7 +47,7 @@ thumb = {
 }
 
 # views
-def work(request):
+def order(request):
     '''
     '''
     
@@ -62,6 +62,11 @@ def work(request):
             'image_url': '/static/tango/150x150/status/flag-green-clock.png',
             'name': ugettext_noop('Maintenance work orders'),
             'description': ugettext_noop('Display and assigne maintenance work orders.'), 
+        }, {
+            'link': '/order/table/',
+            'image_url': '/static/tango/150x150/status/maintenance-time.png',
+            'name': ugettext_noop('All work orders'),
+            'description': _('Display all the work orders. Filter by wrok state, system and work description.'),
         },
     ]
     
@@ -118,7 +123,7 @@ def order_table(request, department_pk = None, order_id = None, action = None, w
     #objs &= Order.objects.filter(work_type = ['MA', 'FR'][work_type == 'fracture'])
     
     # filter employees using the search form
-    search = request.GET.get('search', '')
+    search = request.GET.get('search', '').strip()
     if search:
         
         objs &= Order.objects.filter(assign_to__name__icontains = search)
@@ -236,7 +241,7 @@ def system(request, action = None, work_type = None):
     objs = System.objects.all()
     
     # filter employees using the search form
-    search = request.GET.get('search', '')
+    search = request.GET.get('search', '').strip()
     if search:
         objs &= System.objects.filter(name__icontains = search)
         objs |= System.objects.filter(suplier__name__icontains = search)
@@ -272,7 +277,8 @@ def system(request, action = None, work_type = None):
         {   'header': _('Maintenance work orders'),
             'lead': _('Display and assigne maintenance work orders.'),
             'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-        }, {
+        }, 
+        {
             'header': _('Fracture work orders'),
             'lead': _('Display and assigne fracture maintenance work orders.'),
             'thumb': '/static/tango/48x48/status/flag-red-clock.png',
@@ -290,7 +296,7 @@ def system_order(request, system_pk = None, order_id = None, action = None, work
     objs = Order.objects.filter(system = system).order_by('-created','-assigned','-completed')
    
     # filter employees using the search form
-    search = request.GET.get('search', '')
+    search = request.GET.get('search', '').strip()
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
@@ -522,7 +528,7 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
                         'item': maintenanceitem.item.pk,
                         'amount': maintenanceitem.amount,
                         'ordered': datetime.today(),
-                        })
+                    })
 
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = len(initial_items) + 1, can_delete = True)
         EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
@@ -552,3 +558,54 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
     response_dict['documentformset'] = documentformset
 
     return render(request, 'mro_order/manage_order_items.html', response_dict)
+
+def order_table(request):
+    """
+    """
+    # get the employee data from the data base
+    objs = Order.objects.all().order_by('-created','-assigned','-completed')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '').strip()
+    if search:
+        objs &= Order.objects.filter(assign_to__first_name__icontains = search)
+        objs |= Order.objects.filter(assign_to__last_name__icontains = search)
+        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
+        objs |= Order.objects.filter(system__name__icontains = search)
+        objs |= Order.objects.filter(system__description__icontains = search)
+        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+        objs |= Order.objects.filter(work_description__icontains = search)
+        objs |= Order.objects.filter(work_notes__icontains = search)
+    
+    filter_pk = request.GET.get('filter_pk', '')
+    filter_string = None
+    if filter_pk:
+        objs &= Order.objects.filter(work_order_state = filter_pk)
+        try:
+            filter_string = dict(Order.ORDER_STATE)[filter_pk]
+        except:
+            filter_string = None
+    
+    if not filter_string:
+        filter_string = _('All')
+
+    table = AllOrderTable(objs)
+
+    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    
+    # base_table.html response_dict rendering information
+    response_dict = {}
+    response_dict['search'] = search
+
+    response_dict['filters'] = Order.ORDER_STATE
+    response_dict['current_filter_pk'] = filter_pk
+    response_dict['current_filter_string'] = filter_string
+
+    response_dict['table'] = table
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/status/maintenance-time.png',
+        'header': _('All work orders'),
+        'lead': _('Display all the work orders. Filter by wrok state, system and work description.'),
+    }
+    
+    return render(request, 'mro_order/system_fracture_order.html', response_dict)

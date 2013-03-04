@@ -19,57 +19,76 @@
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
 import os
+from datetime import date
+
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.translation import ugettext as _
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
 class Command(BaseCommand):
-    help = 'import items form csv file'
-    
+    help =  '''import items form csv file
+        csv file columns:
+        name, amount, unit price'''
+
+
     def handle(self, *args, **options):
         ''' run the command
         '''
         
+        # csv delimiter
         delimiter = ';'
 
-        f = open(args[0], 'r')  
+        # defaults used to generate the new items
         serial_counter = 0
-        year = 2013
+        year = date.today().year
 
+        # make / check the warehouse
+        try:
+            warehouse = Warehouse.objects.get()
+        except:
+            warehouse = Warehouse(name = _('Main warehouse'))
+            warehouse.save()
+            print 'warning: creating new warehouse'
+
+        # read the items csv file
+        f = open(args[0], 'r')
         for line in f:
+
+            # read a new csv line
             serial_counter += 1
             line =  line.split(delimiter)
 
+            # try to parse the line
             try:
                 name = line[0]
                 amount = int(line[1])
                 unit_price = float(line[2])
+                catalogic_number = u'CA-%04d-%03d' % (year, serial_counter)
+                unit = 'PC'
             except:
+                print 'warning: line %d, ' % serial_counter
                 continue
             
-            # make the item
-            item = Item()  
-            item.name = name
-            item.unit_price = unit_price
-
-            # make catalogic number unique
-            item.catalogic_number = u'CA-%04d-%03d' % (year, serial_counter)
-
-            item.unit = 'PC'
-            
+            # make / check item
             try:
+                # try to create a new item
+                item = Item()
+                item.name = name
+                item.unit_price = unit_price
+                item.catalogic_number = catalogic_number
+                item.unit = unit
+                
                 item.save()
             except:
-                print 'warning: item %s can not enter db' % name
-                item = Item.objects.get(catalogic_number = name)
+                # check if item already in database
+                try:
+                    item = Item.objects.get(catalogic_number = catalogic_number)
+                except:
+                    print 'warning: bad item, can not insert item %s to db ' % name
+                    continue
 
-            # make the warehouse
-            try:
-                warehouse = Warehouse.objects.get()
-            except:
-                warehouse = Warehouse(name = u'מחסן ראשי')
-                warehouse.save()
-                print 'warning: creating new warehouse'
+                print 'warning: item %s already in the db' % name
 
             # insert the item into the warehouse
             warehouse_item = WarehouseItem()
@@ -79,6 +98,6 @@ class Command(BaseCommand):
 
             warehouse_item.save()
             
-            print 'success: item %s, updated in db' % name
+            print 'success: item %s, updated in warehouse' % name
 
         f.close()

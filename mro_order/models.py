@@ -35,7 +35,7 @@ class Order(models.Model):
     '''
     
     ORDER_STATE = (
-        ('RE', _('Reported')),
+        ('RE', _('Waiting for assignment')),
         ('AS', _('Assigned')),
         ('CO', _('Completed')),
         ('HO', _('Holding')),

@@ -40,26 +40,15 @@ urlpatterns = patterns('mro_order.views',
         {'action': 'table', 'work_type': 'maintenance'}),
     url(r'^maintenance/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_maintenance_order', 
         {'action': 'table', 'work_type': 'maintenance'}),
-
-
-    url(r'^(?P<order_id>\d+)/$', 'manage_order', 
-        {'action': 'edit', 'work_type': 'maintenance'}),
-
-    url(r'^maintenance/(?P<department_pk>\d+)/$', 'order_table', 
-        {'action': 'table', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<department_pk>\d+)/add/$', 'manage_order', 
-        {'action': 'add', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<department_pk>\d+)/delete/$', 'manage_order', 
-        {'action': 'delete', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<department_pk>\d+)/(?P<order_id>\d+)/$', 'manage_order', 
-        {'action': 'edit', 'work_type': 'maintenance'}),
     
-    url(r'^$', 'work'),
+    url(r'^$', 'order'),
+    url(r'^table/$', 'order_table'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
     _('maintenance'),
+    _('table'),
     _('fracture'),
-    _('new'),
+    _('add'),
 )

@@ -130,3 +130,72 @@ class WarehouseItem(models.Model):
         verbose_name_plural = _('Warehouse Items')
         ordering = ('warehouse',)
         unique_together = ('warehouse', 'item', 'shelve', 'batch')
+
+class WarehouseLog(models.Model):
+    '''
+    '''
+
+    ACTIONS = (
+        ('IN', ugettext('Store items')),
+        ('OU', ugettext('Issue items')),
+        ('RE', ugettext('Reset amount, inventory count')),
+    )
+
+    # connection
+    warehouse = models.ForeignKey(Warehouse)
+    warehouse.verbose_name = _('Warehouse')
+
+    item = models.ForeignKey(Item, related_name = 'log_item')
+    item.verbose_name = _('Item')
+    
+    action = models.CharField(max_length = 2, choices = ACTIONS, default = 'OU')
+    action.verbose_name = _('Action')
+
+    # how many items of this type are in the warehouse
+    amount = models.IntegerField(_('Amount'), default = 1)
+    
+    # location of the item
+    shelve = models.CharField(_('Shelve'), max_length = 30, null = True, blank = True)
+    batch = models.CharField(_('Batch'), max_length = 30, null = True, blank = True)
+    
+    # expires date
+    expires = models.DateField(null = True, blank = True)
+    expires.verbose_name = _('Expires')
+
+    # log date
+    log_date = models.DateField(default=lambda: datetime.today(), null = True, blank = True)
+    log_date.verbose_name = _('Date')
+    
+    def save(self, *args, **kwargs):
+        # try to add and insert to the warehouse
+        warehouseitems = WarehouseItem.objects.filter(
+            warehouse = self.warehouse, item = self.item)
+
+        print warehouseitems
+
+        # if we found a warehouse item, adjust amount and expires date
+        if len(warehouseitems) > 0:
+            # get the first item
+            warehouseitem = warehouseitems[0]
+
+            # adjust dates
+            warehouseitem.entered = warehouseitem.entered or self.log_date
+            warehouseitem.expires = self.expires or warehouseitem.expires
+
+            # adjust amount
+            if self.action in ['IN']:
+                warehouseitem.amount = warehouseitem.amount + self.amount
+            elif self.action in ['OU']:
+                warehouseitem.amount = warehouseitem.amount - self.amount
+            elif self.action in ['RE']:
+                warehouseitem.amount = self.amount
+
+            warehouseitem.save()
+
+        # call the default save method
+        super(WarehouseLog, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Warehouse Log')
+        verbose_name_plural = _('Warehouse Log')
+        ordering = ('log_date',)

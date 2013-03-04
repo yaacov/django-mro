@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
 
-from mro_warehouse.models import Item, Warehouse, WarehouseItem
+from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
 
 class WarehouseItemInline(admin.TabularInline):
     fields = ('item', 'shelve', 'batch', 'amount', 'entered', 'expires')
@@ -41,3 +41,4 @@ class ItemAdmin(admin.ModelAdmin):
 
 admin.site.register(Item, ItemAdmin)
 
+admin.site.register(WarehouseLog)

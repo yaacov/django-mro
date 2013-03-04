@@ -31,8 +31,8 @@ from django.contrib import messages
 
 from django_tables2   import RequestConfig
 
-from mro_warehouse.models import Item, Warehouse, WarehouseItem
-from mro_warehouse.forms import WarehouseForm, WarehouseItemForm
+from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
+from mro_warehouse.forms import WarehouseForm, WarehouseItemForm, WarehouseLogForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -54,11 +54,17 @@ def warehouse(request):
             'thumb': '/static/tango/48x48/actions/arrange-boxes.png',
         },
         'thumbs': [ 
+             {
+                'link': '/warehouse/warehouse_actions/',
+                'image_url': '/static/tango/150x150/actions/log-in.png',
+                'name': ugettext_noop('Store and issue Items'),
+                'description': ugettext_noop('Store and issue warehouse items. Issue and store items to and from the warehouse.'), 
+            },
             {
                 'link': '/warehouse/warehouse_items/',
-                'image_url': '/static/tango/150x150/actions/log-in.png',
-                'name': ugettext_noop('Warehouse Items'),
-                'description': ugettext_noop('Manage items in warehouse. Issue and insert items to and from the warehouse.'), 
+                'image_url': '/static/tango/150x150/actions/arrange-boxes.png',
+                'name': ugettext_noop('Manage Warehouse'),
+                'description': ugettext_noop('Manage items in warehouse. Adjust items amount and storage palce in the warehouse.'), 
             },
             {   'link': '/warehouse/items/',
                 'image_url': '/static/tango/150x150/emblems/function.png',
@@ -198,9 +204,9 @@ def manage_warehouse_items(request, warehouse_id = 1):
 
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Warehouse Items'),
-        'lead': _('Manage items in warehouse. Issue and insert items to and from the warehouse.'),
-        'thumb': '/static/tango/48x48/actions/log-in.png',
+        'header': _('Manage Warehouse'),
+        'lead': _('Manage items in warehouse. Adjust items amount and storage palce in the warehouse.'),
+        'thumb': '/static/tango/48x48/actions/arrange-boxes.png',
     }
     response_dict['form'] = warehouseform
     response_dict['formset'] = itemformset
@@ -210,3 +216,42 @@ def manage_warehouse_items(request, warehouse_id = 1):
     response_dict['amount'] = amount
 
     return render(request, 'mro_warehouse/manage_warehouse_items.html', response_dict)
+
+def manage_warehouse_actions(request, warehouse_id = 1):
+    '''
+    '''
+    
+    if  warehouse_id == None:
+        warehouse = Warehouse()
+    else:
+        try:
+            warehouse = Warehouse.objects.get(id = warehouse_id)
+        except:
+            warehouse = Warehouse()
+
+    warehouselog = WarehouseLog(warehouse = warehouse)
+    
+    if request.method == 'POST': # If the form has been submitted...
+        # save ?
+        form = WarehouseLogForm(request.POST, request.FILES, instance = warehouselog) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            form.save()
+            messages.success(request, _('Database updated.'))
+
+            return HttpResponseRedirect('/warehouse/') # Redirect after POST
+        else:
+            messages.error(request, _('Error updating database.'))
+    else:
+        form = WarehouseLogForm(instance = warehouselog)
+    
+    response_dict = {
+        'headers': {
+            'header': _('Store and issue Items.'),
+            'lead': _('Store and issue warehouse items. Issue and store items to and from the warehouse.'), 
+            'thumb': '/static/tango/48x48/actions/log-in.png',
+        },
+        'form': form,
+        'table': None,
+    }
+    
+    return render(request, 'mro_warehouse/manage_warehouse_actions.html', response_dict)
