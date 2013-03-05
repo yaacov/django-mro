@@ -1,30 +1,22 @@
-from django_cron import cronScheduler, Job
-
+from django_cron import CronJobBase, Schedule
 from django.core.management import call_command
 
-class ReadCounters(Job):
-        """
-                Cron Job that checks counter readings
-        """
+class ReadCounters(CronJobBase):
+    RUN_EVERY_MINS = 60 * 6 # every 6 hours
 
-        # run every 6 hours
-        run_every = 60 * 60 * 6
-                
-        def job(self):
-                # This will be executed every 6 hours
-                call_command('read_system_counter', interactive = False)
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'mro_system_read_counters'    # a unique code
 
-class CheckMaintenance(Job):
-        """
-                Cron Job that create new work orders if needed
-        """
+    def do(self):
+        # This will be executed every 6 hours
+        call_command('read_system_counter', interactive = False)
 
-        # run every 12 hours
-        run_every = 60 * 60 * 12
-                
-        def job(self):
-                # This will be executed every 12 hours
-                call_command('check_maintenance_schedual', interactive = False)
+class CheckMaintenance(CronJobBase):
+    RUN_EVERY_MINS = 60 * 12 # every 12 hours
 
-cronScheduler.register(ReadCounters)
-cronScheduler.register(CheckMaintenance)
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'mro_system_read_counters'    # a unique code
+
+    def do(self):
+        # This will be executed every 12 hours
+        call_command('check_maintenance_schedual', interactive = False)

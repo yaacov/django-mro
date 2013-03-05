@@ -58,17 +58,18 @@ MEDIA_ROOT = os.path.join(SITE_ROOT, 'media') + '/'
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = ''
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static') + '/'
+STATICFILES_ROOT = os.path.join(SITE_ROOT, 'static') + '/'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = '/static/' 
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -149,6 +150,11 @@ INSTALLED_APPS = (
     'django_wsgiserver',
 )
 
+CRON_CLASSES = [
+    "mro_system.cron.CheckMaintenance",
+    "mro_system.cron.ReadCounters",
+]
+
 # add request data to the template context processors
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
@@ -163,7 +169,7 @@ LOCALE_PATHS = (
 # create the minified files
 # USAGE:
 #   ./manage.py compile_less
-USE_MINIFY = False
+USE_MINIFY = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

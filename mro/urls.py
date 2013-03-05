@@ -6,9 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 admin.autodiscover()
 
-import django_cron
-django_cron.autodiscover()
-
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'mro_theme.views.home', name='home'),
@@ -19,6 +16,13 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+)
+
+# serve the media files 
+urlpatterns += patterns('',
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.STATIC_ROOT,
+    }),
 )
 
 # serve the media files 

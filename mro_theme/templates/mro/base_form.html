@@ -5,16 +5,16 @@
 {% load render_table from django_tables2 %}
 
 {% block extra_css %}
-<link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
+<link href="/static/admin_enhancer/css/related-widget-wrapper.css" 
     type="text/css" media="screen" rel="stylesheet" />
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}filer/js/popup_handling.js"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/admin/js/actions.js"></script>
+<script type="text/javascript" src="/static/filer/js/popup_handling.js"></script>
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
