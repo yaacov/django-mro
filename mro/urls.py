@@ -6,6 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 admin.autodiscover()
 
+import django_cron
+django_cron.autodiscover()
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'mro_theme.views.home', name='home'),
