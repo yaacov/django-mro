@@ -18,7 +18,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 )
 
-# serve the media files 
+# serve the static files
+# FIXME: wsgi-servers need extra settings to serve the static files
+#   after the extra settings are done in the wsgi-server
+#   remove this urlpatterns
 urlpatterns += patterns('',
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.STATIC_ROOT,
