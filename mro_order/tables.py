@@ -23,6 +23,7 @@ import django_tables2 as tables
 
 from mro_order.models import Order
 from mro_system.models import System, Maintenance
+from mro_contact.models import Employee
 
 class OrderTable(tables.Table):
     name = tables.TemplateColumn(

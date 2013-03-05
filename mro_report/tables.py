@@ -18,12 +18,13 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 import django_tables2 as tables
 
 from mro_warehouse.models import WarehouseLog
 from mro_system.models import System, Maintenance
-from mro_order.models import OrderDocument
+from mro_order.models import OrderDocument, Order
+from mro_contact.models import Employee
 
 class WarehouseLogTable(tables.Table):
     
@@ -95,3 +96,86 @@ class OrderDocumentTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = ('title', 'description', 'created', 'image',)
+
+class SystemOrderTable(tables.Table):
+    name = tables.TemplateColumn(
+        '''<a href="/order/{% if record.maintenance %}maintenance{% else %}fracture{% endif %}/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+    name.verbose_name = _('Description')
+    name.orderable = False
+
+    order_a = tables.TemplateColumn(
+        '{% if record.maintenance %}<span class="maintenance">' + 
+            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
+            _('Fracture') + '</span>{% endif %}')
+
+    order_a.verbose_name = _('Order type')
+    order_a.orderable = False
+
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'order_a',
+            'work_order_state', 
+            'priority', 
+            'assign_to', 
+            'assign_to_suplier',
+            'created', 
+            'assigned', 
+            'completed',)
+
+class EmployeeOrderTable(tables.Table):
+    name = tables.TemplateColumn(
+        '''<a href="/order/{% if record.maintenance %}maintenance{% else %}fracture{% endif %}/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+    name.verbose_name = _('Description')
+    name.orderable = False
+
+    order_a = tables.TemplateColumn(
+        '{% if record.maintenance %}<span class="maintenance">' + 
+            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
+            _('Fracture') + '</span>{% endif %}')
+
+    order_a.verbose_name = _('Order type')
+    order_a.orderable = False
+
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'system',
+            'order_a',
+            'work_order_state', 
+            'priority', 
+            'assign_to_suplier',
+            'created', 
+            'assigned', 
+            'completed',)
+
+class EmployeeTable(tables.Table):
+    first_name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.first_name }}</a>')
+    
+    department_list = tables.Column(accessor='department_list', orderable=False)
+    department_list.verbose_name = _('Departments')
+    
+    phone = tables.TemplateColumn(
+        '<a href="tel:{{ value }}/" >{{ value }}</a>')
+    phone.verbose_name = _('Phone')
+    
+    cell_phone = tables.TemplateColumn(
+        '<a href="tel:{{ value }}/" >{{ value }}</a>')
+    cell_phone.verbose_name = _('Cell phone')
+    
+    class Meta:
+        model = Employee
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'first_name', 'last_name',
+            'department_list', 
+            'phone', 
+            'cell_phone', 
+            'address', 
+            'email')

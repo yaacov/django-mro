@@ -70,4 +70,3 @@ class MaintenanceTable(tables.Table):
             'last_maintenance',
             'current_counter_value',
             'last_maintenance_counter_value')
-

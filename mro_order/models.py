@@ -78,11 +78,11 @@ class Order(models.Model):
     
     # when job was reported and done
     created = models.DateField(default=lambda: date.today())
-    created.verbose_name = _('Created')
+    created.verbose_name = _('Created date')
     assigned = models.DateField(blank = True, null = True)
-    assigned.verbose_name = _('Assigned')
+    assigned.verbose_name = _('Assigned date')
     completed = models.DateField(blank = True, null = True)
-    completed.verbose_name = _('Completed')
+    completed.verbose_name = _('Completed date')
     
     # what to do
     work_description = models.TextField(_('Work description'))
@@ -172,11 +172,11 @@ class OrderItem(models.Model):
     
     # date of order
     ordered = models.DateField(default = lambda: date.today())
-    ordered.verbose_name = _('Ordered')
+    ordered.verbose_name = _('Ordered on date')
 
     # date ot delivery
     issued = models.DateField(null = True, blank = True)
-    issued.verbose_name = _('Issued')
+    issued.verbose_name = _('Issued on date')
     
     # amount of items used
     amount = models.IntegerField(_('Amount'), default = 1)
@@ -245,7 +245,7 @@ class OrderDocument(models.Model):
     title = models.CharField(_('Document title'), max_length = 30)
     description =  models.TextField(_('Document description'), blank = True, null = True)
     created = models.DateField(default=lambda: date.today())
-    created.verbose_name = _('Created')
+    created.verbose_name = _('Created date')
     
     # the document
     image = models.FileField(null=True, blank=True, upload_to='documents/%Y/%m/%d')
