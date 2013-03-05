@@ -34,7 +34,7 @@ from mro_contact.tables import EmployeeTable, SuplierTable
 # a thumbnail button to show in the projects start page
 thumb = {
     'link': '/contact/',
-    'image_url': '/static/tango/150x150/categories/users.png',
+    'image_url': '/static/tango/150x150/categories/user-group.png',
     'name': ugettext_noop('Contacts'),
     'description': ugettext_noop('Manage suppliers and employees. Add and edit contact information for suppliers and employees.'), 
 }
@@ -50,7 +50,7 @@ def contact(request):
         'headers': {
             'header': _('Contacts'),
             'lead': _('Manage suppliers and employees. Add and edit contact information for suppliers and employees.'),
-            'thumb': '/static/tango/48x48/categories/users.png',
+            'thumb': '/static/tango/48x48/categories/user-group.png',
         },
         'thumbs': [
             {   'link': '/contact/supliers/',
