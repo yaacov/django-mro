@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-05 10:01+0200\n"
+"POT-Creation-Date: 2013-03-06 09:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: mro/urls.py:39
+#: mro/urls.py:49
 msgid "contact"
 msgstr "אנשי קשר"
 
-#: mro/urls.py:40
+#: mro/urls.py:50
 msgid "warehouse"
 msgstr "מחסן"
 
-#: mro/urls.py:41 mro_system/urls.py:39
+#: mro/urls.py:51 mro_order/urls.py:62 mro_system/urls.py:39
 msgid "system"
 msgstr "מערכת"
 
-#: mro/urls.py:42
+#: mro/urls.py:52
 msgid "order"
 msgstr "פקודה"
 
-#: mro/urls.py:43
+#: mro/urls.py:53
 msgid "report"
 msgstr "דוח"
 
@@ -158,7 +158,7 @@ msgstr "עובדים"
 msgid "supliers"
 msgstr "עסקים"
 
-#: mro_contact/urls.py:39 mro_order/urls.py:53
+#: mro_contact/urls.py:39 mro_order/urls.py:59
 msgid "add"
 msgstr "הוסף"
 
@@ -181,8 +181,9 @@ msgid "Manage employees contact information. Add and edit employees."
 msgstr "ניהול פרטי קשר של עובדים. הוסף וערוך פרטי קשר של עובדים."
 
 #: mro_contact/views.py:93 mro_contact/views.py:177
-#: mro_contact/templates/mro_contact/base_table.html:22 mro_order/views.py:260
-#: mro_order/views.py:315 mro_order/views.py:590
+#: mro_contact/templates/mro_contact/base_table.html:22 mro_order/views.py:302
+#: mro_order/views.py:357 mro_order/views.py:632 mro_order/views.py:683
+#: mro_order/views.py:796 mro_order/views.py:844
 #: mro_order/templates/mro_order/manage_items.html:54
 #: mro_order/templates/mro_order/manage_order_items.html:111
 #: mro_order/templates/mro_order/system.html:30
@@ -248,7 +249,7 @@ msgstr "מבוטל"
 msgid "System"
 msgstr "מערכת"
 
-#: mro_order/models.py:51 mro_order/tables.py:55 mro_order/views.py:148
+#: mro_order/models.py:51 mro_order/tables.py:55 mro_order/views.py:190
 #: mro_report/tables.py:108 mro_report/tables.py:136 mro_system/models.py:209
 #: mro_system/models.py:210 mro_system/models.py:219 mro_system/views.py:233
 msgid "Maintenance"
@@ -417,7 +418,7 @@ msgstr "מסמך הקשור לפק\"א"
 msgid "Order Documents"
 msgstr "מסמכים הקשורים לפק\"א"
 
-#: mro_order/tables.py:56 mro_order/views.py:152 mro_report/tables.py:109
+#: mro_order/tables.py:56 mro_order/views.py:194 mro_report/tables.py:109
 #: mro_report/tables.py:137
 msgid "Fracture"
 msgstr "אחזקת שבר"
@@ -440,139 +441,229 @@ msgstr "הוראות תחזוקה"
 msgid "Work cycle"
 msgstr "מחזור אחזקה"
 
-#: mro_order/urls.py:50 mro_system/urls.py:40
+#: mro_order/urls.py:57 mro_system/urls.py:40
 msgid "maintenance"
 msgstr "תחזוקה"
 
-#: mro_order/urls.py:51
-msgid "table"
-msgstr "טבלה"
-
-#: mro_order/urls.py:52
+#: mro_order/urls.py:58
 msgid "fracture"
 msgstr "שבר"
 
-#: mro_order/views.py:45
+#: mro_order/urls.py:60
+msgid "table"
+msgstr "טבלה"
+
+#: mro_order/urls.py:61
+msgid "employee"
+msgstr "עובדים"
+
+#: mro_order/urls.py:63
+msgid "all"
+msgstr "הכל"
+
+#: mro_order/urls.py:64
+msgid "none"
+msgstr "ללא"
+
+#: mro_order/views.py:47
 msgid "Work Orders"
 msgstr "פקודות עבודה"
 
-#: mro_order/views.py:46 mro_order/views.py:76
+#: mro_order/views.py:48 mro_order/views.py:78
 msgid "Manage work orders, display and assigne maintenance work orders."
 msgstr "נהל פקודות עבודה, הצגה ושיבוץ של פקודות עבודה."
 
-#: mro_order/views.py:58 mro_order/views.py:282
+#: mro_order/views.py:60 mro_order/views.py:324
 msgid "Fracture work orders"
 msgstr "פקודות עבודה עבור אחזקת שבר"
 
-#: mro_order/views.py:59 mro_order/views.py:283
+#: mro_order/views.py:61 mro_order/views.py:325
 msgid "Display and assigne fracture maintenance work orders."
 msgstr "הצג ושבץ פקודות עבודה עבור אחזקת שבר"
 
-#: mro_order/views.py:63 mro_order/views.py:277
+#: mro_order/views.py:65 mro_order/views.py:319
 msgid "Maintenance work orders"
 msgstr "פקודות עבודה עבור אחזקה שוטפת"
 
-#: mro_order/views.py:64 mro_order/views.py:278
+#: mro_order/views.py:66 mro_order/views.py:320
 msgid "Display and assigne maintenance work orders."
 msgstr "הצג ושבץ פקודות עבודה עבור תחזוקה שוטפת."
 
-#: mro_order/views.py:68 mro_order/views.py:607
+#: mro_order/views.py:70 mro_report/views.py:46 mro_report/views.py:88
+msgid "Reports"
+msgstr "דוחות"
+
+#: mro_order/views.py:71 mro_order/views.py:118
+msgid ""
+"Display work order Reports. Filter by wrok employee, system and work state."
+msgstr "הצג דוחות פקודות אחזקה. חתוך לפי מצב העבודה, המערכת ותאור העבודה."
+
+#: mro_order/views.py:77
+msgid "Work orders"
+msgstr "פקודות עבודה"
+
+#: mro_order/views.py:94 mro_order/views.py:649
 msgid "All work orders"
 msgstr "כל פקודות העבודה"
 
-#: mro_order/views.py:69 mro_order/views.py:608
+#: mro_order/views.py:95 mro_order/views.py:650
 msgid ""
 "Display all the work orders. Filter by wrok state, system and work "
 "description."
 msgstr "הצג את כל פקודות העבודה. חתוך לפי מצב העבודה, המערכת ותאור העבודה."
 
-#: mro_order/views.py:75
-msgid "Work orders"
-msgstr "פקודות עבודה"
+#: mro_order/views.py:100 mro_order/views.py:700
+msgid "Work orders, not assigned"
+msgstr "פקודות עבודה, שלא הועברו לעובד"
 
-#: mro_order/views.py:92
+#: mro_order/views.py:101
+msgid ""
+"Display work orders not assigned to employee. Filter by wrok state, system "
+"and work description."
+msgstr "הצג פקודות עבודה שלא העברו לעובד. חתוך לפי מצב העבודה, המערכת ותאור העבודה."
+
+#: mro_order/views.py:105 mro_report/views.py:59
+msgid "Maintenance orders report. By employee."
+msgstr "דוח פקודות עבודה, לפי עובד"
+
+#: mro_order/views.py:106 mro_report/views.py:60
+msgid "Display maintenance orders. By employee."
+msgstr "הצג דוח פקודות עבודה , לפי עובד."
+
+#: mro_order/views.py:110 mro_report/views.py:65
+msgid "Maintenance orders report. By system."
+msgstr "דוח פקודות עבודה , לפי מערכת"
+
+#: mro_order/views.py:111 mro_report/views.py:66
+msgid "Display maintenance orders. By system."
+msgstr "הצג דוח פקודות עבודה , לפי מערכת."
+
+#: mro_order/views.py:117
+msgid "Work orders reports"
+msgstr "דוחות, פקודות עבודה"
+
+#: mro_order/views.py:134
 msgid "Schedual Maintenance"
 msgstr "תחזוקה שוטפת"
 
-#: mro_order/views.py:93
+#: mro_order/views.py:135
 msgid "Edit and create schedual maintenance work orders."
 msgstr "ערוך והוסף פקודות עבודה עבור תחזוקה שוטפת"
 
-#: mro_order/views.py:108
+#: mro_order/views.py:150
 msgid "Fracture Maintenance"
 msgstr "אחזקת שבר"
 
-#: mro_order/views.py:109
+#: mro_order/views.py:151
 msgid "Edit and create fracture maintenance work orders."
 msgstr "ערוך והוסף פקודת עבודה עבור אחזקת שבר"
 
-#: mro_order/views.py:149
+#: mro_order/views.py:191
 msgid "Edit and create maintenance orders."
 msgstr "ערוך והוסף הוראות תחזוקה"
 
-#: mro_order/views.py:153
+#: mro_order/views.py:195
 msgid "Edit and create fracture maintenance orders."
 msgstr "ערוך והוסף פקודות תחזוקת שבר"
 
-#: mro_order/views.py:214 mro_order/views.py:414 mro_order/views.py:503
+#: mro_order/views.py:256 mro_order/views.py:456 mro_order/views.py:545
 #: mro_system/views.py:147 mro_system/views.py:226 mro_warehouse/views.py:114
 #: mro_warehouse/views.py:200 mro_warehouse/views.py:243
 msgid "Error updating database."
 msgstr "בעיה בעידכון בסיס הנתונים"
 
-#: mro_order/views.py:226
+#: mro_order/views.py:268
 msgid "Maintenance order"
 msgstr "פקודת עבודה עבור אחזקה שוטפת"
 
-#: mro_order/views.py:227
+#: mro_order/views.py:269
 msgid "Edit maintenance order."
 msgstr "ערוך פקודת עבודה עבור אחזקה שוטפת"
 
-#: mro_order/views.py:345
+#: mro_order/views.py:387
 #, python-format
 msgid "Maintenance work orders, %(department)s"
 msgstr "פקודות עבודה עבור אחזקה שוטפת, %(department)s"
 
-#: mro_order/views.py:346
+#: mro_order/views.py:388
 #, python-format
 msgid "Edit and issue maintenance work orders for %(name)s - %(department)s"
 msgstr "ערוך והוסף פקודת אחזקה שוטפת עבור %(name)s - %(department)s"
 
-#: mro_order/views.py:349
+#: mro_order/views.py:391
 #, python-format
 msgid "Fracture work orders, %(department)s"
 msgstr "פקודות עבודה עבור אחזקת שבר, %(department)s"
 
-#: mro_order/views.py:350
+#: mro_order/views.py:392
 #, python-format
 msgid "Edit and issue fracture work orders for %(name)s - %(department)s"
 msgstr "ערוך והוסף פקודת אחזקת שבר עבור %(name)s - %(department)s"
 
-#: mro_order/views.py:406 mro_order/views.py:495 mro_system/views.py:139
+#: mro_order/views.py:448 mro_order/views.py:537 mro_system/views.py:139
 #: mro_system/views.py:218 mro_warehouse/views.py:110
 #: mro_warehouse/views.py:190 mro_warehouse/views.py:239
 msgid "Database updated."
 msgstr "בסיס הנתונים עודכן"
 
-#: mro_order/views.py:438
+#: mro_order/views.py:480
 #, python-format
 msgid "Fracture work order, %(department)s"
 msgstr "פקודות עבודה עבור אחזקת שבר, %(department)s"
 
-#: mro_order/views.py:439
+#: mro_order/views.py:481
 #, python-format
 msgid "Edit fracture work order for %(name)s - %(department)s"
 msgstr "ערוך והוסף פקודת אחזקת שבר עבור %(name)s - %(department)s"
 
-#: mro_order/views.py:551
+#: mro_order/views.py:593
 #, python-format
 msgid "Maintenanace work order, %(department)s"
 msgstr "פקודות עבודה עבור אחזקה שוטפת, %(department)s"
 
-#: mro_order/views.py:552
+#: mro_order/views.py:594
 #, python-format
 msgid "Edit maintenance work order for %(name)s - %(department)s"
 msgstr "ערוך והוסף פקודת אחזקה שוטפת עבור %(name)s - %(department)s"
+
+#: mro_order/views.py:701
+msgid ""
+"Display work orders not assinged to employee. Filter by wrok state, system "
+"and work description."
+msgstr "הצג קודות עבודה שלא הועברו לעובדים. חתוך לפי מצב העבודה, המערכת ותאור העבודה."
+
+#: mro_order/views.py:724 mro_order/views.py:756 mro_report/views.py:275
+#: mro_report/views.py:307
+msgid "Maintenance orders report"
+msgstr "דוח פקודות עבודה"
+
+#: mro_order/views.py:725 mro_report/views.py:276
+msgid "Display maintenance orders. Chose system."
+msgstr "הצג דוח פקודות עבודה , בחר מערכת."
+
+#: mro_order/views.py:757 mro_report/views.py:308
+msgid "Display maintenance orders. Chose employees."
+msgstr "הצג דוח פקודות עבודה , בחר עובד."
+
+#: mro_order/views.py:813 mro_report/views.py:364
+#, python-format
+msgid "System Work orders for %(name)s"
+msgstr "פקודות עבודה עבור העובד %(name)s"
+
+#: mro_order/views.py:814 mro_report/views.py:365
+#, python-format
+msgid "Display all the work orders. for the system - %(name)s"
+msgstr "הצג את כל פקודות העבודה. עבור המערכת - %(name)s"
+
+#: mro_order/views.py:861 mro_report/views.py:412
+#, python-format
+msgid "Employee Work orders for %(name)s"
+msgstr "פקודות עבודה עבור העובד %(name)s"
+
+#: mro_order/views.py:862 mro_report/views.py:413
+#, python-format
+msgid "Display all the work orders. for the employee - %(name)s"
+msgstr "הצג כל פקודות העבודה עבור העובד - %(name)s"
 
 #: mro_order/templates/mro_order/manage_order_items.html:153
 msgid "Order Work Hours"
@@ -619,29 +710,9 @@ msgstr "פקודות עבודה לפי עובד"
 msgid "maintenance_order_system"
 msgstr "פקודות עבודה לפי מערכת"
 
-#: mro_report/views.py:46 mro_report/views.py:88
-msgid "Reports"
-msgstr "דוחות"
-
 #: mro_report/views.py:47 mro_report/views.py:89
 msgid "Syetem reports. View and export reports."
 msgstr "דוחות מערכת. צפה וייצא דוחות מערכת."
-
-#: mro_report/views.py:59
-msgid "Maintenance orders report. By employee."
-msgstr "דוח פקודות עבודה, לפי עובד"
-
-#: mro_report/views.py:60
-msgid "Display maintenance orders. By employee."
-msgstr "הצג דוח פקודות עבודה , לפי עובד."
-
-#: mro_report/views.py:65
-msgid "Maintenance orders report. By system."
-msgstr "דוח פקודות עבודה , לפי מערכת"
-
-#: mro_report/views.py:66
-msgid "Display maintenance orders. By system."
-msgstr "הצג דוח פקודות עבודה , לפי מערכת."
 
 #: mro_report/views.py:71 mro_report/views.py:179
 msgid "Warehouse action log report"
@@ -694,38 +765,6 @@ msgstr "הוראות אחזקה  - %(name)s"
 #, python-format
 msgid "Display maintenance information for %(name)s"
 msgstr "הצג הוראות אחזקה עבור  - %(name)s"
-
-#: mro_report/views.py:275 mro_report/views.py:307
-msgid "Maintenance orders report"
-msgstr "דוח פקודות עבודה"
-
-#: mro_report/views.py:276
-msgid "Display maintenance orders. Chose system."
-msgstr "הצג דוח פקודות עבודה , בחר מערכת."
-
-#: mro_report/views.py:308
-msgid "Display maintenance orders. Chose employees."
-msgstr "הצג דוח פקודות עבודה , בחר עובד."
-
-#: mro_report/views.py:364
-#, python-format
-msgid "System Work orders for %(name)s"
-msgstr "פקודות עבודה עבור העובד %(name)s"
-
-#: mro_report/views.py:365
-#, python-format
-msgid "Display all the work orders. for the system - %(name)s"
-msgstr "הצג את כל פקודות העבודה. עבור המערכת - %(name)s"
-
-#: mro_report/views.py:412
-#, python-format
-msgid "Employee Work orders for %(name)s"
-msgstr "פקודות עבודה עבור העובד %(name)s"
-
-#: mro_report/views.py:413
-#, python-format
-msgid "Display all the work orders. for the employee - %(name)s"
-msgstr "הצג כל פקודות העבודה עבור העובד - %(name)s"
 
 #: mro_system/models.py:41
 msgid "Max delay in days"

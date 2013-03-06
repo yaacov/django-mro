@@ -42,13 +42,24 @@ urlpatterns = patterns('mro_order.views',
         {'action': 'table', 'work_type': 'maintenance'}),
     
     url(r'^$', 'order'),
-    url(r'^table/$', 'order_table'),
+    url(r'^report/$', 'table_index'),
+
+    url(r'^report/all/$', 'table_all'),
+    url(r'^report/none/$', 'table_not_assigned'),
+    url(r'^report/employee/$', 'table_employee'),
+    url(r'^report/system/$', 'table_system'),
+    url(r'^report/employee/(?P<employee_pk>\d+)/$', 'table_employee_report'),
+    url(r'^report/system/(?P<system_pk>\d+)/$', 'table_system_report'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
     _('maintenance'),
-    _('table'),
     _('fracture'),
     _('add'),
+    _('report'),
+    _('employee'),
+    _('system'),
+    _('all'),
+    _('none'),
 )

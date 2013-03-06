@@ -1,6 +1,6 @@
 Django
 South
-#Pillow
+Pillow
 argparse
 django-crispy-forms
 django-tables2

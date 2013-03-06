@@ -53,25 +53,13 @@ def report(request):
     '''
     
     thumbs = [
-        {
-            'link': '/report/maintenance_order_employee/',
-            'image_url': '/static/tango/48x48/categories/user-admin.png',
-            'name': ugettext_noop('Maintenance orders report. By employee.'),
-            'description': ugettext_noop('Display maintenance orders. By employee.'), 
-        },
-        {
-            'link': '/report/maintenance_order_system/',
-            'image_url': '/static/tango/48x48/actions/run.png',
-            'name': ugettext_noop('Maintenance orders report. By system.'),
-            'description': ugettext_noop('Display maintenance orders. By system.'), 
-        },
+        
         {
             'link': '/report/warehouse_log/',
             'image_url': '/static/tango/48x48/actions/arrange-boxes.png',
             'name': ugettext_noop('Warehouse action log report'),
             'description': ugettext_noop('Display warehouse action logs.'), 
-        },
-        {   'link': '/report/system_maintenance/',
+        }, {   'link': '/report/system_maintenance/',
             'image_url': '/static/tango/48x48/actions/manage-students.png',
             'name': ugettext_noop('Maintenance information report'),
             'description': ugettext_noop('Display maintenance information for a system.'), 
@@ -80,6 +68,16 @@ def report(request):
             'image_url': '/static/tango/48x48/status/maintenance-time.png',
             'name': ugettext_noop('Maintenance documentation report'),
             'description': ugettext_noop('Display maintenance documentation for a system.'), 
+        }, {
+            'link': '/report/maintenance_order_employee/',
+            'image_url': '/static/tango/48x48/categories/user-admin.png',
+            'name': ugettext_noop('Maintenance orders report. By employee.'),
+            'description': ugettext_noop('Display maintenance orders. By employee.'), 
+        }, {
+            'link': '/report/maintenance_order_system/',
+            'image_url': '/static/tango/48x48/actions/run.png',
+            'name': ugettext_noop('Maintenance orders report. By system.'),
+            'description': ugettext_noop('Display maintenance orders. By system.'), 
         },
     ]
     

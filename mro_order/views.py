@@ -38,6 +38,8 @@ from mro_order.tables import OrderTable, SystemTable, MaintenanceOrderTable
 from mro_order.tables import MaintenanceTable, AllOrderTable
 from mro_order.forms import OrderForm, FractureOrderForm
 
+from mro_report.tables import SystemOrderTable, EmployeeOrderTable, EmployeeTable
+
 # a thumbnail button to show in the projects start page
 thumb = {
     'link': '/order/',
@@ -63,10 +65,10 @@ def order(request):
             'name': ugettext_noop('Maintenance work orders'),
             'description': ugettext_noop('Display and assigne maintenance work orders.'), 
         }, {
-            'link': '/order/table/',
-            'image_url': '/static/tango/48x48/status/maintenance-time.png',
-            'name': ugettext_noop('All work orders'),
-            'description': _('Display all the work orders. Filter by wrok state, system and work description.'),
+            'link': '/order/report/',
+            'image_url': '/static/tango/48x48/emblems/report-run.png',
+            'name': ugettext_noop('Reports'),
+            'description': _('Display work order Reports. Filter by wrok employee, system and work state.'),
         },
     ]
     
@@ -75,6 +77,46 @@ def order(request):
         'header': _('Work orders'),
         'lead': _('Manage work orders, display and assigne maintenance work orders.'),
         'thumb': '/static/tango/48x48/status/awaiting-plus.png',
+    }
+    
+    response_dict['thumbs'] = thumbs
+    
+    return render(request, 'mro/base_list.html', response_dict)
+
+def table_index(request):
+    '''
+    '''
+    
+    thumbs = [
+        {
+            'link': '/order/report/all/',
+            'image_url': '/static/tango/48x48/status/maintenance-time.png',
+            'name': ugettext_noop('All work orders'),
+            'description': _('Display all the work orders. Filter by wrok state, system and work description.'),
+        },
+        {
+            'link': '/order/report/none/',
+            'image_url': '/static/tango/48x48/actions/add-participant.png',
+            'name': ugettext_noop('Work orders, not assigned'),
+            'description': _('Display work orders not assigned to employee. Filter by wrok state, system and work description.'),
+        },
+        {   'link': '/order/report/employee/',
+           'image_url': '/static/tango/48x48/categories/user-admin.png',
+            'name': ugettext_noop('Maintenance orders report. By employee.'),
+            'description': ugettext_noop('Display maintenance orders. By employee.'), 
+        }, {
+            'link': '/order/report/system/',
+            'image_url': '/static/tango/48x48/actions/run.png',
+            'name': ugettext_noop('Maintenance orders report. By system.'),
+            'description': ugettext_noop('Display maintenance orders. By system.'), 
+        },
+    ]
+    
+    response_dict = {}
+    response_dict['headers'] = {
+        'header': _('Work orders reports'),
+        'lead': _('Display work order Reports. Filter by wrok employee, system and work state.'),
+        'thumb': '/static/tango/48x48/emblems/report-run.png',
     }
     
     response_dict['thumbs'] = thumbs
@@ -559,7 +601,7 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
 
     return render(request, 'mro_order/manage_order_items.html', response_dict)
 
-def order_table(request):
+def table_all(request):
     """
     """
     # get the employee data from the data base
@@ -606,6 +648,218 @@ def order_table(request):
         'thumb': '/static/tango/48x48/status/maintenance-time.png',
         'header': _('All work orders'),
         'lead': _('Display all the work orders. Filter by wrok state, system and work description.'),
+    }
+    
+    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+
+def table_not_assigned(request):
+    """
+    """
+    # get the employee data from the data base
+    objs = Order.objects.filter(assign_to__isnull = True).order_by('-created','-assigned','-completed')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '').strip()
+    if search:
+        objs &= Order.objects.filter(assign_to__first_name__icontains = search)
+        objs |= Order.objects.filter(assign_to__last_name__icontains = search)
+        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
+        objs |= Order.objects.filter(system__name__icontains = search)
+        objs |= Order.objects.filter(system__description__icontains = search)
+        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+        objs |= Order.objects.filter(work_description__icontains = search)
+        objs |= Order.objects.filter(work_notes__icontains = search)
+    
+    filter_pk = request.GET.get('filter_pk', '')
+    filter_string = None
+    if filter_pk:
+        objs &= Order.objects.filter(work_order_state = filter_pk)
+        try:
+            filter_string = dict(Order.ORDER_STATE)[filter_pk]
+        except:
+            filter_string = None
+    
+    if not filter_string:
+        filter_string = _('All')
+
+    table = AllOrderTable(objs)
+
+    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    
+    # base_table.html response_dict rendering information
+    response_dict = {}
+    response_dict['search'] = search
+
+    response_dict['filters'] = Order.ORDER_STATE
+    response_dict['current_filter_pk'] = filter_pk
+    response_dict['current_filter_string'] = filter_string
+
+    response_dict['table'] = table
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/actions/add-participant.png',
+        'header': _('Work orders, not assigned'),
+        'lead': _('Display work orders not assinged to employee. Filter by wrok state, system and work description.'),
+    }
+    
+    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+
+def table_system(request):
+    '''
+    '''
+    
+    # get the WarehouseLog data from the data base
+    objs = System.objects.all().order_by('name')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '')
+    if search:
+        objs &= System.objects.filter(name__icontains = search)
+    
+    # create a table object for the employee data
+    table = SystemTable(objs)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
+    
+    response_dict = {
+        'headers': {
+            'header': _('Maintenance orders report'),
+            'lead': _('Display maintenance orders. Chose system.'),
+            'thumb': '/static/tango/48x48/actions/run.png',
+        },
+        'search': search,
+        'filters': None,
+        
+        'table': table,
+        'add_action': False,
+    }
+    
+    return render(request, 'mro_report/base_table.html', response_dict)
+
+def table_employee(request):
+    '''
+    '''
+    
+    # get the WarehouseLog data from the data base
+    objs = Employee.objects.all().order_by('first_name', 'last_name')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '')
+    if search:
+        objs &= Employee.objects.filter(first_name__icontains = search)
+        objs |= Employee.objects.filter(last_name__icontains = search)
+    
+    # create a table object for the employee data
+    table = EmployeeTable(objs)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
+    
+    response_dict = {
+        'headers': {
+            'header': _('Maintenance orders report'),
+            'lead': _('Display maintenance orders. Chose employees.'),
+            'thumb': '/static/tango/48x48/categories/user-admin.png',
+        },
+        'search': search,
+        'filters': None,
+        
+        'table': table,
+        'add_action': False,
+    }
+    
+    return render(request, 'mro_report/base_table.html', response_dict)
+
+def table_system_report(request, system_pk):
+    """
+    """
+    # get the employee data from the data base
+    system = System.objects.get(pk = system_pk)
+    objs = Order.objects.filter(system = system).order_by('-created','-assigned','-completed')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '').strip()
+    if search:
+        objs &= Order.objects.filter(assign_to__first_name__icontains = search)
+        objs |= Order.objects.filter(assign_to__last_name__icontains = search)
+        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
+        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+        objs |= Order.objects.filter(work_description__icontains = search)
+        objs |= Order.objects.filter(work_notes__icontains = search)
+    
+    filter_pk = request.GET.get('filter_pk', '')
+    filter_string = None
+    if filter_pk:
+        objs &= Order.objects.filter(work_order_state = filter_pk)
+        try:
+            filter_string = dict(Order.ORDER_STATE)[filter_pk]
+        except:
+            filter_string = None
+    
+    if not filter_string:
+        filter_string = _('All')
+
+    table = SystemOrderTable(objs)
+
+    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    
+    # base_table.html response_dict rendering information
+    response_dict = {}
+    response_dict['search'] = search
+
+    response_dict['filters'] = Order.ORDER_STATE
+    response_dict['current_filter_pk'] = filter_pk
+    response_dict['current_filter_string'] = filter_string
+
+    response_dict['table'] = table
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/actions/run.png',
+        'header': _('System Work orders for %(name)s') % {'name': system.name},
+        'lead': _('Display all the work orders. for the system - %(name)s') % {'name': system.name},
+    }
+    
+    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+
+def table_employee_report(request, employee_pk):
+    """
+    """
+    # get the employee data from the data base
+    employee = Employee.objects.get(pk = employee_pk)
+    objs = Order.objects.filter(assign_to = employee).order_by('-created','-assigned','-completed')
+    
+    # filter employees using the search form
+    search = request.GET.get('search', '').strip()
+    if search:
+        objs &= Order.objects.filter(system___name__icontains = search)
+        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+        objs |= Order.objects.filter(work_description__icontains = search)
+        objs |= Order.objects.filter(work_notes__icontains = search)
+    
+    filter_pk = request.GET.get('filter_pk', '')
+    filter_string = None
+    if filter_pk:
+        objs &= Order.objects.filter(work_order_state = filter_pk)
+        try:
+            filter_string = dict(Order.ORDER_STATE)[filter_pk]
+        except:
+            filter_string = None
+    
+    if not filter_string:
+        filter_string = _('All')
+
+    table = EmployeeOrderTable(objs)
+
+    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    
+    # base_table.html response_dict rendering information
+    response_dict = {}
+    response_dict['search'] = search
+
+    response_dict['filters'] = Order.ORDER_STATE
+    response_dict['current_filter_pk'] = filter_pk
+    response_dict['current_filter_string'] = filter_string
+
+    response_dict['table'] = table
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/categories/user-admin.png',
+        'header': _('Employee Work orders for %(name)s') % {'name': employee},
+        'lead': _('Display all the work orders. for the employee - %(name)s') % {'name': employee},
     }
     
     return render(request, 'mro_order/system_fracture_order.html', response_dict)

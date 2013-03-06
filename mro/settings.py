@@ -142,10 +142,10 @@ INSTALLED_APPS = (
     'mro_icons',
     'mro_theme',
     'mro_order',
-    'mro_report',
     'mro_system',
     'mro_contact',
     'mro_warehouse',
+    'mro_report',
 
     # server things
     'django_cron',
@@ -174,7 +174,7 @@ LOCALE_PATHS = (
 # create the minified files
 # USAGE:
 #   ./manage.py compile_less
-USE_MINIFY = True
+USE_MINIFY = False
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
