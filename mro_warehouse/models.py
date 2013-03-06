@@ -158,6 +158,8 @@ class WarehouseLog(models.Model):
     shelve = models.CharField(_('Shelve'), max_length = 30, null = True, blank = True)
     batch = models.CharField(_('Batch'), max_length = 30, null = True, blank = True)
     
+    notes = models.CharField(_('Notes'), max_length = 90, null = True, blank = True)
+    
     # expires date
     expires = models.DateField(null = True, blank = True)
     expires.verbose_name = _('Expires')

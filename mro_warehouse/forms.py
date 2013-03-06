@@ -75,4 +75,4 @@ class WarehouseLogForm(ModelForm):
 
         fields = (
             'item', 'action', 'amount',
-            'shelve', 'batch', 'expires',)
+            'shelve', 'batch', 'notes', 'expires',)

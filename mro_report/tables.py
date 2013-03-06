@@ -34,7 +34,7 @@ class WarehouseLogTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'item', 'action', 'amount', 
-            'shelve', 'batch', 
+            'shelve', 'batch', 'notes',
             'expires', 'log_date')
 
 class SystemTable(tables.Table):
