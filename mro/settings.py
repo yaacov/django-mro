@@ -4,6 +4,7 @@
 import os
 import sys
 import django.conf.global_settings as DEFAULT_SETTINGS
+import autocomplete
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -76,6 +77,8 @@ STATICFILES_ROOT = os.path.join(SITE_ROOT, 'static') + '/'
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/' 
 
+AUTOCOMPLETE_MEDIA_PREFIX = '/static/autocomplete/'
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -137,7 +140,7 @@ INSTALLED_APPS = (
 
     'crispy_forms',
     'django_tables2',
-    
+
     'mro',
     'mro_icons',
     'mro_theme',

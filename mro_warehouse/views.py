@@ -42,6 +42,21 @@ thumb = {
     'description': ugettext_noop('Manage warehouse and items. Issue and insert items to and from warehouse storage.'), 
 }
 
+from django.utils import simplejson
+
+def item_lookup(request):
+    # Default return list
+    results = []
+    if request.method == "GET":
+        if request.GET.has_key(u'query'):
+            value = request.GET[u'query']
+            # Ignore queries shorter than length 3
+            if len(value) > 2:
+                model_results = Item.objects.filter(name__icontains=value)
+                results = [ (x.name, x.id) for x in model_results ]
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 # views
 def warehouse(request):
     '''

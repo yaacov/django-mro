@@ -27,7 +27,8 @@ urlpatterns = patterns('mro_warehouse.views',
     url(r'^items/$', 'manage_items'),
     url(r'^warehouse_actions/$', 'manage_warehouse_actions'),
     url(r'^warehouse_items/$', 'manage_warehouse_items'),
-    
+
+    url(r'^item-lookup/$', 'item_lookup'),
 )
 
 # breadcrumbs translation guide

@@ -5,8 +5,6 @@
 {% load render_table from django_tables2 %}
 
 {% block extra_css %}
-<link href="{{ STATIC_URL }}admin_enhancer/css/related-widget-wrapper.css" 
-    type="text/css" media="screen" rel="stylesheet" />
 <style type="text/css">
 .maintenance input, .table select, .table textarea {
     width: 95%;
@@ -42,7 +40,6 @@ th.error {
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}filer/js/popup_handling.js"></script>
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){

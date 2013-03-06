@@ -26,9 +26,9 @@ from crispy_forms.layout import Layout, MultiField, Fieldset, ButtonHolder
 from crispy_forms.layout import Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 
-from django.forms import ModelForm, TextInput
-from mro_theme.widgets import AmountWidget
+from django.forms import ModelForm, TextInput, CharField
 
+from mro_theme.widgets import AmountWidget
 from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
 
 class WarehouseForm(ModelForm):
@@ -72,6 +72,7 @@ class WarehouseLogForm(ModelForm):
 
     class Meta:
         model = WarehouseLog
+
         fields = (
             'item', 'action', 'amount',
             'shelve', 'batch', 'expires',)
