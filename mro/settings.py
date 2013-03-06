@@ -2,9 +2,13 @@
 # -*- coding:utf-8 -*-
 
 import os
+import sys
 import django.conf.global_settings as DEFAULT_SETTINGS
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+# add the dist-packages path the the python path
+sys.path.insert(1,'%s/dist-packages' % SITE_ROOT)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -30,6 +34,7 @@ DATABASES = {
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
+#TIME_ZONE = 'America/Chicago'
 TIME_ZONE = 'Asia/Jerusalem'
 
 # Language code for this installation. All choices can be found here:
@@ -142,12 +147,12 @@ INSTALLED_APPS = (
     'mro_contact',
     'mro_warehouse',
 
-    # migration manager
-    'south', # must be at the END
-
     # server things
     'django_cron',
     'django_wsgiserver',
+
+    # migration manager
+    'south', # must be at the END
 )
 
 CRON_CLASSES = [

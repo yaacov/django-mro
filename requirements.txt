@@ -1,7 +1,8 @@
-Django>=1.4.3
-South>=0.7.6
-Pillow
-argparse>=1.2.1
-django-crispy-forms>=1.2.3
-django-tables2>=0.13.0
+Django
+South
+#Pillow
+argparse
+django-crispy-forms
+django-tables2
+django-cron
 -e hg+https://bitbucket.org/cleemesser/django-wsgiserver#egg=django-wsgiserver
