@@ -4,7 +4,6 @@
 import os
 import sys
 import django.conf.global_settings as DEFAULT_SETTINGS
-import autocomplete
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -76,8 +75,6 @@ STATICFILES_ROOT = os.path.join(SITE_ROOT, 'static') + '/'
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/' 
-
-AUTOCOMPLETE_MEDIA_PREFIX = '/static/autocomplete/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -177,7 +174,7 @@ LOCALE_PATHS = (
 # create the minified files
 # USAGE:
 #   ./manage.py compile_less
-USE_MINIFY = False
+USE_MINIFY = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

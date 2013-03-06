@@ -171,6 +171,9 @@ django.jQuery(function() {
         django.jQuery('#form-page').val(django.jQuery(this).data('page'));
         django.jQuery('#search-form').submit();
     });
+    
+    django.jQuery('#id_system').select2();
+    django.jQuery('td.item select').select2();
 });
 </script>
 

@@ -39,3 +39,8 @@ input.ltr {
 .form-horizontal .control-group {
     margin-bottom: 5px;
 }
+
+.select2-container {
+    width: 300px;
+}
+

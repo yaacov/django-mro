@@ -32,6 +32,7 @@ css_files = [
     'bootstrap/less/bootstrap',
     'bootstrap/less/responsive',
     'datepicker/less/datepicker',
+    'select2/select2',
     'mro/extra',
 ]
 
@@ -53,8 +54,10 @@ js_files = [
     'bootstrap/js/bootstrap-carousel',
     'bootstrap/js/bootstrap-typeahead',
     'datepicker/js/bootstrap-datepicker',
+    'select2/select2'
 ]
 
 # outut files for the compiled and minified sources
 output_css_file = 'mro/mro.min.css'
 output_js_file = 'mro/mro.min.js'
+
