@@ -38,6 +38,8 @@ class Command(BaseCommand):
         ''' run the command
         '''
         
+        print '\n\nReading counters:\n'
+
         maintenances = Maintenance.objects.exclude(Q(counter_command__isnull = True) | Q(counter_command__exact = ''))
 
         for maintenance in maintenances:

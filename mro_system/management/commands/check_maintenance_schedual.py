@@ -77,6 +77,8 @@ class Command(BaseCommand):
         ''' run the command
         '''
         
+        print '\n\nCheck maintenance scheduals:\n'
+
         # daily 
         print "\nDaily maintenances"
         maintenances = Maintenance.objects.filter(work_cycle = 'DA')
