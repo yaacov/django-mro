@@ -149,7 +149,7 @@ INSTALLED_APPS = (
 
     # server things
     'django_cron',
-    'django_wsgiserver',
+    #'django_wsgiserver',
 
     # migration manager
     'south', # must be at the END
