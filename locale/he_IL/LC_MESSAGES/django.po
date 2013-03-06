@@ -230,7 +230,7 @@ msgstr "ממתין למסירה לעובד"
 
 #: mro_order/models.py:39
 msgid "Assigned"
-msgstr "נמסר לעובד"
+msgstr "נמסר לעובד/ספק"
 
 #: mro_order/models.py:40
 msgid "Completed"
