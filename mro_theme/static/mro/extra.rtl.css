@@ -41,7 +41,7 @@ body {
     float: right;
 }
 .select2-offscreen {
-    position: absolute;
     right: -10000px;
+    left: inherit;
 }
 
