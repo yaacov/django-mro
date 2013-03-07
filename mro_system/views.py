@@ -58,6 +58,8 @@ def system(request):
     if search:
         objs &= System.objects.filter(name__icontains = search)
         objs |= System.objects.filter(suplier__name__icontains = search)
+        objs |= System.objects.filter(assinged_to__first_name__icontains = search)
+        objs |= System.objects.filter(assinged_to__last_name__icontains = search)
         objs |= System.objects.filter(serial_number__icontains = search)
         objs |= System.objects.filter(description__icontains = search)
         objs |= System.objects.filter(contract_number__icontains = search)

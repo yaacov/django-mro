@@ -61,6 +61,9 @@ td.description textarea {
 td.created input {
     width: 120px;
 }
+th.error {
+    color: red;
+}
 </style>
 {% endblock %}
 
@@ -115,9 +118,6 @@ django.jQuery(function(){
     </ul>
 </form>
 
-{{ form.errors }}
-{{ form.non_field_errors }}
-
 <form method="post" id="formset" action="" enctype="multipart/form-data">
     {% csrf_token %}
 
@@ -125,6 +125,7 @@ django.jQuery(function(){
     {%for field in form %}
         <tr>
         {% if not field.is_hidden %}
+            
             {% if field.errors %}
             <th valign="bottom" class="control-group {{ field.name }} error">
             {% else %}
@@ -132,9 +133,15 @@ django.jQuery(function(){
             {% endif %}
                 {{ field.label }}
             </th>
+
+            {% if field.errors %}
+            <td class="control-group {{ field.name }} error">
+            {% else %}
             <td class="control-group {{ field.name }}">
+            {% endif %}
                 {{field}}
             </td>
+
         {%else%}
             {{field}}
         {% endif %}

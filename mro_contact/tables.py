@@ -53,7 +53,7 @@ class EmployeeTable(tables.Table):
 class SuplierTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     name = tables.TemplateColumn(
-        '<a href="{{ record.pk }}/" >{{ record }}</a>')
+        '<a href="{{ record.pk }}/" >{{ record.name }}</a>')
     name.verbose_name = _('Name')
     
     department_list = tables.Column(accessor='department_list', orderable=False)

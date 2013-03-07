@@ -467,6 +467,7 @@ def manage_fracture_order(request, system_pk = None, order_pk = None, action = N
             'contract_number': system.contract_number,
             'contract_include_parts': system.contract_include_parts,
             'assign_to_suplier': system.suplier,
+            'assign_to': system.assign_to,
         }
 
         orderform = OrderForm(instance = order, initial = initial)
@@ -562,6 +563,7 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
                     'contract_number': maintenance.system.contract_number,
                     'contract_include_parts': maintenance.system.contract_include_parts,
                     'assign_to_suplier': maintenance.system.suplier,
+                    'assign_to': maintenance.system.assign_to,
                 }
 
                 initial_items = []

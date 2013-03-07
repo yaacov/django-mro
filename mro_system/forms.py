@@ -42,19 +42,22 @@ class SystemForm(ModelForm):
         
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
-        
+        self.helper.help_text_inline = True
+
         self.fields['image'].widget = AdminImageWidget()
         #self.fields['address'].widget.attrs.update({'class' : 'wide'})
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
-        
+
     class Meta:
         model = System
         fields = ('name', 
             'serial_number', 
-            'card_number', 
+            #'card_number', 
             'contract_number',
             'contract_include_parts',
-            'suplier','department', 
+            #'suplier', 
+            'assign_to', 
+            'department', 
             'image', 'description',)
 
 class SystemMaintenanceForm(ModelForm):
@@ -81,9 +84,8 @@ class MaintenanceForm(ModelForm):
         #self.helper.add_input(Submit('update', _('Update'), css_class='btn-success'))
         self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
         
-        self.fields['work_description'].widget.attrs.update({'class' : 'wide', 'rows': '6'})
-        
     class Meta:
         model = Maintenance
-        exclude = ('items', 'priority', 'assign_to',)
+        fields = ('work_description', 'counter_command',)
+        #exclude = ('items', 'priority', 'assign_to',)
         

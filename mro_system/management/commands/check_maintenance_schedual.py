@@ -58,6 +58,7 @@ class Command(BaseCommand):
             contract_number = maintenance.system.contract_number,
             contract_include_parts = maintenance.system.contract_include_parts,
             assign_to_suplier = maintenance.system.suplier,
+            assign_to = maintenance.system.assign_to,
         )
 
         order.save()

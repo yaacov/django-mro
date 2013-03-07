@@ -62,10 +62,13 @@ class System(models.Model):
     suplier = models.ForeignKey(Suplier, null = True, blank = True)
     suplier.verbose_name = _('System Suplier')
 
+    assign_to = models.ForeignKey(Employee, null = True, blank = True)
+    assign_to.verbose_name = _('Maintenance employee')
+
     card_number = models.CharField(_('Card number'), max_length = 30, null = True, blank = True)
 
     contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
-    contract_include_parts = models.BooleanField(_('Contract include parts'))
+    contract_include_parts = models.BooleanField(_('Contract include parts'), help_text = _('Check this box if the contract include parts'))
 
     # what department if responsible for this system
     department = models.ForeignKey(Department)

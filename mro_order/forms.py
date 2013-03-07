@@ -41,15 +41,16 @@ class FractureOrderForm(ModelForm):
         # on items we do not know, we do not set the amount unit widget
         instance = getattr(self, 'instance', None)
         if instance and instance.id:
-            self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
-            self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
+            pass
+            #self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
+            #self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
 
     class Meta:
         model = Order
         fields = ('work_description', 'work_notes',
             'estimated_work_time', 'priority', 
             'contract_number', 'contract_include_parts', 
-            'assign_to_suplier','assign_to', 
+            'assign_to', 
             'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed',)
 
 class OrderForm(ModelForm):
@@ -65,13 +66,14 @@ class OrderForm(ModelForm):
         # on items we do not know, we do not set the amount unit widget
         instance = getattr(self, 'instance', None)
         if instance and instance.id:
-            self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
-            self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
+            pass
+            #self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
+            #self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
 
     class Meta:
         model = Order
         fields = ('system', 'maintenance', 'work_description', 'work_notes',
             'estimated_work_time', 'priority', 
             'contract_number', 'contract_include_parts', 
-            'assign_to_suplier','assign_to', 
+            'assign_to', 
             'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed',)

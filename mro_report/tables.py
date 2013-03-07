@@ -119,8 +119,7 @@ class SystemOrderTable(tables.Table):
             'order_a',
             'work_order_state', 
             'priority', 
-            'assign_to', 
-            'assign_to_suplier',
+            'assign_to',
             'created', 
             'assigned', 
             'completed',)
@@ -148,7 +147,6 @@ class EmployeeOrderTable(tables.Table):
             'order_a',
             'work_order_state', 
             'priority', 
-            'assign_to_suplier',
             'created', 
             'assigned', 
             'completed',)

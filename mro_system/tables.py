@@ -39,7 +39,8 @@ class SystemTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'name',
-            'suplier',
+            #'suplier',
+            'assign_to',
             'department',
             'short_description',
             'last_maintenance',

@@ -140,7 +140,10 @@ class Suplier(models.Model):
     
     # model overides
     def __unicode__(self):
-        return '%s' % (self.name)
+        if self.contact_name:
+            return '%s, %s' % (self.name, self.contact_name)
+        else:
+            return '%s' % (self.name)
     
     class Meta:
         verbose_name = _('Suplier')

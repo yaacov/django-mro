@@ -9,6 +9,7 @@
 .maintenance input, .table select, .table textarea {
     width: 95%;
 }
+
 .maintenance textarea {
     height: 120px;
 }
@@ -98,7 +99,7 @@ django.jQuery(function(){
                 {{ field.label }}
             </th>
             <td class="control-group {{ field.name }}">
-                {{field}}
+                {{field}} <apan class="text-info">{{field.help_text}}</span>
             </td>
         {%else%}
             {{field}}
@@ -170,6 +171,7 @@ django.jQuery(function() {
     });
     
     django.jQuery('#id_suplier').select2();
+    django.jQuery('#id_assign_to').select2();
     django.jQuery('#id_department').select2();
     
 });
