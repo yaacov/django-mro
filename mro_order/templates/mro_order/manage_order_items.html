@@ -38,7 +38,7 @@ th.name, td.name input {
 }
 .horizontal-form th {
     text-align: left;
-    width: 200px;
+    width: 180px;
 }
 td.DELETE,
 th.DELETE {
@@ -58,7 +58,7 @@ td.image input[type=checkbox] {
 td.description textarea {
     min-width: 300px;
 }
-td.created input {
+td.created input, td.started {
     width: 120px;
 }
 th.error {
@@ -76,6 +76,7 @@ th.error {
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
     django.jQuery('.created input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.started input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.assigned input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.completed input').datepicker({'format': 'yyyy-mm-dd'});
 
@@ -152,36 +153,20 @@ django.jQuery(function(){
     <input type="hidden" id="form-page" name="page" value="">
     <input type="hidden" id="form-action" name="form-action" value="">
 
-    {{ employeeformset.management_form }}
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        django.jQuery('#form-action').val('_save');
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        django.jQuery('#form-action').val('_update');
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
 
-    <h4>{% trans "Order Work Hours" %}</h4>
-    <table class="table table-striped employees-table">
-    <tr>
-    {% for field in employeeformset.forms.0 %}
-        {% if not field.is_hidden %}
-            <th class="{{ field.name }}">{{ field.label }}</th>
-        {% endif %}
-    {% endfor %}
-    </tr>
+    <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
+        django.jQuery('#form-action').val('_delete');
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
+</div>
 
-    {% for form in employeeformset %}
-    <tr>
-        {%for field in form %} 
-            {% if not field.is_hidden %}
-                {% if field.errors %}
-                <td valign="bottom" class="control-group error">
-                {% else %}
-                <td valign="bottom" class="control-group {{ field.name }}">
-                {% endif %}
-                    {{field}}
-                </td>
-            {%else%}
-                {{field}}
-            {% endif %}
-        {%endfor%}
-    </td>
-    {% endfor %}
-    </table>
+<div class="formset-sep"></div>
 
     {{ formset.management_form }}
 
@@ -216,33 +201,14 @@ django.jQuery(function(){
 
 <div class="form-actions">
     <a class="btn btn-primary btn-submit" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_save');
         django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
     <a class="btn btn-primary btn-success" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_update');
-        django.jQuery('#formset').submit();" >{% trans 'Update' %}</a>
-
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
     <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_delete');
-        django.jQuery('#formset').submit();" >{% trans 'Delete' %}</a>
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
 </div>
 
 <div class="formset-sep"></div>
@@ -282,33 +248,15 @@ django.jQuery(function(){
 
 <div class="form-actions">
     <a class="btn btn-primary btn-submit" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_save');
         django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
     <a class="btn btn-primary btn-success" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_update');
-        django.jQuery('#formset').submit();" >{% trans 'Update' %}</a>
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
 
     <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form-action').val('_delete');
-        django.jQuery('#formset').submit();" >{% trans 'Delete' %}</a>
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
 </div>
 
 <script>

@@ -32,6 +32,21 @@ class SystemTable(tables.Table):
     short_description = tables.TemplateColumn(
         '{{ record }}', orderable=False)
     short_description.verbose_name = _('Description')
+    
+    has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance')
+    has_hourly_maintenance.verbose_name = _('Hourly')
+
+    has_daily_maintenance = tables.BooleanColumn('has_daily_maintenance')
+    has_daily_maintenance.verbose_name = _('Daily')
+
+    has_weekly_maintenance = tables.BooleanColumn('has_weekly_maintenance')
+    has_weekly_maintenance.verbose_name = _('Weekly')
+
+    has_monthly_maintenance = tables.BooleanColumn('has_monthly_maintenance')
+    has_monthly_maintenance.verbose_name = _('Monthly')
+
+    has_yearly_maintenance = tables.BooleanColumn('has_yearly_maintenance')
+    has_yearly_maintenance.verbose_name = _('Yearly')
 
     class Meta:
         model = System
@@ -44,9 +59,14 @@ class SystemTable(tables.Table):
             'department',
             'short_description',
             'last_maintenance',
-            'card_number',
-            'contract_number',
-            'contract_include_parts', 
+            #'card_number',
+            #'contract_number',
+            #'contract_include_parts', 
+            'has_hourly_maintenance', 
+            'has_daily_maintenance', 
+            'has_weekly_maintenance', 
+            'has_monthly_maintenance', 
+            'has_yearly_maintenance', 
             )
 
 class MaintenanceTable(tables.Table):
@@ -65,7 +85,7 @@ class MaintenanceTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'system', 
-            'priority', 
+            #'priority', 
             'work_cycle_str', 
             'estimated_work_time', 
             'last_maintenance',

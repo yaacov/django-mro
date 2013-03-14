@@ -28,17 +28,16 @@ from django.shortcuts import render, render_to_response
 from django.forms.models import inlineformset_factory
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
+from django.db.models import Max
 
 from django_tables2 import RequestConfig
 
 from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
 from mro_contact.models import Department, Employee, Suplier
 from mro_order.models import Order, OrderItem, OrderEmployee, OrderDocument
-from mro_order.tables import OrderTable, SystemTable, MaintenanceOrderTable
-from mro_order.tables import MaintenanceTable, AllOrderTable
-from mro_order.forms import OrderForm, FractureOrderForm
-
-from mro_report.tables import SystemOrderTable, EmployeeOrderTable, EmployeeTable
+from mro_order.tables import SystemTable, MaintenanceOrderTable
+from mro_order.tables import MaintenanceTable, AllOrderTable, AssignTable
+from mro_order.forms import OrderForm, SearchOrderForm, ActionOrderForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -54,21 +53,22 @@ def order(request):
     '''
     
     thumbs = [
+        {   'link': '/order/assign/',
+            'image_url': '/static/tango/48x48/actions/add-participant.png',
+            'name': ugettext_noop('Assing work orders to employees'),
+            'description': ugettext_noop('Manage work orders, assigne work orders to employees.'), 
+        }, 
         {
-            'link': '/order/fracture/',
-            'image_url': '/static/tango/48x48/status/flag-red-clock.png',
-            'name': ugettext_noop('Fracture work orders'),
-            'description': ugettext_noop('Display and assigne fracture maintenance work orders.'), 
+            'link': '/order/print/',
+            'image_url': '/static/tango/48x48/actions/manage-students.png',
+            'name': ugettext_noop('Print work orders for employees'),
+            'description': _('Print work orders, print work orders assined to employees.'),
         },
-        {   'link': '/order/maintenance/',
-            'image_url': '/static/tango/48x48/status/flag-green-clock.png',
-            'name': ugettext_noop('Maintenance work orders'),
-            'description': ugettext_noop('Display and assigne maintenance work orders.'), 
-        }, {
-            'link': '/order/report/',
-            'image_url': '/static/tango/48x48/emblems/report-run.png',
-            'name': ugettext_noop('Reports'),
-            'description': _('Display work order Reports. Filter by wrok employee, system and work state.'),
+        {
+            'link': '/order/issue/',
+            'image_url': '/static/tango/48x48/status/flag-red-clock.png',
+            'name': ugettext_noop('Issue new work orders'),
+            'description': ugettext_noop('Issue new work orders. Create and edit new maintenance work orders.'), 
         },
     ]
     
@@ -83,199 +83,10 @@ def order(request):
     
     return render(request, 'mro/base_list.html', response_dict)
 
-def table_index(request):
-    '''
-    '''
-    
-    thumbs = [
-        {
-            'link': '/order/report/all/',
-            'image_url': '/static/tango/48x48/status/maintenance-time.png',
-            'name': ugettext_noop('All work orders'),
-            'description': _('Display all the work orders. Filter by wrok state, system and work description.'),
-        },
-        {
-            'link': '/order/report/none/',
-            'image_url': '/static/tango/48x48/actions/add-participant.png',
-            'name': ugettext_noop('Work orders, not assigned'),
-            'description': _('Display work orders not assigned to employee. Filter by wrok state, system and work description.'),
-        },
-        {   'link': '/order/report/employee/',
-           'image_url': '/static/tango/48x48/categories/user-admin.png',
-            'name': ugettext_noop('Maintenance orders report. By employee.'),
-            'description': ugettext_noop('Display maintenance orders. By employee.'), 
-        }, {
-            'link': '/order/report/system/',
-            'image_url': '/static/tango/48x48/actions/run.png',
-            'name': ugettext_noop('Maintenance orders report. By system.'),
-            'description': ugettext_noop('Display maintenance orders. By system.'), 
-        },
-    ]
-    
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Work orders reports'),
-        'lead': _('Display work order Reports. Filter by wrok employee, system and work state.'),
-        'thumb': '/static/tango/48x48/emblems/report-run.png',
-    }
-    
-    response_dict['thumbs'] = thumbs
-    
-    return render(request, 'mro/base_list.html', response_dict)
+# issue new work orders
+# ---------------------
 
-def work_maintenance(request):
-    '''
-    '''
-    
-    departments = Department.objects.all()
-
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Schedual Maintenance'),
-        'lead': _('Edit and create schedual maintenance work orders.'),
-        'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-    }
-    response_dict['thumbs'] = departments
-    
-    return render(request, 'mro/base_thumbs.html', response_dict)
-
-def work_fracture(request):
-    '''
-    '''
-    
-    departments = Department.objects.all()
-    
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Fracture Maintenance'),
-        'lead': _('Edit and create fracture maintenance work orders.'),
-        'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-    }
-    response_dict['thumbs'] = departments
-    
-    return render(request, 'mro/base_thumbs.html', response_dict)
-
-def order_table(request, department_pk = None, order_id = None, action = None, work_type = 'fracture'):
-    """
-    """
-    # get the employee data from the data base
-    objs = Order.objects.all().order_by('created','assigned','completed')
-    
-    objs &= Order.objects.filter(system__department = department_pk)
-    #objs &= Order.objects.filter(work_type = ['MA', 'FR'][work_type == 'fracture'])
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '').strip()
-    if search:
-        
-        objs &= Order.objects.filter(assign_to__name__icontains = search)
-        objs |= Order.objects.filter(system__name___icontains = search)
-        objs |= Order.objects.filter(work_description___icontains = search)
-        objs |= Order.objects.filter(work_notes___icontains = search)
-    
-    # create a table object for the employee data
-    table = OrderTable(objs)
-    RequestConfig(request, paginate={"per_page": 40}).configure(table)
-    
-    # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
-    response_dict['filters'] = None
-    
-    response_dict['table'] = table
-    response_dict['add_action'] = True
-    
-    thumbs = [
-        {   'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-            'header': _('Maintenance'),
-            'lead': _('Edit and create maintenance orders.'), 
-        }, {
-            'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-            'header': _('Fracture'),
-            'lead': _('Edit and create fracture maintenance orders.'), 
-        },
-    ]
-    response_dict['headers'] = thumbs[work_type == 'fracture']
-    
-    return render(request, 'mro/base_table.html', response_dict)
-
-def manage_order(request, department_pk = None, order_id = None, action = None, work_type = 'fracture'):
-    if  order_id == None:
-        #order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
-        order = Order()
-    else:
-        try:
-            order = Order.objects.get(id = order_id)
-        except:
-            order = Order(work_type = ['MA', 'FR'][work_type == 'fracture'])
-            order = Order()
-
-    ItemFormSet    = inlineformset_factory(Order, OrderItem, extra = 1, can_delete=True)
-    queryset = OrderItem.objects.all() 
-
-    EmployeeFormSet    = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete=True)
-    employeequeryset = OrderEmployee.objects.all() 
-
-    redirect_url = '/order/%s/' % (work_type)
-
-    if request.method == "POST":
-        action = request.POST['form-action']
-
-        if action == '_delete':
-            order.delete()
-            return HttpResponseRedirect(redirect_url)
-
-        orderform = OrderForm(request.POST, instance=order)
-
-        itemformset = ItemFormSet(request.POST, request.FILES, instance=order)
-        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance=order)
-        
-        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid():
-            orderform.save()
-            itemformset.save()
-            employeeformset.save()
-
-            # Redirect to somewhere
-            try:
-                redirect_url = '/order/%s/%s/' % (
-                    ['maintenance','fracture'][order.work_type == 'FR'], 
-                    order.system.department.pk)
-            except:
-                pass
-            
-            if action == '_save':
-                return HttpResponseRedirect(redirect_url)
-            if action == '_update':
-                return HttpResponseRedirect('/order/%d' % order.pk)
-
-            if '_addanother' in request.POST:
-                return HttpResponseRedirect(redirect_url)
-
-            return HttpResponseRedirect(redirect_url)
-        else:
-            messages.error(request, _('Error updating database.'))
-
-            orderform = OrderForm(instance=order)
-            itemformset = ItemFormSet(instance=order, queryset=queryset)
-            employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
-    else:
-        orderform = OrderForm(instance=order)
-        itemformset = ItemFormSet(instance=order, queryset=queryset)
-        employeeformset = EmployeeFormSet(instance=order, queryset=employeequeryset)
-
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Maintenance order'),
-        'lead': _('Edit maintenance order.'),
-        'thumb': '/static/tango/48x48/actions/log-in.png',
-    }
-    response_dict['form'] = orderform
-    response_dict['formset'] = itemformset
-    response_dict['employeeformset'] = employeeformset
-
-    return render(request, 'mro_order/manage_order_items.html', response_dict)
-
-def system(request, action = None, work_type = None):
+def issue(request, action = None, work_type = None):
     '''
     '''
     
@@ -299,7 +110,7 @@ def system(request, action = None, work_type = None):
         filter_string = Department.objects.get(pk = filter_pk)
     
     if not filter_string:
-        filter_string = _('All')
+        filter_string = _('Select department')
     
     # create a table object for the employee data
     table = SystemTable(objs)
@@ -315,22 +126,15 @@ def system(request, action = None, work_type = None):
     response_dict['table'] = table
     response_dict['add_action'] = True
     
-    thumbs = [
-        {   'header': _('Maintenance work orders'),
-            'lead': _('Display and assigne maintenance work orders.'),
-            'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-        }, 
-        {
-            'header': _('Fracture work orders'),
-            'lead': _('Display and assigne fracture maintenance work orders.'),
-            'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-        },
-    ]
-    response_dict['headers'] = thumbs[work_type == 'fracture']
+    response_dict['headers'] = {
+        'header': _('Issue new work orders'),
+        'lead': _('Issue new work orders. Create and edit new maintenance work orders.'),
+        'thumb': '/static/tango/48x48/status/flag-red-clock.png',
+    }
 
-    return render(request, 'mro_order/system.html', response_dict)
+    return render(request, 'mro_order/issue.html', response_dict)
 
-def system_order(request, system_pk = None, order_id = None, action = None, work_type = 'fracture'):
+def issue_order(request, system_pk = None, order_id = None, action = None):
     """
     """
     # get the employee data from the data base
@@ -354,14 +158,9 @@ def system_order(request, system_pk = None, order_id = None, action = None, work
             filter_string = None
     
     if not filter_string:
-        filter_string = _('All')
+        filter_string = _('Select work state')
 
-    if work_type == 'fracture':
-        objs &= Order.objects.filter(maintenance__isnull = True)
-        table = OrderTable(objs)
-    else:
-        objs &= Order.objects.filter(maintenance__isnull = False)
-        table = MaintenanceOrderTable(objs)
+    table = MaintenanceOrderTable(objs)
 
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
@@ -374,32 +173,22 @@ def system_order(request, system_pk = None, order_id = None, action = None, work
     
     response_dict['table'] = table
 
-    if work_type == 'maintenance':
-        # get all maintenance instructions for this system
-        maintenance = Maintenance.objects.filter(system = system)
-        maintenance_table = MaintenanceTable(maintenance)
-        response_dict['maintenance_table'] = maintenance_table
+    # get all maintenance instructions for this system
+    maintenance = Maintenance.objects.filter(system = system)
+    maintenance_table = MaintenanceTable(maintenance)
+    response_dict['maintenance_table'] = maintenance_table
 
     response_dict['add_action'] = True
-    
-    thumbs = [
-        {   'thumb': '/static/tango/48x48/status/flag-green-clock.png',
-            'header': _('Maintenance work orders, %(department)s') % {'department': system.department.name},
-            'lead': _('Edit and issue maintenance work orders for %(name)s - %(department)s') % {'name': system.name, 'department': system.department.name},
-        }, {
-            'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-            'header': _('Fracture work orders, %(department)s') % {'department': system.department.name},
-            'lead': _('Edit and issue fracture work orders for %(name)s - %(department)s') % {'name': system.name, 'department': system.department.name},
-        },
-    ]
-    response_dict['headers'] = thumbs[work_type == 'fracture']
-    
-    if work_type == 'fracture':
-        return render(request, 'mro_order/system_fracture_order.html', response_dict)
-    else:
-        return render(request, 'mro_order/system_maintenance_order.html', response_dict)
 
-def manage_fracture_order(request, system_pk = None, order_pk = None, action = None, work_type = 'fracture'):
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/status/flag-red-clock.png',
+        'header': _('Issue new work orders for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+        'lead': _('Issue and edit new work orders for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+    }
+
+    return render(request, 'mro_order/issue_order.html', response_dict)
+
+def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_pk = None, next_url = None, update_url = None):
     '''
     '''
 
@@ -407,105 +196,18 @@ def manage_fracture_order(request, system_pk = None, order_pk = None, action = N
         order = Order.objects.get(pk = order_pk)
     else:
         order = None
-
-    if request.method == "POST":
-        ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
-        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
-        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
-
-        orderform = OrderForm(request.POST, request.FILES, instance = order)
-        itemformset = ItemFormSet(request.POST, request.FILES, instance = order, prefix='items')
-        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance = order, prefix='employees')
-        documentformset = DocumentFormSet(request.POST, request.FILES, instance = order, prefix='documents')
-        
-        action = request.POST['form-action']
-        if action == '_delete':
-            try:
-                Order.objects.get(pk = order_pk).delete()
-            except Exception, e:
-                pass
-
-            return HttpResponseRedirect('/order/fracture/%s/' % (system_pk))
-
-        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid() and documentformset.is_valid():
-            order = orderform.save()
-            items = itemformset.save(commit=False)
-            for item in items:
-                item.order = order
-                item.save()
-
-            employees = employeeformset.save(commit=False)
-            for employee in employees:
-                employee.order = order
-                employee.save()
-
-            documents = documentformset.save(commit=False)
-            for document in documents:
-
-                document.order = order
-                document.save()
-
-            messages.success(request, _('Database updated.'))
-
-            # Redirect to somewhere
-            if action == '_update':
-                return HttpResponseRedirect('/order/fracture/%s/%s/' % (system_pk, order.pk))
-
-            return HttpResponseRedirect('/order/fracture/%s/' % (system_pk))
-        else:
-            messages.error(request, _('Error updating database.'))
-    else:
-        ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
-        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
-        DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
-
-        system = System.objects.get(pk = system_pk)
-
-        initial = {
-            'system': system,
-            'priority': Priority.objects.all().order_by('-max_days_delay')[0],
-            'contract_number': system.contract_number,
-            'contract_include_parts': system.contract_include_parts,
-            'assign_to_suplier': system.suplier,
-            'assign_to': system.assign_to,
-        }
-
-        orderform = OrderForm(instance = order, initial = initial)
-        employeeformset = EmployeeFormSet(instance = order, prefix='employees')
-        itemformset = ItemFormSet(instance = order, prefix='items')
-        documentformset = DocumentFormSet(instance = order, prefix='documents')
 
     system = System.objects.get(pk = system_pk)
-    response_dict = {}
-    response_dict['headers'] = {
-        'header': _('Fracture work order, %(department)s') % {'department': system.department.name},
-        'lead': _('Edit fracture work order for %(name)s - %(department)s') % {'name': system.name, 'department': system.department.name},
-        'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-    }
-    response_dict['form'] = orderform
-    response_dict['formset'] = itemformset
-    response_dict['employeeformset'] = employeeformset
-    response_dict['documentformset'] = documentformset
 
-    return render(request, 'mro_order/manage_order_items.html', response_dict)
-
-def manage_maintenance_order(request, system_pk = None, order_pk = None, maintenance_pk = None, action = None, work_type = 'maintenance'):
-    '''
-    '''
-
-    if order_pk:
-        order = Order.objects.get(pk = order_pk)
-    else:
-        order = None
+    if not next_url:
+        next_url = '/order/issue/%s/' % (system_pk)
 
     if request.method == "POST":
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
-        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
         DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
         orderform = OrderForm(request.POST, request.FILES, instance = order)
         itemformset = ItemFormSet(request.POST, request.FILES, instance = order, prefix='items')
-        employeeformset = EmployeeFormSet(request.POST, request.FILES, instance = order, prefix='employees')
         documentformset = DocumentFormSet(request.POST, request.FILES, instance = order, prefix='documents')
         
         action = request.POST['form-action']
@@ -515,19 +217,14 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
             except Exception, e:
                 pass
 
-            return HttpResponseRedirect('/order/maintenance/%s/' % (system_pk))
+            return HttpResponseRedirect(next_url)
 
-        if orderform.is_valid() and itemformset.is_valid() and employeeformset.is_valid() and documentformset.is_valid():
+        if orderform.is_valid() and itemformset.is_valid() and documentformset.is_valid():
             order = orderform.save()
             items = itemformset.save(commit=False)
             for item in items:
                 item.order = order
                 item.save()
-
-            employees = employeeformset.save(commit=False)
-            for employee in employees:
-                employee.order = order
-                employee.save()
 
             documents = documentformset.save(commit=False)
             for document in documents:
@@ -539,9 +236,12 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
 
             # Redirect to somewhere
             if action == '_update':
-                return HttpResponseRedirect('/order/maintenance/%s/%s/' % (system_pk, order.pk))
+                if not update_url:
+                    update_url = '/order/issue/'
 
-            return HttpResponseRedirect('/order/maintenance/%s/' % (system_pk))
+                return HttpResponseRedirect('%s%s' % (update_url, '%s/%s/' % (order.system.pk, order.pk)))
+
+            return HttpResponseRedirect(next_url)
         else:
             messages.error(request, _('Error updating database.'))
     else:
@@ -549,11 +249,17 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
             initial = {}
             initial_items = []
         else:
-            # if we have a maintenace object
+            max_order = Order.objects.all().aggregate(Max('work_number'))
+            if max_order['work_number__max']:
+                work_number = max_order['work_number__max'] + 1
+            else:
+                work_number = 1
+
             if maintenance_pk:
                 maintenance = Maintenance.objects.get(pk = maintenance_pk)
 
                 initial = {
+                    'work_number': work_number,
                     'maintenance': maintenance.pk,
                     'system': maintenance.system,
                     'priority': maintenance.priority,
@@ -569,17 +275,27 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
                 initial_items = []
                 for maintenanceitem in MaintenanceItem.objects.filter(maintenance = maintenance):
                     initial_items.append({
+                        'work_number': work_number,
                         'item': maintenanceitem.item.pk,
                         'amount': maintenanceitem.amount,
                         'ordered': datetime.today(),
                     })
+            else:
+                initial = {
+                    'work_number': work_number,
+                    'system': system,
+                    'priority': Priority.objects.all().order_by('-max_days_delay')[0],
+                    'contract_number': system.contract_number,
+                    'contract_include_parts': system.contract_include_parts,
+                    'assign_to_suplier': system.suplier,
+                    'assign_to': system.assign_to,
+                }
+                initial_items = []
 
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = len(initial_items) + 1, can_delete = True)
-        EmployeeFormSet = inlineformset_factory(Order, OrderEmployee, extra = 1, can_delete = True)
         DocumentFormSet = inlineformset_factory(Order, OrderDocument, extra = 1, can_delete = True)
 
         orderform = OrderForm(instance = order, initial = initial)
-        employeeformset = EmployeeFormSet(instance = order, prefix='employees')
 
         itemformset = ItemFormSet(instance = order, prefix='items')
         for subform, data in zip(itemformset.forms, initial_items):
@@ -589,21 +305,48 @@ def manage_maintenance_order(request, system_pk = None, order_pk = None, mainten
 
         documentformset = DocumentFormSet(instance = order, prefix='documents')
 
-    system = System.objects.get(pk = system_pk)
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Maintenanace work order, %(department)s') % {'department': system.department.name},
-        'lead': _('Edit maintenance work order for %(name)s - %(department)s') % {'name': system.name, 'department': system.department.name},
-        'thumb': '/static/tango/48x48/status/flag-green-clock.png',
+        'header': _('Work order for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+        'lead': _('Edit work order for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+        'thumb': '/static/tango/48x48/status/flag-red-clock.png',
     }
     response_dict['form'] = orderform
     response_dict['formset'] = itemformset
-    response_dict['employeeformset'] = employeeformset
+    #response_dict['employeeformset'] = employeeformset
     response_dict['documentformset'] = documentformset
 
-    return render(request, 'mro_order/manage_order_items.html', response_dict)
+    return render(request, 'mro_order/manage_issue_order.html', response_dict)
 
-def table_all(request):
+
+# work order tables
+# -----------------
+
+def table(request):
+    '''
+    '''
+    
+    thumbs = [
+        {
+            'link': '/order/table/orders/',
+            'image_url': '/static/tango/48x48/status/maintenance-time.png',
+            'name': ugettext_noop('All work orders'),
+            'description': _('Display all the work orders, search by wrok state, system and work description.'),
+        },
+    ]
+    
+    response_dict = {}
+    response_dict['headers'] = {
+        'header': _('Work order reports'),
+        'lead': _('Display work order Reports, search for order by wrok employee, system and work state.'),
+        'thumb': '/static/tango/48x48/emblems/report-run.png',
+    }
+    
+    response_dict['thumbs'] = thumbs
+    
+    return render(request, 'mro/base_list.html', response_dict)
+
+def table_orders(request):
     """
     """
     # get the employee data from the data base
@@ -631,237 +374,196 @@ def table_all(request):
             filter_string = None
     
     if not filter_string:
-        filter_string = _('All')
+        filter_string = _('Select work state')
 
     table = AllOrderTable(objs)
 
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
     # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
+    response_dict = {
+        'search': search,
 
-    response_dict['filters'] = Order.ORDER_STATE
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
+        'filters': Order.ORDER_STATE,
+        'current_filter_pk':filter_pk,
+        'current_filter_string': filter_string,
+
+        'table': table,
+    }
 
     response_dict['table'] = table
     response_dict['headers'] = {
         'thumb': '/static/tango/48x48/status/maintenance-time.png',
         'header': _('All work orders'),
-        'lead': _('Display all the work orders. Filter by wrok state, system and work description.'),
+        'lead': _('Display all the work orders, search by wrok state, system and work description.'),
     }
     
-    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+    return render(request, 'mro_order/table_orders.html', response_dict)
 
-def table_not_assigned(request):
+def assign(request):
     """
     """
     # get the employee data from the data base
-    objs = Order.objects.filter(assign_to__isnull = True).order_by('-created','-assigned','-completed')
+    objs = Order.objects.all().order_by('-created','-assigned','-completed')
     
     # filter employees using the search form
     search = request.GET.get('search', '').strip()
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
         objs |= Order.objects.filter(system__name__icontains = search)
         objs |= Order.objects.filter(system__description__icontains = search)
         objs |= Order.objects.filter(maintenance__work_description__icontains = search)
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
-    
-    filter_pk = request.GET.get('filter_pk', '')
-    filter_string = None
-    if filter_pk:
-        objs &= Order.objects.filter(work_order_state = filter_pk)
-        try:
-            filter_string = dict(Order.ORDER_STATE)[filter_pk]
-        except:
-            filter_string = None
-    
-    if not filter_string:
-        filter_string = _('All')
 
-    table = AllOrderTable(objs)
+    searchform = SearchOrderForm(request.GET)
+    if searchform.is_valid():
+        employee = searchform.cleaned_data['employee']
+        system = searchform.cleaned_data['system']
+        work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
+
+        if system.startswith('DE-'):
+            department_pk = int(system[3:])
+            objs &= Order.objects.filter(system__department__pk = department_pk)
+
+        if system.startswith('SY-'):
+            system_pk = int(system[3:])
+            objs &= Order.objects.filter(system__pk = system_pk)
+
+        if employee:
+            objs &= Order.objects.filter(assign_to__pk = employee)
+
+        if work_order_state not in ['AL',]:
+            objs &= Order.objects.filter(work_order_state = work_order_state)
+    else:
+        # default is RE
+        objs &= Order.objects.filter(work_order_state = 'RE')
+
+    table = AssignTable(objs)
 
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
-    # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
+    if request.method == "POST":
+        actionfrom = ActionOrderForm(request.POST)
 
-    response_dict['filters'] = Order.ORDER_STATE
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
+        if actionfrom.is_valid():
+            pks = request.POST.getlist("selection")
+            selected_objects = Order.objects.filter(pk__in=pks)
+
+            selected_action = actionfrom.cleaned_data['selected_action']
+            #'AS', _('Assign to employee')),
+            #'CA', _('Cancel assignment')),
+            #'CW', _('Cancel work order')),
+            if selected_action == 'AS':
+                # assing to employee
+                assign_to = actionfrom.cleaned_data['assign_to']
+                if assign_to and selected_objects:
+                    for order in selected_objects:
+                        order.assign_to = Employee.objects.get(pk = assign_to)
+                        order.work_order_state = 'AS'
+                        order.save()
+
+            if selected_action == 'CA':
+                # cancel assing to employee
+                if selected_objects:
+                    for order in selected_objects:
+                        order.assign_to = None
+                        order.assigned = None
+                        order.work_order_state = 'RE'
+                        order.save()
+
+            if selected_action == 'CW':
+                # cancel work
+                if selected_objects:
+                    for order in selected_objects:
+                        order.work_order_state = 'CA'
+                        order.save()
+
+    # base_table.html response_dict rendering information
+    response_dict = {
+        'search_form': SearchOrderForm(request.GET),
+        'action_form': ActionOrderForm(request.POST),
+        'search': search,
+        'table': table,
+    }
 
     response_dict['table'] = table
     response_dict['headers'] = {
         'thumb': '/static/tango/48x48/actions/add-participant.png',
-        'header': _('Work orders, not assigned'),
-        'lead': _('Display work orders not assinged to employee. Filter by wrok state, system and work description.'),
+        'header': _('Assing work orders to employees'),
+        'lead': _('Manage work orders, assigne work orders to employees.'), 
     }
     
-    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+    return render(request, 'mro_order/assign.html', response_dict)
 
-def table_system(request):
-    '''
-    '''
-    
-    # get the WarehouseLog data from the data base
-    objs = System.objects.all().order_by('name')
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '')
-    if search:
-        objs &= System.objects.filter(name__icontains = search)
-    
-    # create a table object for the employee data
-    table = SystemTable(objs)
-    RequestConfig(request, paginate={"per_page": 20}).configure(table)
-    
-    response_dict = {
-        'headers': {
-            'header': _('Maintenance orders report'),
-            'lead': _('Display maintenance orders. Chose system.'),
-            'thumb': '/static/tango/48x48/actions/run.png',
-        },
-        'search': search,
-        'filters': None,
-        
-        'table': table,
-        'add_action': False,
-    }
-    
-    return render(request, 'mro_report/base_table.html', response_dict)
-
-def table_employee(request):
-    '''
-    '''
-    
-    # get the WarehouseLog data from the data base
-    objs = Employee.objects.all().order_by('first_name', 'last_name')
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '')
-    if search:
-        objs &= Employee.objects.filter(first_name__icontains = search)
-        objs |= Employee.objects.filter(last_name__icontains = search)
-    
-    # create a table object for the employee data
-    table = EmployeeTable(objs)
-    RequestConfig(request, paginate={"per_page": 20}).configure(table)
-    
-    response_dict = {
-        'headers': {
-            'header': _('Maintenance orders report'),
-            'lead': _('Display maintenance orders. Chose employees.'),
-            'thumb': '/static/tango/48x48/categories/user-admin.png',
-        },
-        'search': search,
-        'filters': None,
-        
-        'table': table,
-        'add_action': False,
-    }
-    
-    return render(request, 'mro_report/base_table.html', response_dict)
-
-def table_system_report(request, system_pk):
+def print_orders(request):
     """
     """
     # get the employee data from the data base
-    system = System.objects.get(pk = system_pk)
-    objs = Order.objects.filter(system = system).order_by('-created','-assigned','-completed')
+    objs = Order.objects.all().order_by('-created','-assigned','-completed')
     
     # filter employees using the search form
     search = request.GET.get('search', '').strip()
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
+        objs |= Order.objects.filter(system__name__icontains = search)
+        objs |= Order.objects.filter(system__description__icontains = search)
         objs |= Order.objects.filter(maintenance__work_description__icontains = search)
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
-    
-    filter_pk = request.GET.get('filter_pk', '')
-    filter_string = None
-    if filter_pk:
-        objs &= Order.objects.filter(work_order_state = filter_pk)
-        try:
-            filter_string = dict(Order.ORDER_STATE)[filter_pk]
-        except:
-            filter_string = None
-    
-    if not filter_string:
-        filter_string = _('All')
 
-    table = SystemOrderTable(objs)
+    if 'work_order_state' not in request.GET:
+        searchform = SearchOrderForm(initial = {'work_order_state': 'AS'})
+    else:
+        searchform = SearchOrderForm(request.GET)
 
-    RequestConfig(request, paginate={"per_page": 40}).configure(table)
-    
-    # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
+    if searchform.is_valid():
+        employee = searchform.cleaned_data['employee']
+        system = searchform.cleaned_data['system']
+        work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
 
-    response_dict['filters'] = Order.ORDER_STATE
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
+        if system.startswith('DE-'):
+            department_pk = int(system[3:])
+            objs &= Order.objects.filter(system__department__pk = department_pk)
 
-    response_dict['table'] = table
-    response_dict['headers'] = {
-        'thumb': '/static/tango/48x48/actions/run.png',
-        'header': _('System Work orders for %(name)s') % {'name': system.name},
-        'lead': _('Display all the work orders. for the system - %(name)s') % {'name': system.name},
-    }
-    
-    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+        if system.startswith('SY-'):
+            system_pk = int(system[3:])
+            objs &= Order.objects.filter(system__pk = system_pk)
 
-def table_employee_report(request, employee_pk):
-    """
-    """
-    # get the employee data from the data base
-    employee = Employee.objects.get(pk = employee_pk)
-    objs = Order.objects.filter(assign_to = employee).order_by('-created','-assigned','-completed')
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '').strip()
-    if search:
-        objs &= Order.objects.filter(system___name__icontains = search)
-        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
-        objs |= Order.objects.filter(work_description__icontains = search)
-        objs |= Order.objects.filter(work_notes__icontains = search)
-    
-    filter_pk = request.GET.get('filter_pk', '')
-    filter_string = None
-    if filter_pk:
-        objs &= Order.objects.filter(work_order_state = filter_pk)
-        try:
-            filter_string = dict(Order.ORDER_STATE)[filter_pk]
-        except:
-            filter_string = None
-    
-    if not filter_string:
-        filter_string = _('All')
+        if employee:
+            objs &= Order.objects.filter(assign_to__pk = employee)
 
-    table = EmployeeOrderTable(objs)
+        if work_order_state not in ['AL',]:
+            objs &= Order.objects.filter(work_order_state = work_order_state)
+    else:
+        # default is RE
+        objs &= Order.objects.filter(work_order_state = 'AS')
+
+    table = AssignTable(objs)
 
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
-    # base_table.html response_dict rendering information
-    response_dict = {}
-    response_dict['search'] = search
+    if request.method == "POST":
+        
+        pks = request.POST.getlist("selection")
+        orders = Order.objects.filter(pk__in=pks)
 
-    response_dict['filters'] = Order.ORDER_STATE
-    response_dict['current_filter_pk'] = filter_pk
-    response_dict['current_filter_string'] = filter_string
+        return render(request, 'mro_order/print_orders.html', {'orders': orders})
+
+    # base_table.html response_dict rendering information
+    response_dict = {
+        'search_form': searchform,
+        'search': search,
+        'table': table,
+    }
 
     response_dict['table'] = table
     response_dict['headers'] = {
-        'thumb': '/static/tango/48x48/categories/user-admin.png',
-        'header': _('Employee Work orders for %(name)s') % {'name': employee},
-        'lead': _('Display all the work orders. for the employee - %(name)s') % {'name': employee},
+        'thumb': '/static/tango/48x48/actions/manage-students.png',
+        'header': _('Print work orders for employees'),
+        'lead': _('Print work orders, print work orders assined to employees.'),
     }
     
-    return render(request, 'mro_order/system_fracture_order.html', response_dict)
+    return render(request, 'mro_order/print.html', response_dict)

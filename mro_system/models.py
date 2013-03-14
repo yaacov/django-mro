@@ -59,6 +59,9 @@ class System(models.Model):
     name = models.CharField(_('System Name'), max_length = 30)
     serial_number = models.CharField(_('Serial number'), max_length = 30, blank = True, null = True)
     
+    # system location
+    location = models.CharField(_('Location'), max_length = 30, blank = True, null = True)
+
     suplier = models.ForeignKey(Suplier, null = True, blank = True)
     suplier.verbose_name = _('System Suplier')
 
@@ -107,6 +110,46 @@ class System(models.Model):
     last_maintenance = models.DateField(null = True, blank = True)
     last_maintenance.verbose_name = _('Last Maintenance Date')
 
+    def has_hourly_maintenance(self):
+        ''' True if the system has an hourly maintenance
+        '''
+        
+        hourly_maintenances = Maintenance.objects.filter(system = self, work_type = 'WH')
+        return len(hourly_maintenances) > 0
+    has_hourly_maintenance.verbose_name = _('Hourly')
+
+    def has_daily_maintenance(self):
+        ''' True if the system has an Daily maintenance
+        '''
+        
+        daily_maintenances = Maintenance.objects.filter(system = self, work_type = 'DA')
+        return len(daily_maintenances) > 0
+    has_daily_maintenance.short_description = _('Daily')
+
+    def has_weekly_maintenance(self):
+        ''' True if the system has an weekly maintenance
+        '''
+        
+        weekly_maintenances = Maintenance.objects.filter(system = self, work_type = 'WE')
+        return len(weekly_maintenances) > 0
+    has_weekly_maintenance.short_description = _('Weekly')
+
+    def has_monthly_maintenance(self):
+        ''' True if the system has an monthly maintenance
+        '''
+        
+        monthly_maintenances = Maintenance.objects.filter(system = self, work_type = 'MO')
+        return len(monthly_maintenances) > 0
+    has_monthly_maintenance.short_description = _('Monthly')
+
+    def has_yearly_maintenance(self):
+        ''' True if the system has an yearly maintenance
+        '''
+        
+        monthly_maintenances = Maintenance.objects.filter(system = self, work_type = 'YE')
+        return len(monthly_maintenances) > 0
+    has_yearly_maintenance.short_description = _('Yearly')
+
     # model overides
     def __unicode__(self):
         short_desc = self.description.split('\n')[0].split()[:8]
@@ -132,6 +175,15 @@ class Maintenance(models.Model):
         ('ON', _('Once')),
     )
     
+    WORK_TYPE = (
+        ('WH', _('Hourly')),
+        ('DA', _('Daily')),
+        ('WE', _('Weekly')),
+        ('MO', _('Monthly')),
+        ('YE', _('Yearly')),
+        ('ON', _('One time')),
+    )
+
     # this work is on this system
     system = models.ForeignKey(System)
     system.verbose_name = _('System')
@@ -140,6 +192,9 @@ class Maintenance(models.Model):
     priority = models.ForeignKey(Priority, default = 1)
     priority.verbose_name = _('Priority')
     
+    work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'WH')
+    work_type.verbose_name = _('Maintenance type')
+
     # the job manager and contact information
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
     assign_to.verbose_name = _('Assign to')
@@ -172,20 +227,16 @@ class Maintenance(models.Model):
     def work_cycle_str(self):
         ''' human readable text representing a work cycle
         '''
-        cycle_as_string = 'None'
-        
-        # get work_cycle information
-        cycle_type = self.work_cycle
-        cycle_count = self.work_cycle_count
-        cycle_type_dict = dict(self.WORK_CYCLE)
-        
+        cycle_as_string = "%d" % self.work_cycle_count
+
         # print out the work cycle and work_count
-        if cycle_count == 1:
-            cycle_as_string = _('One %(cycle)s') % {'count': cycle_count, 'cycle': cycle_type_dict[cycle_type]}
+        if self.work_cycle_count == 1:
+            cycle_as_string = _('%(cycle)s') % {'cycle': self.get_work_type_display() }
         else:
-            cycle_as_string = _('%(count)d %(cycle)s') % {'count': cycle_count, 'cycle': cycle_type_dict[cycle_type]}
+            cycle_as_string = _('%(count)d %(cycle)s') % {'count': self.work_cycle_count, 'cycle': self.get_work_cycle_display() }
         
         return cycle_as_string
+
     work_cycle_str.verbose_name = _('Work cycle')
     
     def save(self, *args, **kwargs):
@@ -199,6 +250,13 @@ class Maintenance(models.Model):
             print e
             pass
         
+        # make work cycle compatible with the work type
+        if self.work_type == 'WH' and self.work_cycle != 'WH':
+            self.work_type = self.work_cycle
+
+        if self.work_type != 'WH' and self.work_cycle == 'WH':
+            self.work_type = self.work_cycle
+
         # call the default save method
         super(Maintenance, self).save(*args, **kwargs)
 

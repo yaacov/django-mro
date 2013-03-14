@@ -128,21 +128,21 @@ def manage_system(request, system_pk = None):
     except EmptyPage:
         objects = paginator.page(paginator.num_pages)
 
-    page_query = Maintenance.objects.filter(id__in=[object.id for object in objects])
+    page_query = Maintenance.objects.filter(id__in=[object.pk for object in objects])
 
     if request.method == "POST":
         systemform = SystemForm(request.POST, instance=system)
         maintenanceformset = MaintenanceFormSet(request.POST, request.FILES, instance=system)
         
         if systemform.is_valid() and maintenanceformset.is_valid():
-            systemform.save()
+            system = systemform.save()
             maintenanceformset.save()
 
             messages.success(request, _('Database updated.'))
 
             # Redirect to somewhere
             if '_continue' == request.POST.get('form-action', ''):
-                return HttpResponseRedirect('/system/%s' % system_pk)
+                return HttpResponseRedirect('/system/%s' % system.pk)
 
             return HttpResponseRedirect('/system/')
         else:
@@ -207,23 +207,23 @@ def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
     except EmptyPage:
         objects = paginator.page(paginator.num_pages)
 
-    page_query = MaintenanceItem.objects.filter(id__in=[object.id for object in objects])
+    page_query = MaintenanceItem.objects.filter(id__in=[object.pk for object in objects])
 
     if request.method == "POST":
         maintenanceform = MaintenanceForm(request.POST, instance=maintenance)
         itemformset = ItemFormSet(request.POST, request.FILES, instance=maintenance)
         
         if maintenanceform.is_valid() and itemformset.is_valid():
-            maintenanceform.save()
+            maintenance = maintenanceform.save()
             itemformset.save()
 
             messages.success(request, _('Database updated.'))
 
             # Redirect to somewhere
             if '_continue' == request.POST.get('form-action', ''):
-                return HttpResponseRedirect('/system/%s/%s/' % (system_pk, maintenance_pk))
+                return HttpResponseRedirect('/system/%s/%s/' % (maintenance.system.pk, maintenance.pk))
 
-            return HttpResponseRedirect('/system/%s/' % system_pk)
+            return HttpResponseRedirect('/system/%s/' % maintenance.system.pk)
         else:
             messages.error(request, _('Error updating database.'))
     else:
@@ -232,8 +232,9 @@ def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
 
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Maintenance'),
-        'lead': _('Edit maintenance instruction information.'),
+        'header': _('Maintenanace instruction information, %(department)s') % {'department': maintenance.system.department.name},
+        'lead': _('Edit maintenance instruction information for %(name)s - %(department)s') % {'name': maintenance.system.name, 'department': maintenance.system.department.name},
+
         'thumb': '/static/tango/48x48/status/flag-green-clock.png',
     }
     response_dict['form'] = systemform

@@ -40,15 +40,7 @@ class WarehouseForm(ModelForm):
 
 class WarehouseItemForm(ModelForm):
     can_delete = True
-
-    def clean_item(self):
-        # As shown in the above answer.
-        instance = getattr(self, 'instance', None)
-        if instance:
-            return instance.item
-        else:
-            return self.cleaned_data.get('item', None)
-            
+    
     def __init__(self, *args, **kwargs):
         super(WarehouseItemForm, self).__init__(*args, **kwargs)
 
@@ -62,8 +54,7 @@ class WarehouseItemForm(ModelForm):
             })
             
             # make the item widget none seateble
-            self.fields['item'].required = False
-            self.fields['item'].widget.attrs['disabled'] = 'disabled'
+            self.fields['item'].widget.attrs['readonly'] = True
 
     class Meta:
         model = WarehouseItem

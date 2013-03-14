@@ -44,21 +44,23 @@ class SystemForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.help_text_inline = True
 
-        self.fields['image'].widget = AdminImageWidget()
+        #self.fields['image'].widget = AdminImageWidget()
         #self.fields['address'].widget.attrs.update({'class' : 'wide'})
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
 
     class Meta:
         model = System
         fields = ('name', 
-            'serial_number', 
+            'location',
+            #'serial_number', 
             #'card_number', 
             'contract_number',
             'contract_include_parts',
             #'suplier', 
             'assign_to', 
             'department', 
-            'image', 'description',)
+            #'image', 
+            'description',)
 
 class SystemMaintenanceForm(ModelForm):
     '''
@@ -68,7 +70,7 @@ class SystemMaintenanceForm(ModelForm):
 
     class Meta:
         model = Maintenance
-        exclude = ('items', 'priority', 'assign_to', 'counter_command')
+        exclude = ('estimated_work_time', 'items', 'priority', 'assign_to', 'counter_command')
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm
@@ -83,7 +85,14 @@ class MaintenanceForm(ModelForm):
         self.helper.add_input(Submit('submit', _('Submit'), css_class='btn'))
         #self.helper.add_input(Submit('update', _('Update'), css_class='btn-success'))
         self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
-        
+
+        # if we have an item, we can set the amount unit widget,
+        # on items we do not know, we do not set the amount unit widget
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            if instance.work_type != 'WH':
+                self.fields['counter_command'].widget.attrs['readonly'] = True
+
     class Meta:
         model = Maintenance
         fields = ('work_description', 'counter_command',)

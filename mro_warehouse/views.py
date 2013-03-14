@@ -145,12 +145,14 @@ def manage_warehouse_items(request, warehouse_id = 1):
     '''
     
     if  warehouse_id == None:
-        warehouse = Warehouse()
+        warehouse = Warehouse(name = _('Main warehouse'))
+        #warehouse.save()
     else:
         try:
             warehouse = Warehouse.objects.get(id = warehouse_id)
         except:
-            warehouse = Warehouse()
+            warehouse = Warehouse(name = _('Main warehouse'))
+            #warehouse.save()
 
     ItemFormSet    = inlineformset_factory(Warehouse, WarehouseItem, 
         extra = 1, can_delete=True, form=WarehouseItemForm)
@@ -195,11 +197,11 @@ def manage_warehouse_items(request, warehouse_id = 1):
     page_query = WarehouseItem.objects.filter(id__in=[object.id for object in objects])
 
     if request.method == "POST":
-        warehouseform = WarehouseForm(request.POST, instance=warehouse)
-        itemformset = ItemFormSet(request.POST, request.FILES, instance=warehouse)
-        
+        warehouseform = WarehouseForm(request.POST, instance = warehouse)
+        itemformset = ItemFormSet(request.POST, request.FILES, instance = warehouse, queryset = page_query)
+
         if warehouseform.is_valid() and itemformset.is_valid():
-            warehouseform.save()
+            warehouse = warehouseform.save()
             itemformset.save()
 
             messages.success(request, _('Database updated.'))
@@ -238,11 +240,13 @@ def manage_warehouse_actions(request, warehouse_id = 1):
     
     if  warehouse_id == None:
         warehouse = Warehouse()
+        warehouse.save()
     else:
         try:
             warehouse = Warehouse.objects.get(id = warehouse_id)
         except:
             warehouse = Warehouse()
+            warehouse.save()
 
     warehouselog = WarehouseLog(warehouse = warehouse)
     

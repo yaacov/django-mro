@@ -29,11 +29,6 @@ urlpatterns = patterns('mro_report.views',
     url(r'^system_maintenance/(?P<system_pk>\d+)/$', 'system_maintenance_report'),
     url(r'^system_document/$', 'system_document'),
     url(r'^system_document/(?P<system_pk>\d+)/$', 'system_document_report'),
-
-    url(r'^maintenance_order_employee/$', 'maintenance_order_employee'),
-    url(r'^maintenance_order_system/$', 'maintenance_order_system'),
-    url(r'^maintenance_order_employee/(?P<employee_pk>\d+)/$', 'maintenance_order_employee_report'),
-    url(r'^maintenance_order_system/(?P<system_pk>\d+)/$', 'maintenance_order_system_report'),
 )
 
 # breadcrumbs translation guide
@@ -41,6 +36,4 @@ breadcrumbs = (
     _('warehouse_log'),
     _('system_maintenance'),
     _('system_document'),
-    _('maintenance_order_employee'),
-    _('maintenance_order_system'),
 )

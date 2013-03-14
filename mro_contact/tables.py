@@ -27,6 +27,9 @@ class EmployeeTable(tables.Table):
     first_name = tables.TemplateColumn(
         '<a href="{{ record.pk }}/" >{{ record.first_name }}</a>')
     
+    last_name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.last_name }}</a>')
+    
     department_list = tables.Column(accessor='department_list', orderable=False)
     department_list.verbose_name = _('Departments')
     
@@ -43,7 +46,7 @@ class EmployeeTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
-            'first_name', 'last_name',
+            'last_name', 'first_name',
             'department_list', 
             'phone', 
             'cell_phone', 

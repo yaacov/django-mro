@@ -44,4 +44,6 @@ body {
     right: -10000px;
     left: inherit;
 }
-
+.assign-search> li {
+    float: right;
+}

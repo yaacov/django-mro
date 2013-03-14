@@ -18,7 +18,7 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 from django.db import models
 from django.utils.translation import ugettext
@@ -120,11 +120,19 @@ class WarehouseItem(models.Model):
     batch = models.CharField(_('Batch'), max_length = 30, null = True, blank = True)
     
     # dates
-    entered = models.DateField(default=lambda: datetime.today(), null = True, blank = True)
+    entered = models.DateField(null = True, blank = True)
     entered.verbose_name = _('Entered')
-    expires = models.DateField(default=lambda: datetime.today() + timedelta(days = 365), null = True, blank = True)
+    expires = models.DateField(null = True, blank = True)
     expires.verbose_name = _('Expires')
     
+    def save(self, *args, **kwargs):
+
+        if not self.entered:
+            self.entered = date.today()
+
+        # call the default save method
+        super(WarehouseItem, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Warehouse Item')
         verbose_name_plural = _('Warehouse Items')
@@ -173,8 +181,6 @@ class WarehouseLog(models.Model):
         warehouseitems = WarehouseItem.objects.filter(
             warehouse = self.warehouse, item = self.item)
 
-        print warehouseitems
-
         # if we found a warehouse item, adjust amount and expires date
         if len(warehouseitems) > 0:
             # get the first item
@@ -183,6 +189,23 @@ class WarehouseLog(models.Model):
             # adjust dates
             warehouseitem.entered = warehouseitem.entered or self.log_date
             warehouseitem.expires = self.expires or warehouseitem.expires
+
+            # adjust amount
+            if self.action in ['IN']:
+                warehouseitem.amount = warehouseitem.amount + self.amount
+            elif self.action in ['OU']:
+                warehouseitem.amount = warehouseitem.amount - self.amount
+            elif self.action in ['RE']:
+                warehouseitem.amount = self.amount
+
+            warehouseitem.save()
+        else:
+            # create item
+            warehouseitem = WarehouseItem(item = self.item, warehouse = self.warehouse, amount = 0)
+
+            # adjust dates
+            warehouseitem.entered = self.log_date
+            warehouseitem.expires = self.expires
 
             # adjust amount
             if self.action in ['IN']:

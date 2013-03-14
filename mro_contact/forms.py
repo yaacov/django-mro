@@ -52,7 +52,7 @@ class EmployeeForm(ModelForm):
         
     class Meta:
         model = Employee
-        fields = ('first_name', 'last_name', 
+        fields = ('last_name', 'first_name', 
             'phone', 'cell_phone', 'address', 
             'email', 'image', 'departments')
         

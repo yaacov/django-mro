@@ -37,11 +37,14 @@ class Order(models.Model):
     ORDER_STATE = (
         ('RE', _('Waiting for assignment')),
         ('AS', _('Assigned')),
+        #('ST', _('Started')),
         ('CO', _('Completed')),
-        ('HO', _('Holding')),
         ('CA', _('Canceled')),
     )
-    
+
+    # a number atached to this work
+    work_number = models.IntegerField(_('Work number'), unique = True)
+
     # this work is on this system
     system = models.ForeignKey(System)
     system.verbose_name = _('System')
@@ -51,8 +54,13 @@ class Order(models.Model):
     maintenance.verbose_name = _('Maintenance')
 
     # estimated time to complete the job
-    estimated_work_time = models.IntegerField(_('Estimated work hours'), default = 8)
+    estimated_work_time = models.IntegerField(_('Estimated work hours'), default = 0)
+    work_time = models.FloatField(_('Work hours'), default = 0)
     
+    # start ans end times
+    work_started_time = models.TimeField(_('Work start time'), blank = True, null = True)
+    work_end_time = models.TimeField(_('Work end time'), blank = True, null = True)
+
     # is this a priority job
     priority = models.ForeignKey(Priority)
     priority.verbose_name = _('Priority')
@@ -78,11 +86,13 @@ class Order(models.Model):
     
     # when job was reported and done
     created = models.DateField(default=lambda: date.today())
-    created.verbose_name = _('Created date')
+    created.verbose_name = _('Created at date')
     assigned = models.DateField(blank = True, null = True)
-    assigned.verbose_name = _('Assigned date')
+    assigned.verbose_name = _('Assigned at date')
+    started = models.DateField(blank = True, null = True)
+    started.verbose_name = _('Started at date')
     completed = models.DateField(blank = True, null = True)
-    completed.verbose_name = _('Completed date')
+    completed.verbose_name = _('Completed at date')
     
     # what to do
     work_description = models.TextField(_('Work description'))
@@ -101,21 +111,18 @@ class Order(models.Model):
     # documents for this job
     documents = models.ManyToManyField('OrderDocument', related_name = 'order_documents')
     documents.verbose_name = _('Documents')
-
-    def work_order_state_str(self):
-        ''' human readable text representing a work_order_state
-        '''
-        # get state_type information
-        work_order_state = self.work_order_state
-        
-        # print out the work type and work_state
-        if work_order_state:
-            return u'%s' % dict(self.WORK_STATE)[work_order_state]
-        else:
-            return u''
-        
-    work_order_state_str.verbose_name = _('Work state')
     
+    def sum_work_hours(self):
+        ''' return the sum of all work hours for this order
+        '''
+        work_hours = 0
+
+        employees_work = OrderEmployee.objects.filter(order = self)
+        for employee_work in employees_work:
+            work_hours += employee_work.work_hours
+
+        return work_hours
+
     def save(self, *args, **kwargs):
         
         # check if assigned to worker
@@ -125,12 +132,16 @@ class Order(models.Model):
         # adjast work state
         if self.assigned and self.work_order_state in ['RE']:
             self.work_order_state = 'AS'
-        if self.completed and self.work_order_state in ['RE', 'AS']:
+        if self.started and self.work_order_state in ['RE', 'AS']:
+            self.work_order_state = 'ST'
+        if self.completed and self.work_order_state in ['RE', 'AS', 'ST']:
             self.work_order_state = 'CO'
 
         # check dates for work state
         if not self.assigned and self.work_order_state == 'AS':
             self.assigned = date.today()
+        if not self.started and self.work_order_state == 'ST':
+            self.started = date.today()
         if not self.completed and self.work_order_state == 'CO':
             self.completed = date.today()
 
@@ -203,14 +214,14 @@ class OrderEmployee(models.Model):
     # connection
     order = models.ForeignKey(Order)
     order.verbose_name = _('Order')
-    employee = models.ForeignKey(Employee, related_name = 'work_employee')
+    employee = models.ForeignKey(Employee, related_name = 'work_employee', null = True, blank = True)
     employee.verbose_name = _('Employee')
     
     # how many hours where worked and some information
     work_started = models.DateField(_('Work started'), default=lambda: date.today())
     work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'OS')
     work_type.verbose_name = _('Order type')
-    work_hours = models.IntegerField(_('Order hours'), default = 1)
+    work_hours = models.FloatField(_('Order hours'), default = 1)
     
     # admin stuff
     work_started_time = models.TimeField(_('Work start time'), blank = True, null = True)
@@ -229,6 +240,13 @@ class OrderEmployee(models.Model):
             return ''
     work_type_str.verbose_name = _('Work type')
     
+    def save(self, *args, **kwargs):
+        if not self.employee and self.order.assign_to:
+            self.employee = self.order.assign_to
+
+        # call the default save method
+        super(OrderEmployee, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Order employee')
         verbose_name_plural = _('Order employees')

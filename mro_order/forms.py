@@ -20,7 +20,7 @@
 
 from django import forms
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, MultiField, Fieldset, ButtonHolder
 from crispy_forms.layout import Div, Submit, HTML, Button, Row, Field
@@ -29,29 +29,8 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm
 
 from mro_order.models import Order
-from mro_contact.models import Employee, Suplier
-
-class FractureOrderForm(ModelForm):
-    can_delete = True
-
-    def __init__(self, *args, **kwargs):
-        super(FractureOrderForm, self).__init__(*args, **kwargs)
-
-        # if we have an item, we can set the amount unit widget,
-        # on items we do not know, we do not set the amount unit widget
-        instance = getattr(self, 'instance', None)
-        if instance and instance.id:
-            pass
-            #self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
-            #self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
-
-    class Meta:
-        model = Order
-        fields = ('work_description', 'work_notes',
-            'estimated_work_time', 'priority', 
-            'contract_number', 'contract_include_parts', 
-            'assign_to', 
-            'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed',)
+from mro_contact.models import Employee, Suplier, Department
+from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
 
 class OrderForm(ModelForm):
     can_delete = True
@@ -62,18 +41,78 @@ class OrderForm(ModelForm):
         self.fields['system'].widget = forms.HiddenInput()
         self.fields['maintenance'].widget = forms.HiddenInput()
 
-        # if we have an item, we can set the amount unit widget,
-        # on items we do not know, we do not set the amount unit widget
-        instance = getattr(self, 'instance', None)
-        if instance and instance.id:
-            pass
-            #self.fields['assign_to'].queryset = Employee.objects.filter(departments = instance.system.department).only('id', 'first_name', 'last_name')
-            #self.fields['assign_to_suplier'].queryset = Suplier.objects.filter(departments = instance.system.department).only('id', 'name')
-
     class Meta:
         model = Order
-        fields = ('system', 'maintenance', 'work_description', 'work_notes',
-            'estimated_work_time', 'priority', 
+        fields = ('work_number', 
+            'system', 'maintenance', 
+            'work_description', 'work_notes',
+            #'estimated_work_time',
+            'work_time',
+            'priority', 
             'contract_number', 'contract_include_parts', 
             'assign_to', 
-            'work_order_state', 'estimated_completion', 'created', 'assigned', 'completed',)
+            'work_order_state', 
+            #'estimated_completion', 
+            'created', 
+            'assigned', 
+            #'started', 
+            'completed',
+            'work_started_time',
+            'work_end_time',)
+
+class SearchOrderForm(forms.Form):
+    system = forms.ChoiceField(label=_("Department and System"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+
+    employee = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+
+    work_order_state = forms.ChoiceField(label=_("Work state"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+
+    def __init__(self, *args, **kwargs):
+        super(SearchOrderForm, self).__init__(*args, **kwargs)
+
+        choices = [
+            ('', _('Select department')),
+        ]
+        choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
+        choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
+        self.fields['system'].choices = choices
+
+        choices = [
+            ('', _('Select employee')),
+        ]
+        choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
+        self.fields['employee'].choices = choices
+
+
+        choices = list(Order.ORDER_STATE)
+        choices += [
+            ('AL', _('All')),
+        ]
+        self.fields['work_order_state'].choices = choices
+
+class ActionOrderForm(forms.Form):
+
+    assign_to = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+
+    selected_action = forms.ChoiceField(label=_("Action"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+
+    def __init__(self, *args, **kwargs):
+        super(ActionOrderForm, self).__init__(*args, **kwargs)
+
+        choices = [
+            ('', _('Select employee')),
+        ]
+        choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
+        self.fields['assign_to'].choices = choices
+
+        choices = [
+            ('AS', _('Assign to employee')),
+            ('CA', _('Cancel assignment')),
+            ('CW', _('Cancel work order')),
+        ]
+        self.fields['selected_action'].choices = choices

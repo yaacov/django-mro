@@ -145,20 +145,8 @@ django.jQuery(function(){
 
 <div class="form-actions">
     <a class="btn btn-primary btn-submit" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
     <a class="btn btn-primary btn-success" href="#" onClick="
-        // delete items with no item selected
-        django.jQuery('td').each(function() { 
-            if (django.jQuery(this).children('select').val() == '') {
-                django.jQuery(this).siblings('.DELETE').children('input').attr('checked','checked'); 
-            }
-        });
         django.jQuery('#form_action').val('_continue');
         django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
 </div>

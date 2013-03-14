@@ -37,7 +37,7 @@ class Department(models.Model):
     description = models.TextField(_('Description'))
     
     # image - profile image or logo
-    image = models.ImageField(upload_to='departments/')
+    image = models.ImageField(upload_to='departments/', blank = True, null = True)
     image.verbose_name = _('Image')
     
     # model overides
@@ -90,7 +90,10 @@ class Employee(models.Model):
     
     # model overides
     def __unicode__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        if self.last_name:
+            return '%s, %s' % (self.first_name, self.last_name)
+        else:
+            return '%s' % (self.first_name)
     
     class Meta:
         verbose_name = _('Employee')

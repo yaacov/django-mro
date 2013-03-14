@@ -24,6 +24,7 @@ from datetime import date, datetime, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
+from django.db.models import Max
 
 from mro_contact.models import Department, Suplier
 from mro_system.models import System, Maintenance, MaintenanceItem
@@ -49,7 +50,14 @@ class Command(BaseCommand):
             print '            work order waiting ... '
             return
 
+        max_order = Order.objects.all().aggregate(Max('work_number'))
+        if max_order['work_number__max']:
+            work_number = max_order['work_number__max'] + 1
+        else:
+            work_number = 1
+
         order = Order(
+            work_number = work_number,
             maintenance = maintenance,
             system = maintenance.system,
             priority = maintenance.priority,

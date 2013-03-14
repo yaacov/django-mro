@@ -38,7 +38,8 @@ class WarehouseLogTable(tables.Table):
             'expires', 'log_date')
 
 class SystemTable(tables.Table):
-    
+    #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
+   
     name = tables.TemplateColumn(
         '<a href="{{ record.pk }}/" >{{ record.name }}</a>')
     name.verbose_name = _('System Name')
@@ -46,6 +47,21 @@ class SystemTable(tables.Table):
     short_description = tables.TemplateColumn(
         '{{ record }}', orderable=False)
     short_description.verbose_name = _('Description')
+    
+    has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance')
+    has_hourly_maintenance.verbose_name = _('Hourly')
+
+    has_daily_maintenance = tables.BooleanColumn('has_daily_maintenance')
+    has_daily_maintenance.verbose_name = _('Daily')
+
+    has_weekly_maintenance = tables.BooleanColumn('has_weekly_maintenance')
+    has_weekly_maintenance.verbose_name = _('Weekly')
+
+    has_monthly_maintenance = tables.BooleanColumn('has_monthly_maintenance')
+    has_monthly_maintenance.verbose_name = _('Monthly')
+
+    has_yearly_maintenance = tables.BooleanColumn('has_yearly_maintenance')
+    has_yearly_maintenance.verbose_name = _('Yearly')
 
     class Meta:
         model = System
@@ -53,13 +69,19 @@ class SystemTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'name',
-            'suplier',
+            #'suplier',
+            'assign_to',
             'department',
             'short_description',
             'last_maintenance',
-            'card_number',
-            'contract_number',
-            'contract_include_parts', 
+            #'card_number',
+            #'contract_number',
+            #'contract_include_parts', 
+            'has_hourly_maintenance', 
+            'has_daily_maintenance', 
+            'has_weekly_maintenance', 
+            'has_monthly_maintenance', 
+            'has_yearly_maintenance', 
             )
 
 class MaintenanceTable(tables.Table):
@@ -78,9 +100,10 @@ class MaintenanceTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'system', 
-            'priority', 
+            'work_type',
+            #'priority', 
             'work_cycle_str', 
-            'estimated_work_time', 
+            #'estimated_work_time', 
             'last_maintenance',
             'current_counter_value',
             'last_maintenance_counter_value')
@@ -96,84 +119,3 @@ class OrderDocumentTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = ('title', 'description', 'created', 'image',)
-
-class SystemOrderTable(tables.Table):
-    name = tables.TemplateColumn(
-        '''<a href="/order/{% if record.maintenance %}maintenance{% else %}fracture{% endif %}/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
-    name.verbose_name = _('Description')
-    name.orderable = False
-
-    order_a = tables.TemplateColumn(
-        '{% if record.maintenance %}<span class="maintenance">' + 
-            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
-            _('Fracture') + '</span>{% endif %}')
-
-    order_a.verbose_name = _('Order type')
-    order_a.orderable = False
-
-    class Meta:
-        model = Order
-        template = 'mro/table.html'
-        attrs = {'class': 'table table-striped'}
-        fields = (
-            'order_a',
-            'work_order_state', 
-            'priority', 
-            'assign_to',
-            'created', 
-            'assigned', 
-            'completed',)
-
-class EmployeeOrderTable(tables.Table):
-    name = tables.TemplateColumn(
-        '''<a href="/order/{% if record.maintenance %}maintenance{% else %}fracture{% endif %}/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
-    name.verbose_name = _('Description')
-    name.orderable = False
-
-    order_a = tables.TemplateColumn(
-        '{% if record.maintenance %}<span class="maintenance">' + 
-            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
-            _('Fracture') + '</span>{% endif %}')
-
-    order_a.verbose_name = _('Order type')
-    order_a.orderable = False
-
-    class Meta:
-        model = Order
-        template = 'mro/table.html'
-        attrs = {'class': 'table table-striped'}
-        fields = (
-            'system',
-            'order_a',
-            'work_order_state', 
-            'priority', 
-            'created', 
-            'assigned', 
-            'completed',)
-
-class EmployeeTable(tables.Table):
-    first_name = tables.TemplateColumn(
-        '<a href="{{ record.pk }}/" >{{ record.first_name }}</a>')
-    
-    department_list = tables.Column(accessor='department_list', orderable=False)
-    department_list.verbose_name = _('Departments')
-    
-    phone = tables.TemplateColumn(
-        '<a href="tel:{{ value }}/" >{{ value }}</a>')
-    phone.verbose_name = _('Phone')
-    
-    cell_phone = tables.TemplateColumn(
-        '<a href="tel:{{ value }}/" >{{ value }}</a>')
-    cell_phone.verbose_name = _('Cell phone')
-    
-    class Meta:
-        model = Employee
-        template = 'mro/table.html'
-        attrs = {'class': 'table table-striped'}
-        fields = (
-            'first_name', 'last_name',
-            'department_list', 
-            'phone', 
-            'cell_phone', 
-            'address', 
-            'email')

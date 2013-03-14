@@ -2,6 +2,17 @@
 {% load i18n %}
 {% load render_table from django_tables2 %}
 
+{% block extra_css %}
+<style>
+td span.true {
+    color: green;
+}
+th.system {
+    width: 400px;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">

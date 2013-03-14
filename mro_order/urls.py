@@ -20,46 +20,50 @@
 
 from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import RedirectView
 
 urlpatterns = patterns('mro_order.views',
-   
-    url(r'^fracture/$', 'system', 
-        {'action': 'table', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<system_pk>\d+)/$', 'system_order', 
-        {'action': 'table', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<system_pk>\d+)/add/$', 'manage_fracture_order', 
-        {'action': 'table', 'work_type': 'fracture'}),
-    url(r'^fracture/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_fracture_order', 
-        {'action': 'table', 'work_type': 'fracture'}),
-
-    url(r'^maintenance/$', 'system', 
-        {'action': 'table', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<system_pk>\d+)/$', 'system_order', 
-        {'action': 'table', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<system_pk>\d+)/add/(?P<maintenance_pk>\d+)/$', 'manage_maintenance_order', 
-        {'action': 'table', 'work_type': 'maintenance'}),
-    url(r'^maintenance/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_maintenance_order', 
-        {'action': 'table', 'work_type': 'maintenance'}),
     
-    url(r'^$', 'order'),
-    url(r'^report/$', 'table_index'),
+    url(r'^issue/$', 'issue'),
+    url(r'^issue/(?P<system_pk>\d+)/$', 'issue_order'),
+    url(r'^issue/(?P<system_pk>\d+)/add/$', 'manage_issue_order'),
+    url(r'^issue/(?P<system_pk>\d+)/add/(?P<maintenance_pk>\d+)/$', 'manage_issue_order'),
+    url(r'^issue/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order'),
 
-    url(r'^report/all/$', 'table_all'),
-    url(r'^report/none/$', 'table_not_assigned'),
-    url(r'^report/employee/$', 'table_employee'),
-    url(r'^report/system/$', 'table_system'),
-    url(r'^report/employee/(?P<employee_pk>\d+)/$', 'table_employee_report'),
-    url(r'^report/system/(?P<system_pk>\d+)/$', 'table_system_report'),
+    url(r'^assign/$', 'assign'),
+    url(r'^assign/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/assign/')),
+    url(r'^assign/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+        {
+            'next_url': '/order/assign/',
+            'update_url': '/order/assign/'
+        }),
+
+    url(r'^print/$', 'print_orders'),
+    url(r'^print/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/print/')),
+    url(r'^print/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+        {
+            'next_url': '/order/print/',
+            'update_url': '/order/print/'
+        }),
+
+    url(r'^table/$', 'table'),
+    url(r'^table/orders/$', 'table_orders'),
+    url(r'^table/orders/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/table/orders/')),
+    url(r'^table/orders/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+        {
+            'next_url': '/order/table/orders/',
+            'update_url': '/order/table/orders/'
+        }),
+    url(r'^$', 'order'),
+
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
-    _('maintenance'),
-    _('fracture'),
+    _('issue'),
     _('add'),
-    _('report'),
-    _('employee'),
-    _('system'),
-    _('all'),
-    _('none'),
+    _('assign'),
+    _('print'),
+    _('table'),
+    _('orders'),
 )
