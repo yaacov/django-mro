@@ -1,0 +1,71 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+<style>
+#search-form {
+  margin-top: 80px;
+  margin-bottom: 0px;
+}
+.fracture {
+    color: red;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- h5>{% trans 'Issue new maintenance instructions' %}</h5 -->
+
+{% render_table maintenance_table %}
+
+<div class="form-actions">
+    {% if add_action %}
+    <a class="btn btn-primary btn-danger" href="add/" >{% trans 'Issue fracture work order' %}</a>
+    {% endif %}
+</div>
+
+<form id="search-form">
+    <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
+    <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
+    <ul class="nav nav-pills">
+        <li>
+            <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
+        </li>
+        
+        {% if filters %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{ current_filter_string }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="filters" data-val="">{% trans 'All' %}</a></li>
+                    {% for filter, name in filters %}
+                    <li><a class="filters" data-val="{{ filter }}">{{ name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</form>
+
+<h5>{% trans 'Edit issued work orders' %}</h5>
+
+{% render_table table %}
+
+<script>
+$(function() {
+    $('.filters').on("click", function(event){
+        $('#form-filter').val($(this).data('val'));
+        $('#search-form').submit();
+    });
+    
+    $('.paginators').on("click", function(event){
+        $('#form-page').val($(this).data('page'));
+        $('#search-form').submit();
+    });
+});
+</script>
+{% endblock %}

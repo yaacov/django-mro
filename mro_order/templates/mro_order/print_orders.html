@@ -1,0 +1,174 @@
+{% load i18n %}
+{% load mro %}
+{% load mro_bootstrap %}
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mro - print</title>
+    {% add_header_css %}
+    <style>
+    body {
+        height: 842px;
+        width: 595px;
+        /* to centre page on screen*/
+        margin-left: auto;
+        margin-right: auto;
+    }
+    @media all {
+        .page-break {
+            border-bottom: 4px solid #eeeeee;
+            height: 50px;
+        }
+    }
+
+    @media print {
+        .page-break { 
+            display: block; 
+            page-break-before: always; 
+            border-bottom: none;
+            height: 0px;
+        
+        }
+    }
+
+    .order-form {
+        margin: 20px;
+    }
+    table {
+        width: 100%;
+    }
+    th {
+        padding-left: 5px;
+        padding-right: 5px;
+        width: 15%;
+        border: 1px solid black;
+    }
+    td {
+        width: 35%;
+        border: 1px solid black;
+        padding-left: 5px;
+        padding-right: 5px;
+        height: 18px;
+    }
+    th.description {
+        text-align: right;
+        width: 50%
+    }
+    td.description {
+        vertical-align: top;
+        width: 50%;
+        height: 150px;
+    }
+    .item {
+        width: 40%;
+    }
+    .amount {
+        width: 10%;
+    }
+    h3 {
+        margin-bottom: 0px; 
+    }
+    h4 {
+        margin-top: 30px;
+    }
+    .work_number {
+        margin-bottom: 30px;
+    }
+    </style>
+</head>
+<body>
+    {% for order in orders %}
+        <div class="order-form">
+            
+            {% if order.maintenance %}
+            <h3 class="field">{% trans "Work instruction - " %} {{ order.maintenance.get_work_type_display }}</h3>
+            {% else %}
+            <h3 class="field">{% trans "Work instruction - Fracture maintenance" %}</h3>
+            {% endif %}
+
+            <div class="work_number">{% trans "Work instruction number" %}: {{ order.work_number }}</div>
+
+            <table>
+                <tr>
+                    <th>{% trans "System" %}</th><td>{{ order.system }}</td>
+                    <th>{% trans "Department" %}</th><td>{{ order.system.department }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Location" %}</th><td>{{ order.system.location }}</td>
+                    <th></td><th></td>
+                </tr>
+            </table>
+
+            <h4 class="field">{% trans "Maintenance instractions" %}</h4>
+
+            <table>
+                <tr>
+                    <th class="description">{% trans "Work description" %}</th>
+                    <th class="description">{% trans "Maintenance notes" %}</th>
+                </tr>
+                <tr>
+                    <td class="description">{{ order.work_description|linebreaks }}</td>
+                    <td class="description">{{ order.work_notes|linebreaks }}</td>
+                </tr>
+            </table>
+
+            <h4 class="field">{% trans "Items for this work" %}</h4>
+
+            {% if order.items.all.0 %}
+            <table>
+                <tr>
+                    <th class="item">{% trans "Item" %}</th>
+                    <th class="amount">{% trans "Amount" %}</tg>
+                    <th class="item">{% trans "Item" %}</th>
+                    <th class="amount">{% trans "Amount" %}</tg>
+                </tr>
+                {% for orderitem in order.orderitem_set.all %}
+                <tr>
+                    <td class="item">{{ orderitem.item }}</td>
+                    <td class="amount">{{ orderitem.amount }}</td>
+                    <td class="item"></td>
+                    <td class="amount"></td>
+                </tr>
+                {% endfor%}
+            </table>
+            {% else %}
+            <table>
+                <tr>
+                    <th class="item">{% trans "Item" %}</th>
+                    <th class="amount">{% trans "Amount" %}</tg>
+                    <th class="item">{% trans "Item" %}</th>
+                    <th class="amount">{% trans "Amount" %}</tg>
+                </tr>
+                <tr>
+                    <td class="item"></td>
+                    <td class="amount"></td>
+                    <td class="item"></td>
+                    <td class="amount"></td>
+                </tr>
+                <tr>
+                    <td class="item"></td>
+                    <td class="amount"></td>
+                    <td class="item"></td>
+                    <td class="amount"></td>
+                </tr>
+            </table>
+            {% endif %}
+
+            <h4 class="field"></h4>
+
+            <table>
+                <tr>
+                    <th>{% trans "Assigned to" %}</th><td>{{ order.assign_to|default:" " }}</td>
+                    <th>{% trans "Date" %}</th><td>{{ order.assigned|default:" " }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Signiture" %}</th><td></td>
+                    <th></td><th></td>
+                </tr>
+            </table>
+        </div>
+        <div class="page-break"></div>
+    {% endfor %}
+</body>
+</html>

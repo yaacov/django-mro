@@ -1,0 +1,86 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+<style>
+.form-actions {
+  border-top: none;
+  margin-bottom: 20px;
+}
+.fracture {
+    color: red;
+}
+.select2-container {
+    width: 180px;
+}
+.assign-search> li {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.action-form {
+    margin-bottom: 60px;
+    margin-top: 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h5>{% trans 'Search work orders' %}</h5>
+
+<form id="search-form">
+    <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
+    <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
+    {{ search_form.system }}
+    {{ search_form.employee }}
+    {{ search_form.work_order_state }}
+
+    <div class="action-form">
+    <button type="submit" class="btn" >{% trans 'Update work order list' %}</button>
+    </div>
+
+</form>
+
+<form method="post" id="assign-form" action="">
+{% csrf_token %}
+
+<h5>{% trans 'Assign work orders' %}</h5>
+
+{{ action_form.assign_to }}
+{{ action_form.selected_action }}
+
+<div class="action-form">
+<button type="submit" class="btn btn-success" >{% trans 'Applay action to selected rows' %}</button>
+</div>
+
+{% render_table table %}
+</form>
+
+<script>
+function toggle(source) {
+    checkboxes = document.getElementsByName('selection');
+    for(var i in checkboxes)
+        checkboxes[i].checked = source.checked;
+}
+
+$(function() {
+    $('.filters').on("click", function(event){
+        $('#form-filter').val($(this).data('val'));
+        $('#search-form').submit();
+    });
+    
+    $('.paginators').on("click", function(event){
+        $('#form-page').val($(this).data('page'));
+        $('#search-form').submit();
+    });
+
+    $('#id_system').select2();
+    $('#id_employee').select2();
+    $('#id_work_order_state').select2();
+
+    $('#id_assign_to').select2();
+    $('#id_selected_action').select2();
+});
+</script>
+{% endblock %}

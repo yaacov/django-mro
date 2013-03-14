@@ -1,0 +1,281 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load mro_bootstrap %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+<style type="text/css">
+select, textarea {
+    width: 95%;
+}
+td.catalogic_number, td.unit, 
+td.expires, td.entered {
+    width: 90px;
+}
+td.shelve, td.batch {
+    width: 110px;
+}
+td.amount input{
+    width: 60px;
+}
+td.issued input, td.ordered input,
+td.estimated_completion input {
+    width: 120px;
+}
+th.name, td.name input {
+    width: 150px;
+}
+.amount input, input.amount {
+    direction: ltr;
+    text-align: right;
+}
+#search-form li {
+    margin-right: 20px;
+}
+.table th {
+    text-align: right;
+}
+.horizontal-form th {
+    text-align: left;
+    width: 180px;
+}
+td.DELETE,
+th.DELETE {
+    width: 30px;
+}
+.employees-table input {
+    width: 100px;
+}
+.formset-sep {
+    height: 50px;
+    border-bottom: 1px solid gray;
+}
+td.image label,
+td.image input[type=checkbox] {
+    visibility: hidden;
+}
+td.description textarea {
+    min-width: 300px;
+}
+td.created input, td.started {
+    width: 120px;
+}
+th.error {
+    color: red;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+<script>
+// use bootstrap datepicker for redering 
+django.jQuery(function(){
+    django.jQuery('.created input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.started input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.assigned input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.completed input').datepicker({'format': 'yyyy-mm-dd'});
+
+    django.jQuery('.estimated_completion input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.issued input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.ordered input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.work_started input').datepicker({'format': 'yyyy-mm-dd'});
+
+    django.jQuery('#search-form').keypress(function (e){
+        code = e.keyCode ? e.keyCode : e.which;
+          if(code.toString() == 13) {
+             django.jQuery('#search-form').submit();
+          }
+    });
+});
+</script>
+{% endblock %}
+    
+{% block content %}
+
+<form id="search-form">
+    <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
+    <input type="hidden" id="form-filter" name="filter_pk" value="{{ current_filter_pk }}">
+    <ul class="nav nav-pills">
+        
+        {% if filters %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{ current_filter_string }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="filters" data-val="">{% trans 'All' %}</a></li>
+                    {% for filter in filters %}
+                    <li><a class="filters" data-val="{{ filter.pk }}">{{ filter.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</form>
+
+<form method="post" id="formset" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <table class="table horizontal-form">
+    {%for field in form %}
+        <tr>
+        {% if not field.is_hidden %}
+            
+            {% if field.errors %}
+            <th valign="bottom" class="control-group {{ field.name }} error">
+            {% else %}
+            <th valign="bottom" class="control-group {{ field.name }}">
+            {% endif %}
+                {{ field.label }}
+            </th>
+
+            {% if field.errors %}
+            <td class="control-group {{ field.name }} error">
+            {% else %}
+            <td class="control-group {{ field.name }}">
+            {% endif %}
+                {{field}}
+            </td>
+
+        {%else%}
+            {{field}}
+        {% endif %}
+        </tr>
+    {%endfor%}
+    </table>
+
+    <input type="hidden" id="form-page" name="page" value="">
+    <input type="hidden" id="form-action" name="form-action" value="">
+
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        django.jQuery('#form-action').val('_save');
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        django.jQuery('#form-action').val('_update');
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
+
+    <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
+        django.jQuery('#form-action').val('_delete');
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
+</div>
+
+<div class="formset-sep"></div>
+
+    {{ formset.management_form }}
+
+    <h4>{% trans "Order Items" %}</h4>
+    <table class="table table-striped">
+    <tr>
+    {% for field in formset.forms.0 %}
+        {% if not field.is_hidden %}
+            <th class="{{ field.name }}">{{ field.label }}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+
+    {% for form in formset %}
+    <tr>
+        {%for field in form %} 
+            {% if not field.is_hidden %}
+                {% if field.errors %}
+                <td valign="bottom" class="control-group error">
+                {% else %}
+                <td valign="bottom" class="control-group {{ field.name }}">
+                {% endif %}
+                    {{field}}
+                </td>
+            {%else%}
+                {{field}}
+            {% endif %}
+        {%endfor%}
+    </td>
+    {% endfor %}
+    </table>
+
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        django.jQuery('#form-action').val('_save');
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        django.jQuery('#form-action').val('_update');
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
+    <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
+        django.jQuery('#form-action').val('_delete');
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
+</div>
+
+<div class="formset-sep"></div>
+
+    {{ documentformset.management_form }}
+
+    <h4>{% trans "Order Documents" %}</h4>
+    <table class="table table-striped">
+    <tr>
+    {% for field in documentformset.forms.0 %}
+        {% if not field.is_hidden %}
+            <th class="{{ field.name }}">{{ field.label }}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+
+    {% for form in documentformset %}
+    <tr>
+        {%for field in form %} 
+            {% if not field.is_hidden %}
+                {% if field.errors %}
+                <td valign="bottom" class="control-group error">
+                {% else %}
+                <td valign="bottom" class="control-group {{ field.name }}">
+                {% endif %}
+                    {{field}}
+                </td>
+            {%else%}
+                {{field}}
+            {% endif %}
+        {%endfor%}
+    </td>
+    {% endfor %}
+    </table>
+
+</form>
+
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="
+        django.jQuery('#form-action').val('_save');
+        django.jQuery('#formset').submit();" >{% trans 'Submit' %}</a>
+    <a class="btn btn-primary btn-success" href="#" onClick="
+        django.jQuery('#form-action').val('_update');
+        django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
+
+    <a class="btn btn-primary btn-danger pull-right" href="#" onClick="
+        django.jQuery('#form-action').val('_delete');
+        django.jQuery('#formset').submit();" >{% trans 'Delete this order' %}</a>
+</div>
+
+<script>
+django.jQuery(function() {
+    django.jQuery('.filters').on("click", function(event){
+        django.jQuery('#form-filter').val(django.jQuery(this).data('val'));
+        django.jQuery('#search-form').submit();
+    });
+    
+    django.jQuery('.paginators').on("click", function(event){
+        django.jQuery('#form-page').val(django.jQuery(this).data('page'));
+        django.jQuery('#search-form').submit();
+    });
+    
+    django.jQuery('td.item select').select2();
+    django.jQuery('td.employee select').select2();
+    django.jQuery('#id_assign_to_suplier').select2();
+    django.jQuery('#id_assign_to').select2();
+});
+</script>
+
+{% endblock %}
