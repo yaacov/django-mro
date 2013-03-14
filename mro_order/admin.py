@@ -22,13 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
 
-from mro_order.models import Order, OrderEmployee, OrderItem, OrderDocument
-
-class OrderEmployeeInline(admin.TabularInline):
-    fields = ('employee', 'work_started', 'work_hours')
-    
-    model = OrderEmployee
-    extra = 0
+from mro_order.models import Order, OrderItem, OrderDocument
 
 class OrderItemInline(admin.TabularInline):
     fields = ('item', 'issued', 'amount')
@@ -46,7 +40,7 @@ admin.site.register(OrderDocument)
 
 class OrderAdmin(admin.ModelAdmin):
     
-    inlines = (OrderEmployeeInline, OrderItemInline, OrderDocumentInline,)
+    inlines = (OrderItemInline, OrderDocumentInline,)
 
 admin.site.register(Order, OrderAdmin)
 

@@ -56,7 +56,6 @@ class SystemForm(ModelForm):
             #'card_number', 
             'contract_number',
             'contract_include_parts',
-            #'suplier', 
             'assign_to', 
             'department', 
             #'image', 

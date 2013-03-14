@@ -24,7 +24,7 @@ from django.db import models
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 
-from mro_contact.models import Department, Employee, Suplier
+from mro_contact.models import Department, Employee
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
 class Priority(models.Model):
@@ -61,9 +61,6 @@ class System(models.Model):
     
     # system location
     location = models.CharField(_('Location'), max_length = 30, blank = True, null = True)
-
-    suplier = models.ForeignKey(Suplier, null = True, blank = True)
-    suplier.verbose_name = _('System Suplier')
 
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
     assign_to.verbose_name = _('Maintenance employee')

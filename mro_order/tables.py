@@ -39,10 +39,8 @@ class OrderTable(tables.Table):
             'work_order_state', 
             #'priority', 
             'assign_to', 
-            #'assign_to_suplier',
             'created', 
             'assigned',
-            #'started', 
             'completed',
             'work_time', )
 
@@ -70,10 +68,8 @@ class AllOrderTable(tables.Table):
             'work_order_state', 
             #'priority', 
             'assign_to', 
-            #'assign_to_suplier',
             'created', 
             'assigned', 
-            #'started', 
             'completed',
             'name',)
 
@@ -107,7 +103,6 @@ class AssignTable(tables.Table):
             'work_order_state', 
             #'priority', 
             'assign_to', 
-            #'assign_to_suplier',
             'created',)
 
 class MaintenanceOrderTable(tables.Table):
@@ -133,10 +128,8 @@ class MaintenanceOrderTable(tables.Table):
             'order_type',
             #'priority', 
             'assign_to', 
-            #'assign_to_suplier',
             'created', 
             'assigned', 
-            #'started', 
             'completed',
             'name',)
 

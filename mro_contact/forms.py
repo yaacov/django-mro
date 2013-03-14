@@ -29,7 +29,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm
 
 from mro_theme.widgets import AdminImageWidget
-from mro_contact.models import Employee, Suplier
+from mro_contact.models import Employee
 
 class EmployeeForm(ModelForm):
     ''' form for editing employee
@@ -55,29 +55,3 @@ class EmployeeForm(ModelForm):
         fields = ('last_name', 'first_name', 
             'phone', 'cell_phone', 'address', 
             'email', 'image', 'departments')
-        
-class SuplierForm(ModelForm):
-    ''' form for editing supliers
-    '''
-    
-    def __init__(self, *args, **kwargs):
-        super(SuplierForm, self).__init__(*args, **kwargs)
-        
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        
-        self.helper.add_input(Submit('submit', _('Submit'), css_class='btn'))
-        #self.helper.add_input(Submit('update', _('Update'), css_class='btn-success'))
-        self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
-        
-        self.fields['image'].widget = AdminImageWidget()
-        self.fields['address'].widget.attrs.update({'class' : 'wide'})
-        self.fields['image'].widget.attrs.update({'class' : 'wide'})
-        self.fields['email'].widget.attrs.update({'class' : 'ltr'})
-        
-    class Meta:
-        model = Suplier
-        fields = ('name', 'contact_name', 'phone', 
-            'fax', 'address', 'email', 
-            'image', 'departments')
-    

@@ -31,7 +31,7 @@ from django.contrib import messages
 from django_tables2   import RequestConfig
 
 from mro_system.models import System, Maintenance, Item, MaintenanceItem
-from mro_contact.models import Department, Employee, Suplier
+from mro_contact.models import Department, Employee
 
 from mro_system.tables import SystemTable
 from mro_system.tables import MaintenanceTable
@@ -57,7 +57,6 @@ def system(request):
     search = request.GET.get('search', '')
     if search:
         objs &= System.objects.filter(name__icontains = search)
-        objs |= System.objects.filter(suplier__name__icontains = search)
         objs |= System.objects.filter(assinged_to__first_name__icontains = search)
         objs |= System.objects.filter(assinged_to__last_name__icontains = search)
         objs |= System.objects.filter(serial_number__icontains = search)
@@ -117,7 +116,6 @@ def manage_system(request, system_pk = None):
     if search:
         queryset &= Maintenance.objects.filter(name__icontains = search)
         queryset |= Maintenance.objects.filter(work_description__icontains = search)
-        queryset |= Maintenance.objects.filter(suplier__name__icontains = search)
 
     paginator = Paginator(queryset, 10)
     page = request.GET.get('page', '')

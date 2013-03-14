@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
 
-from mro_contact.models import Department, Employee, Suplier
+from mro_contact.models import Department, Employee
 
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -52,25 +52,3 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(Employee, EmployeeAdmin)
-
-class SuplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'department_list', 'phone', 'fax', 'email',)
-    search_fields = ['name',]
-    list_editable = None
-    list_filter = ('departments',)
-    
-    fieldsets = (
-        (None, {
-            'fields': (
-                'name',
-                'phone', 
-                'fax',
-                'address', 
-                'email',
-                'image', 
-                'departments',
-            )
-        }),
-    )
-
-admin.site.register(Suplier, SuplierAdmin)

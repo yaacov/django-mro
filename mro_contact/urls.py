@@ -25,16 +25,12 @@ urlpatterns = patterns('mro_contact.views',
     url(r'^employees/$', 'contact_employees'),
     url(r'^employees/(?P<num>\d+)/$', 'contact_employees_edit'),
     url(r'^employees/add/$', 'contact_employees_edit'),
-    url(r'^supliers/$', 'contact_supliers'),
-    url(r'^supliers/(?P<num>\d+)/$', 'contact_supliers_edit'),
-    url(r'^supliers/add/$', 'contact_supliers_edit'),
-    
+
     url(r'$', 'contact'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
     _('employees'),
-    _('supliers'),
     _('add'),
 )

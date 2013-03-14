@@ -22,7 +22,7 @@
 import os
 from django.core.management.base import BaseCommand, CommandError
 
-from mro_contact.models import Department, Suplier
+from mro_contact.models import Department, Employee
 from mro_system.models import System, Maintenance
 
 class Command(BaseCommand):
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             # read csv
             try:
                 name = line[0].strip('"').replace('""', '"')
-                suplier_name = line[4].strip('"').replace('""', '"')
+                employee_name = line[4].strip('"').replace('""', '"')
                 card_number = line[9].strip('"').replace('""', '"')
 
                 # make serial number unique
@@ -73,14 +73,14 @@ class Command(BaseCommand):
 
             # find suplir
             try:
-                suplier = Suplier.objects.get(name = suplier_name)
+                employee = Employee.objects.get(last_name = employee_name)
             except:
-                suplier = None
+                employee = None
 
             # make the item
             system = System()
             system.name = name
-            system.suplier = suplier
+            system.assing_to = employee
             system.serial_number = serial_number
             system.card_number = card_number
             system.description = description

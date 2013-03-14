@@ -27,9 +27,9 @@ from django.conf import settings
 from django_tables2   import RequestConfig
 
 from mro_contact.models import Department
-from mro_contact.models import Employee, Suplier
-from mro_contact.forms import EmployeeForm, SuplierForm
-from mro_contact.tables import EmployeeTable, SuplierTable
+from mro_contact.models import Employee
+from mro_contact.forms import EmployeeForm
+from mro_contact.tables import EmployeeTable
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -43,7 +43,7 @@ thumb = {
 def contact(request):
     ''' contact application main view
         
-        chose between supliers and employees
+        chose to edit employees
     '''
     
     response_dict = {
@@ -53,11 +53,6 @@ def contact(request):
             'thumb': '/static/tango/48x48/categories/user-group.png',
         },
         'thumbs': [
-            #{   'link': '/contact/supliers/',
-            #    'image_url': '/static/tango/48x48/categories/user-organisational-unit.png',
-            #    'name': ugettext_noop('Supliers'),
-            #    'description': ugettext_noop('Manage supliers contact information. Add and edit supliers.'), 
-            #}, 
             {
                 'link': '/contact/employees/',
                 'image_url': '/static/tango/48x48/categories/user-employee.png',
@@ -152,89 +147,3 @@ def contact_employees_edit(request, num = None):
     }
     
     return render(request, 'mro_contact/base_form.html', response_dict)
-
-def contact_supliers(request):
-    '''
-    '''
-    
-    # get the employee data from the data base
-    objs = Suplier.objects.all()
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '')
-    if search:
-        objs &= Suplier.objects.filter(name__icontains = search)
-        objs |= Suplier.objects.filter(email__icontains = search)
-        objs |= Suplier.objects.filter(contact_name__icontains = search)
-        objs |= Suplier.objects.filter(phone__icontains = search)
-
-    filter_pk = request.GET.get('filter_pk', '')
-    filter_string = None
-    if filter_pk:
-        objs &= Suplier.objects.filter(departments__in = filter_pk)
-        filter_string = Department.objects.get(pk = filter_pk)
-    
-    if not filter_string:
-        filter_string = _('All')
-    
-    # create a table object for the employee data
-    table = SuplierTable(objs)
-    RequestConfig(request, paginate={"per_page": 20}).configure(table)
-    
-    response_dict = {
-        'headers': {
-            'header': _('Supliers contact information list'),
-            'lead': None,
-            'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
-        },
-        'search': search,
-        'filters': Department.objects.all(),
-        'current_filter_pk': filter_pk,
-        'current_filter_string': filter_string,
-        
-        'table': table,
-        'add_action': True,
-    }
-    
-    return render(request, 'mro_contact/base_table.html', response_dict)
-
-def contact_supliers_edit(request, num = None):
-    '''
-    '''
-    
-    try:
-        suplier = Suplier.objects.get(pk = num)
-    except:
-        suplier = Suplier()
-        
-    if request.method == 'POST': # If the form has been submitted...
-        # delete ?
-        if request.POST.get('delete'):
-            try:
-                suplier.delete()
-            except:
-                pass
-            return HttpResponseRedirect('/contact/supliers/') # Redirect after POST
-        
-        # save / update ?
-        form = SuplierForm(request.POST, request.FILES, instance = suplier) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            form.save()
-            
-            if request.POST.get('submit'):
-                return HttpResponseRedirect('/contact/supliers/') # Redirect after POST
-    else:
-        form = SuplierForm(instance = suplier)
-        
-    response_dict = {
-        'headers': {
-            'header': _('Manage suplier contact information.'),
-            'lead': None,
-            'thumb': '/static/tango/48x48/categories/user-organisational-unit.png',
-        },
-        'form': form,
-        'table': None,
-    }
-    
-    return render(request, 'mro_contact/base_form.html', response_dict)
-    

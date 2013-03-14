@@ -33,8 +33,8 @@ from django.db.models import Max
 from django_tables2 import RequestConfig
 
 from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
-from mro_contact.models import Department, Employee, Suplier
-from mro_order.models import Order, OrderItem, OrderEmployee, OrderDocument
+from mro_contact.models import Department, Employee
+from mro_order.models import Order, OrderItem, OrderDocument
 from mro_order.tables import SystemTable, MaintenanceOrderTable
 from mro_order.tables import MaintenanceTable, AllOrderTable, AssignTable
 from mro_order.forms import OrderForm, SearchOrderForm, ActionOrderForm
@@ -97,7 +97,6 @@ def issue(request, action = None, work_type = None):
     search = request.GET.get('search', '').strip()
     if search:
         objs &= System.objects.filter(name__icontains = search)
-        objs |= System.objects.filter(suplier__name__icontains = search)
         objs |= System.objects.filter(serial_number__icontains = search)
         objs |= System.objects.filter(description__icontains = search)
         objs |= System.objects.filter(contract_number__icontains = search)
@@ -268,7 +267,6 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
                     'estimated_work_time': maintenance.estimated_work_time,
                     'contract_number': maintenance.system.contract_number,
                     'contract_include_parts': maintenance.system.contract_include_parts,
-                    'assign_to_suplier': maintenance.system.suplier,
                     'assign_to': maintenance.system.assign_to,
                 }
 
@@ -287,7 +285,6 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
                     'priority': Priority.objects.all().order_by('-max_days_delay')[0],
                     'contract_number': system.contract_number,
                     'contract_include_parts': system.contract_include_parts,
-                    'assign_to_suplier': system.suplier,
                     'assign_to': system.assign_to,
                 }
                 initial_items = []
@@ -357,7 +354,6 @@ def table_orders(request):
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(assign_to_suplier__name__icontains = search)
         objs |= Order.objects.filter(system__name__icontains = search)
         objs |= Order.objects.filter(system__description__icontains = search)
         objs |= Order.objects.filter(maintenance__work_description__icontains = search)

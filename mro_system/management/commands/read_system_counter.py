@@ -23,7 +23,7 @@ import os
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
-from mro_contact.models import Department, Suplier
+from mro_contact.models import Department
 from mro_system.models import System, Maintenance
 
 try:

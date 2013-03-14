@@ -26,7 +26,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 from django.db.models import Max
 
-from mro_contact.models import Department, Suplier
+from mro_contact.models import Department
 from mro_system.models import System, Maintenance, MaintenanceItem
 from mro_order.models import Order, OrderItem
 
@@ -65,7 +65,6 @@ class Command(BaseCommand):
             estimated_work_time = maintenance.estimated_work_time,
             contract_number = maintenance.system.contract_number,
             contract_include_parts = maintenance.system.contract_include_parts,
-            assign_to_suplier = maintenance.system.suplier,
             assign_to = maintenance.system.assign_to,
         )
 

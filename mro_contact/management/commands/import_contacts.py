@@ -23,7 +23,7 @@ import os
 from django.core.management.base import BaseCommand, CommandError
 
 from mro_contact.models import Department
-from mro_contact.models import Employee, Suplier
+from mro_contact.models import Employee
 class Command(BaseCommand):
     help = 'import contacts form csv file'
     
@@ -44,19 +44,19 @@ class Command(BaseCommand):
                 fax = line[3]
                 contact_name = line[1].strip('"').replace('""', '"')
             except:
-                print 'warning: bad suplier line'
+                print 'warning: bad employee line'
                 continue
             
             # check name
             if name:
                 try:
                     # if supllier already in list, continue
-                    suplier = Suplier.objects.get(name = name)
+                    employee = Employee.objects.get(last_name = name)
                     continue
                 except:
                     pass
             else:
-                print 'warning: bad suplier name'
+                print 'warning: bad employee name'
                 continue
 
 
@@ -64,20 +64,20 @@ class Command(BaseCommand):
             department = Department.objects.get(id = 2)
 
             # make the item
-            suplier = Suplier()
-            suplier.name = name
-            suplier.contact_name = contact_name
-            suplier.phone = phone
-            suplier.fax = fax
+            employee = Employee()
+            employee.last_name = name
+            employee.first_name = contact_name
+            employee.phone = phone
+            employee.fax = fax
 
             try:
-                suplier.save()
+                employee.save()
 
                 # add to many to many field
-                suplier.departments.add(department)
+                employee.departments.add(department)
             except:
-                print 'warning: suplier %s can not enter db' % name
+                print 'warning: employee %s can not enter db' % name
             
-            print 'success: suplier %s, updated in db' % name
+            print 'success: employee %s, updated in db' % name
 
         f.close()

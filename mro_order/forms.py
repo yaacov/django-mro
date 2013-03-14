@@ -29,7 +29,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm
 
 from mro_order.models import Order
-from mro_contact.models import Employee, Suplier, Department
+from mro_contact.models import Employee, Department
 from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
 
 class OrderForm(ModelForm):
@@ -46,16 +46,13 @@ class OrderForm(ModelForm):
         fields = ('work_number', 
             'system', 'maintenance', 
             'work_description', 'work_notes',
-            #'estimated_work_time',
             'work_time',
             'priority', 
             'contract_number', 'contract_include_parts', 
             'assign_to', 
             'work_order_state', 
-            #'estimated_completion', 
             'created', 
             'assigned', 
-            #'started', 
             'completed',
             'work_started_time',
             'work_end_time',)
@@ -85,7 +82,6 @@ class SearchOrderForm(forms.Form):
         ]
         choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         self.fields['employee'].choices = choices
-
 
         choices = list(Order.ORDER_STATE)
         choices += [
