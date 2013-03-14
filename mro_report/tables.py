@@ -102,7 +102,6 @@ class MaintenanceTable(tables.Table):
             'work_type',
             #'priority', 
             'work_cycle_str', 
-            #'estimated_work_time', 
             'last_maintenance',
             'current_counter_value',
             'last_maintenance_counter_value')

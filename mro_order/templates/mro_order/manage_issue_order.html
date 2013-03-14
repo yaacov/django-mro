@@ -19,8 +19,7 @@ td.shelve, td.batch {
 td.amount input{
     width: 60px;
 }
-td.issued input, td.ordered input,
-td.estimated_completion input {
+td.issued input, td.ordered input {
     width: 120px;
 }
 th.name, td.name input {
@@ -80,7 +79,6 @@ django.jQuery(function(){
     django.jQuery('.assigned input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.completed input').datepicker({'format': 'yyyy-mm-dd'});
 
-    django.jQuery('.estimated_completion input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.issued input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.ordered input').datepicker({'format': 'yyyy-mm-dd'});
     django.jQuery('.work_started input').datepicker({'format': 'yyyy-mm-dd'});

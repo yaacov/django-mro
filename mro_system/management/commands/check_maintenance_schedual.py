@@ -62,7 +62,6 @@ class Command(BaseCommand):
             system = maintenance.system,
             priority = maintenance.priority,
             work_description = maintenance.work_description,
-            estimated_work_time = maintenance.estimated_work_time,
             contract_number = maintenance.system.contract_number,
             contract_include_parts = maintenance.system.contract_include_parts,
             assign_to = maintenance.system.assign_to,

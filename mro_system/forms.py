@@ -69,7 +69,7 @@ class SystemMaintenanceForm(ModelForm):
 
     class Meta:
         model = Maintenance
-        exclude = ('estimated_work_time', 'items', 'priority', 'assign_to', 'counter_command')
+        exclude = ('items', 'priority', 'assign_to', 'counter_command')
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm

@@ -96,17 +96,6 @@ class Order(models.Model):
     # documents for this job
     documents = models.ManyToManyField('OrderDocument', related_name = 'order_documents')
     documents.verbose_name = _('Documents')
-    
-    def sum_work_hours(self):
-        ''' return the sum of all work hours for this order
-        '''
-        work_hours = 0
-
-        employees_work = OrderEmployee.objects.filter(order = self)
-        for employee_work in employees_work:
-            work_hours += employee_work.work_hours
-
-        return work_hours
 
     def save(self, *args, **kwargs):
         
@@ -199,3 +188,4 @@ class OrderDocument(models.Model):
         verbose_name = _('Order Document')
         verbose_name_plural = _('Order Documents')
         ordering = ('title',)
+        

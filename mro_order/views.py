@@ -264,7 +264,6 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
                     'priority': maintenance.priority,
                     'work_description': maintenance.work_description,
                     #'assign_to': maintenance.assign_to,
-                    'estimated_work_time': maintenance.estimated_work_time,
                     'contract_number': maintenance.system.contract_number,
                     'contract_include_parts': maintenance.system.contract_include_parts,
                     'assign_to': maintenance.system.assign_to,
@@ -448,9 +447,7 @@ def assign(request):
             selected_objects = Order.objects.filter(pk__in=pks)
 
             selected_action = actionfrom.cleaned_data['selected_action']
-            #'AS', _('Assign to employee')),
-            #'CA', _('Cancel assignment')),
-            #'CW', _('Cancel work order')),
+            
             if selected_action == 'AS':
                 # assing to employee
                 assign_to = actionfrom.cleaned_data['assign_to']
