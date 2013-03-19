@@ -53,7 +53,7 @@ class Employee(models.Model):
     """
     an employee
     
-    a contact with first and last name that works in a department
+    contact information for an employee
     """
     
     # name
@@ -99,3 +99,51 @@ class Employee(models.Model):
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
         ordering = ('first_name', 'last_name',)
+
+class Business(models.Model):
+    """
+    a business
+    
+    contact information for a business
+    """
+    
+    # name
+    name = models.CharField(_('Name'), 
+        max_length = 30)
+    contact_person = models.CharField(_('Contact person'), 
+        max_length = 30)
+
+    # contact information
+    phone = models.CharField(_('Phone'), 
+        max_length = 30, blank = True, null = True)
+    fax = models.CharField(_('Fax'), 
+        max_length = 30, blank = True, null = True)
+    address = models.CharField(_('Address'), 
+        max_length = 30, blank = True, null = True)
+    email = models.EmailField(_('Email'), 
+        max_length = 30, blank = True, null = True)
+    
+    # image - profile image or profile icon
+    image = models.ImageField(null=True, blank=True, upload_to='contacts/')
+    image.verbose_name = _('Image')
+    
+    # departments
+    departments = models.ManyToManyField(Department, blank = True, null = True)
+    departments.verbose_name = _('Department')
+    
+    def department_list(self):
+        out = []
+        for department in self.departments.all():
+            if department.name:
+                out.append(department.name)
+        return ', '.join(out)
+    department_list.short_description = _('Departments')
+    
+    # model overides
+    def __unicode__(self):
+        return '%s' % (self.first_name)
+    
+    class Meta:
+        verbose_name = _('Business')
+        verbose_name_plural = _('Businesses')
+        ordering = ('name',)

@@ -21,7 +21,7 @@
 from django.utils.translation import ugettext_lazy as _
 import django_tables2 as tables
 
-from mro_contact.models import Employee
+from mro_contact.models import Employee, Business
 
 class EmployeeTable(tables.Table):
     first_name = tables.TemplateColumn(
@@ -50,5 +50,28 @@ class EmployeeTable(tables.Table):
             'department_list', 
             'phone', 
             'cell_phone', 
+            'address', 
+            'email')
+
+class BusinessTable(tables.Table):
+    name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.name }}</a>')
+    
+    department_list = tables.Column(accessor='department_list', orderable=False)
+    department_list.verbose_name = _('Departments')
+    
+    phone = tables.TemplateColumn(
+        '<a href="tel:{{ value }}/" >{{ value }}</a>')
+    phone.verbose_name = _('Phone')
+    
+    class Meta:
+        model = Employee
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'name', 'contact_person',
+            'department_list', 
+            'phone', 
+            'fax', 
             'address', 
             'email')

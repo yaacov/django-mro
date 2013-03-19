@@ -29,6 +29,10 @@ urlpatterns = patterns('mro_contact.views',
     url(r'^employees/(?P<num>\d+)/$', 'contact_employees_edit'),
     url(r'^employees/add/$', 'contact_employees_edit'),
 
+    url(r'^business/$', 'contact_businesses'),
+    url(r'^business/(?P<num>\d+)/$', 'contact_businesses_edit'),
+    url(r'^business/add/$', 'contact_businesses_edit'),
+
     url(r'^$', 'contact'),
 )
 
@@ -36,5 +40,6 @@ urlpatterns = patterns('mro_contact.views',
 breadcrumbs = (
     _('department'),
     _('employees'),
+    _('business'),
     _('add'),
 )
