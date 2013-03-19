@@ -44,17 +44,18 @@ class SystemForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.help_text_inline = True
-
-        #self.fields['image'].widget = AdminImageWidget()
-        #self.fields['address'].widget.attrs.update({'class' : 'wide'})
+        
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
 
         instance = getattr(self, 'instance', None)
         choices = [
             ('', _('Select employee')),
         ]
-        if instance and instance.department:
-            choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = [instance.department])]
+        if instance:
+            try:
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = [instance.department])]
+            except:
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
         else:
             choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
         self.fields['assign_to'].choices = choices

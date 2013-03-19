@@ -111,7 +111,7 @@ class Business(models.Model):
     name = models.CharField(_('Name'), 
         max_length = 30)
     contact_person = models.CharField(_('Contact person'), 
-        max_length = 30)
+        max_length = 30, blank = True, null = True)
 
     # contact information
     phone = models.CharField(_('Phone'), 
@@ -141,7 +141,7 @@ class Business(models.Model):
     
     # model overides
     def __unicode__(self):
-        return '%s' % (self.first_name)
+        return '%s' % (self.name)
     
     class Meta:
         verbose_name = _('Business')

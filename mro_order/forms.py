@@ -88,19 +88,7 @@ class SearchOrderForm(forms.Form):
             choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         self.fields['employee'].choices = choices
         self.fields['employee'].required = False
-
-        #choices = [
-        #    ('', _('Select employee')),
-        #]
-        #choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
-        #self.fields['employee'].choices = choices
-
-        #choices = list(Order.ORDER_STATE)
-        #choices += [
-        #    ('AL', _('All')),
-        #]
-        #self.fields['work_order_state'].choices = choices
-
+        
 class ActionOrderForm(forms.Form):
 
     assign_to = forms.ChoiceField(label=_("Employee"), required = False, choices=(),

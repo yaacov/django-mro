@@ -42,7 +42,7 @@ class EmployeeForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         
         self.helper.add_input(Submit('submit', _('Submit'), css_class='btn'))
-        self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
+        self.helper.add_input(Submit('delete', _('Delete contact'), css_class='btn-danger pull-right'))
         
         self.fields['image'].widget = AdminImageWidget()
         self.fields['address'].widget.attrs.update({'class' : 'wide'})
@@ -66,7 +66,7 @@ class BusinessForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         
         self.helper.add_input(Submit('submit', _('Submit'), css_class='btn'))
-        self.helper.add_input(Submit('delete', _('Delete'), css_class='btn-danger pull-right'))
+        self.helper.add_input(Submit('delete', _('Delete business'), css_class='btn-danger pull-right'))
         
         self.fields['image'].widget = AdminImageWidget()
         self.fields['address'].widget.attrs.update({'class' : 'wide'})

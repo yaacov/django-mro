@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'mro_system',
     'mro_contact',
     'mro_warehouse',
+    'mro_contract',
     'mro_report',
 
     # server things
