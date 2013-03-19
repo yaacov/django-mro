@@ -5,4 +5,5 @@ argparse
 django-crispy-forms
 django-tables2
 django-cron
+django-wkhtmltopdf
 -e hg+https://bitbucket.org/cleemesser/django-wsgiserver#egg=django-wsgiserver
