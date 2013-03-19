@@ -1,0 +1,96 @@
+{% extends 'mro/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load mro_bootstrap %}
+{% load render_table from django_tables2 %}
+
+{% block extra_css %}
+<style type="text/css">
+input, select, textarea {
+    width: 95%;
+}
+textarea {
+    height: 50px;
+}
+.name, .catalogic_number, .unit {
+    width: 130px;
+}
+.description {
+    width: 300px;
+}
+.DELETE {
+    width: 30px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+<script>
+// use bootstrap datepicker for redering 
+django.jQuery(function(){
+    django.jQuery('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+});
+</script>
+{% endblock %}
+    
+{% block content %}
+
+<form method="post" id="formset" action="">
+    {% csrf_token %}
+    <input type="hidden" id="form-page" name="page" value="">
+
+    {{ formset.management_form }}
+
+    <table class="table table-striped">
+    <tr>
+    {% for field in formset.forms.0 %}
+        {% if not field.is_hidden %}
+            <th class="{{ field.name }}">{{ field.label }}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+
+    {% for form in formset %}
+    <tr>
+        {%for field in form %} 
+            {% if not field.is_hidden %}
+                {% if field.errors %}
+                <td valign="bottom" class="control-group error">
+                {% else %}
+                <td valign="bottom" class="control-group {{ field.name }}">
+                {% endif %}
+                    {{field}}
+                </td>
+            {%else%}
+                {{field}}
+            {% endif %}
+        {%endfor%}
+    </td>
+    {% endfor %}
+    </table>
+</form>
+
+<div class="form-actions">
+    <a class="btn btn-primary btn-submit" href="#" onClick="django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
+    <a class="btn btn-primary btn-success pull-right" href="/contact/" >{% trans 'Back' %}</a>
+</div>
+
+<script>
+django.jQuery(function() {
+    django.jQuery('.filters').on("click", function(event){
+        django.jQuery('#form-filter').val(django.jQuery(this).data('val'));
+        django.jQuery('#search-form').submit();
+    });
+    
+    django.jQuery('.paginators').on("click", function(event){
+        django.jQuery('#form-page').val(django.jQuery(this).data('page'));
+        django.jQuery('#search-form').submit();
+    });
+});
+</script>
+
+{% endblock %}
