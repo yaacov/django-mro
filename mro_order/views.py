@@ -527,118 +527,13 @@ def assign(request, simple_view = True):
     
     return render(request, 'mro_order/assign.html', response_dict)
 
-def xprint_orders(request, simple_view = False):
-    """
-    """
-    # get the employee data from the data base
-    objs = Order.objects.all().order_by('-created','-assigned','-completed')
-    
-    # filter employees using the search form
-    search = request.GET.get('search', '').strip()
-    if search:
-        objs &= Order.objects.filter(assign_to__first_name__icontains = search)
-        objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(system__name__icontains = search)
-        objs |= Order.objects.filter(system__description__icontains = search)
-        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
-        objs |= Order.objects.filter(work_description__icontains = search)
-        objs |= Order.objects.filter(work_notes__icontains = search)
-
-    if simple_view:
-        searchform = SimpleSearchOrderForm(request.GET)
-    else:
-        #if 'work_order_state' not in request.GET:
-        #    searchform = SearchOrderForm(initial = {'work_order_state': 'AS'})
-        #else:
-        searchform = SearchOrderForm(request.GET)
-
-    if searchform.is_valid():
-        work_order_state = 'AS'
-        employee = ''
-
-        if not simple_view:
-            #work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
-            employee = searchform.cleaned_data['employee']
-
-        system = searchform.cleaned_data['system']
-
-        if system.startswith('DE-'):
-            department_pk = int(system[3:])
-            objs &= Order.objects.filter(system__department__pk = department_pk)
-
-        if system.startswith('SY-'):
-            system_pk = int(system[3:])
-            objs &= Order.objects.filter(system__pk = system_pk)
-
-        if employee:
-            objs &= Order.objects.filter(assign_to__pk = employee)
-
-        if work_order_state not in ['AL',]:
-            objs &= Order.objects.filter(work_order_state = work_order_state)
-    else:
-        # default is RE
-        objs &= Order.objects.filter(work_order_state = 'AS')
-
-    table = AssignTable(objs)
-
-    RequestConfig(request, paginate={"per_page": 40}).configure(table)
-    
-    if request.method == "POST":
-        
-        pks = request.POST.getlist("selection")
-        post_print = request.POST.get("print", "")
-
-        print post_print
-        orders = Order.objects.filter(pk__in=pks)
-
-        t = get_template('mro_order/print_orders.html')
-
-        #for order in orders:
-        #    c = Context({'orders': orders})
-        #    html_content = t.render(c)
-        #    from_email = "kobi@ddc.co.il"
-        #    msg = EmailMessage("work", html_content, from_email, [order.assign_to.email])
-        #    msg.content_subtype = "html"  # Main content is now text/html
-        #    try:
-        #        if order.assign_to.email:
-        #            print "sending to", order.assign_to.email
-        #            msg.send()
-        #    except:
-        #        print "fail to send mail"
-
-        return render(request, 'mro_order/print_orders.html', {'orders': orders})
-
-    # base_table.html response_dict rendering information
-    response_dict = {
-        'search_form': searchform,
-        'search': search,
-        'table': table,
-    }
-
-    response_dict['table'] = table
-    response_dict['headers'] = {
-        'thumb': '/static/tango/48x48/actions/manage-students.png',
-        'header': _('Print work orders for employees'),
-        'lead': _('Print work orders, print work orders assined to employees.'),
-    }
-    
-    return render(request, 'mro_order/print.html', response_dict)
-
 class PrintOrders(PDFTemplateView):
-    
-    def get(self, request, *args, **kwargs):
-        post_print = request.POST.get("print", "")
-        response_class = self.response_class
-        try:
-            if post_print != '_pdf' or request.GET.get('as', '') == 'html':
-                # Use the html_response_class if HTML was requested.
-                self.response_class = self.html_response_class
-            return super(PrintOrders, self).get(request,
-                *args, **kwargs)
-        finally:
-            # Remove self.response_class
-            self.response_class = response_class
 
+    def get(self, request, *args, **kwargs):
+        self.response_class = self.html_response_class
+        return super(PrintOrders, self).get(request,
+            *args, **kwargs)
+        
     def post(self, request, *args, **kwargs):
         post_print = request.POST.get("print", "")
 
@@ -654,9 +549,25 @@ class PrintOrders(PDFTemplateView):
             self.response_class = response_class
 
     def get_context_data(self, **kwargs):
+        
+        response_dict = super(PrintOrders, self).get_context_data(**kwargs)
+        self.template_name = 'mro_order/print.html'
+        request = self.request
+
+        if request.method == "POST":
+            pks = request.POST.getlist("selection")
+            post_print = request.POST.get("print", "")
+            orders = Order.objects.filter(pk__in=pks)
+
+            if orders:
+                self.template_name = 'mro_order/print_orders.html'
+                response_dict['orders'] = orders
+                response_dict['post_print'] = post_print
+
+                return response_dict
+
         # get the employee data from the data base
         objs = Order.objects.all().order_by('-created','-assigned','-completed')
-        request = self.request
 
         # filter employees using the search form
         search = request.GET.get('search', '').strip()
@@ -695,32 +606,14 @@ class PrintOrders(PDFTemplateView):
             if work_order_state not in ['AL',]:
                 objs &= Order.objects.filter(work_order_state = work_order_state)
         else:
-            # default is RE
+            # default is AS
             objs &= Order.objects.filter(work_order_state = 'AS')
 
         table = AssignTable(objs)
-
         RequestConfig(request, paginate={"per_page": 40}).configure(table)
         
-        if request.method == "POST":
-            
-            pks = request.POST.getlist("selection")
-            post_print = request.POST.get("print", "")
-
-            orders = Order.objects.filter(pk__in=pks)
-
-            self.template_name = 'mro_order/print_orders.html'
-            response_dict = super(PrintOrders, self).get_context_data(**kwargs)
-            response_dict['orders'] = orders
-            response_dict['post_print'] = post_print
-            return response_dict
-
-        self.template_name = 'mro_order/print.html'
-        response_dict = super(PrintOrders, self).get_context_data(**kwargs)
         response_dict['search_form']=searchform
         response_dict['search']=search
-        response_dict['table']=table
-
         response_dict['table'] = table
         response_dict['headers'] = {
             'thumb': '/static/tango/48x48/actions/manage-students.png',
