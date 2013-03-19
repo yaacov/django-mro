@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-18 17:38+0200\n"
+"POT-Creation-Date: 2013-03-19 10:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgstr "דוח"
 #: mro_system/forms.py:96
 #: mro_system/templates/mro_system/manage_system.html:124
 #: mro_system/templates/mro_system/manage_system.html:173
-#: mro_system/templates/mro_system/manage_system.html:219
+#: mro_system/templates/mro_system/manage_system.html:216
 #: mro_system/templates/mro_system/manage_system_maintenance.html:148
 #: mro_system/templates/mro_system/system_form.html:39
 msgid "Submit"
@@ -57,9 +57,13 @@ msgstr "שמור"
 msgid "Delete"
 msgstr "מחק "
 
-#: mro_contact/models.py:36 mro_contact/models.py:37 mro_order/tables.py:31
-#: mro_order/tables.py:79 mro_order/tables.py:118 mro_order/tables.py:168
-#: mro_order/tables.py:201 mro_report/tables.py:49 mro_warehouse/models.py:43
+#: mro_contact/models.py:36 mro_warehouse/models.py:39
+msgid "Name"
+msgstr "שם"
+
+#: mro_contact/models.py:37 mro_order/tables.py:31 mro_order/tables.py:79
+#: mro_order/tables.py:118 mro_order/tables.py:168 mro_order/tables.py:201
+#: mro_report/tables.py:49 mro_warehouse/models.py:43
 msgid "Description"
 msgstr "תאור"
 
@@ -70,7 +74,7 @@ msgstr "תמונה"
 
 #: mro_contact/models.py:48 mro_contact/models.py:81 mro_order/forms.py:76
 #: mro_order/forms.py:139 mro_order/tables.py:88 mro_order/tables.py:127
-#: mro_order/templates/mro_order/print_orders.html:96
+#: mro_order/templates/mro_order/print_orders.html:124
 msgid "Department"
 msgstr "מערכת"
 
@@ -184,7 +188,7 @@ msgstr "בסיס הנתונים עודכן"
 msgid "Error updating database."
 msgstr "בעיה בעידכון בסיס הנתונים"
 
-#: mro_contact/templates/mro_contact/base_formset.html:75
+#: mro_contact/templates/mro_contact/base_formset.html:78
 #: mro_order/templates/mro_order/manage_issue_order.html:160
 #: mro_order/templates/mro_order/manage_issue_order.html:206
 #: mro_order/templates/mro_order/manage_issue_order.html:253
@@ -193,14 +197,14 @@ msgstr "בעיה בעידכון בסיס הנתונים"
 #: mro_order/templates/mro_order/manage_order_items.html:253
 #: mro_system/templates/mro_system/manage_system.html:127
 #: mro_system/templates/mro_system/manage_system.html:176
-#: mro_system/templates/mro_system/manage_system.html:222
+#: mro_system/templates/mro_system/manage_system.html:219
 #: mro_system/templates/mro_system/manage_system_maintenance.html:151
 #: mro_warehouse/templates/mro_warehouse/manage_items.html:103
 #: mro_warehouse/templates/mro_warehouse/manage_warehouse_items.html:158
 msgid "Submit and continue to edit"
 msgstr "שמור והמשך לערוך"
 
-#: mro_contact/templates/mro_contact/base_formset.html:76
+#: mro_contact/templates/mro_contact/base_formset.html:79
 msgid "Back"
 msgstr "חזור"
 
@@ -220,8 +224,9 @@ msgstr "בחר מערכת"
 
 #: mro_order/forms.py:77 mro_order/forms.py:140 mro_order/models.py:49
 #: mro_order/tables.py:74 mro_order/tables.py:113
-#: mro_order/templates/mro_order/print_orders.html:95 mro_system/models.py:160
-#: mro_system/models.py:161 mro_system/models.py:190 mro_system/models.py:298
+#: mro_order/templates/mro_order/print_orders.html:123
+#: mro_system/models.py:160 mro_system/models.py:161 mro_system/models.py:190
+#: mro_system/models.py:298
 msgid "System"
 msgstr "ציוד"
 
@@ -320,7 +325,7 @@ msgstr "נמסר לעובד/קבלן בתאריך"
 msgid "Completed at date"
 msgstr "בוצע בתאריך"
 
-#: mro_order/models.py:87 mro_order/templates/mro_order/print_orders.html:108
+#: mro_order/models.py:87 mro_order/templates/mro_order/print_orders.html:136
 #: mro_system/models.py:207
 msgid "Work description"
 msgstr "תאור העבודה"
@@ -357,10 +362,10 @@ msgstr "פקודה"
 msgid "Orders"
 msgstr "פקודות"
 
-#: mro_order/models.py:176 mro_order/templates/mro_order/print_orders.html:122
-#: mro_order/templates/mro_order/print_orders.html:124
-#: mro_order/templates/mro_order/print_orders.html:139
-#: mro_order/templates/mro_order/print_orders.html:141
+#: mro_order/models.py:176 mro_order/templates/mro_order/print_orders.html:150
+#: mro_order/templates/mro_order/print_orders.html:152
+#: mro_order/templates/mro_order/print_orders.html:167
+#: mro_order/templates/mro_order/print_orders.html:169
 #: mro_system/models.py:283 mro_warehouse/models.py:70
 #: mro_warehouse/models.py:113 mro_warehouse/models.py:157
 msgid "Item"
@@ -374,10 +379,10 @@ msgstr "הוזמן בתאריך"
 msgid "Issued on date"
 msgstr "נופק בתאריך"
 
-#: mro_order/models.py:187 mro_order/templates/mro_order/print_orders.html:123
-#: mro_order/templates/mro_order/print_orders.html:125
-#: mro_order/templates/mro_order/print_orders.html:140
-#: mro_order/templates/mro_order/print_orders.html:142
+#: mro_order/models.py:187 mro_order/templates/mro_order/print_orders.html:151
+#: mro_order/templates/mro_order/print_orders.html:153
+#: mro_order/templates/mro_order/print_orders.html:168
+#: mro_order/templates/mro_order/print_orders.html:170
 #: mro_system/models.py:286 mro_warehouse/models.py:116
 #: mro_warehouse/models.py:163
 msgid "Amount"
@@ -624,44 +629,44 @@ msgstr "הדפס"
 msgid "Print as PDF"
 msgstr "הדפס כ PDF"
 
-#: mro_order/templates/mro_order/print_orders.html:86
+#: mro_order/templates/mro_order/print_orders.html:114
 msgid "Work instruction - "
 msgstr "הוראת אחזקה - "
 
-#: mro_order/templates/mro_order/print_orders.html:88
+#: mro_order/templates/mro_order/print_orders.html:116
 msgid "Work instruction - Fracture maintenance"
 msgstr "הוראת אחזקה - אחזקת שבר"
 
-#: mro_order/templates/mro_order/print_orders.html:91
+#: mro_order/templates/mro_order/print_orders.html:119
 msgid "Work instruction number"
 msgstr "הוראת אחזקה מספר"
 
-#: mro_order/templates/mro_order/print_orders.html:99 mro_system/models.py:63
+#: mro_order/templates/mro_order/print_orders.html:127 mro_system/models.py:63
 msgid "Location"
 msgstr "מיקום"
 
-#: mro_order/templates/mro_order/print_orders.html:104
+#: mro_order/templates/mro_order/print_orders.html:132
 msgid "Maintenance instractions"
 msgstr "הוראות טיפול ואחזקה"
 
-#: mro_order/templates/mro_order/print_orders.html:109
+#: mro_order/templates/mro_order/print_orders.html:137
 msgid "Maintenance notes"
 msgstr "הוראות מיוחדות"
 
-#: mro_order/templates/mro_order/print_orders.html:117
+#: mro_order/templates/mro_order/print_orders.html:145
 msgid "Items for this work"
 msgstr "חלקי חילוף וחומרים נדרשים"
 
-#: mro_order/templates/mro_order/print_orders.html:163
+#: mro_order/templates/mro_order/print_orders.html:191
 msgid "Assigned to"
 msgstr "מטופל ע\"י"
 
-#: mro_order/templates/mro_order/print_orders.html:164
+#: mro_order/templates/mro_order/print_orders.html:192
 #: mro_warehouse/models.py:177
 msgid "Date"
 msgstr "תאריך"
 
-#: mro_order/templates/mro_order/print_orders.html:167
+#: mro_order/templates/mro_order/print_orders.html:195
 msgid "Signiture"
 msgstr "חתימה"
 
@@ -880,7 +885,7 @@ msgid "System Document"
 msgstr "מסמך ציוד"
 
 #: mro_system/models.py:312
-#: mro_system/templates/mro_system/manage_system.html:184
+#: mro_system/templates/mro_system/manage_system.html:185
 msgid "System Documents"
 msgstr "מסמכי ציוד"
 
@@ -926,7 +931,7 @@ msgstr "ערוך הוראות תחזוקה עבור %(name)s - %(department)s"
 
 #: mro_system/templates/mro_system/manage_system.html:128
 #: mro_system/templates/mro_system/manage_system.html:177
-#: mro_system/templates/mro_system/manage_system.html:223
+#: mro_system/templates/mro_system/manage_system.html:220
 #: mro_system/templates/mro_system/system_form.html:40
 msgid "Delete this system"
 msgstr "מחק את הציוד"
@@ -1018,10 +1023,6 @@ msgstr "ק\"ג"
 #: mro_warehouse/models.py:35
 msgid "m"
 msgstr "מ'"
-
-#: mro_warehouse/models.py:39
-msgid "Name"
-msgstr "שם"
 
 #: mro_warehouse/models.py:40
 msgid "Item catalog number"
@@ -1167,9 +1168,3 @@ msgstr "ספק ואכסן פריטים."
 #: mro_warehouse/templates/mro_warehouse/manage_warehouse_actions.html:26
 msgid "Issue warehouse action"
 msgstr "בצע פעולה במחסן"
-
-#~ msgid "Chose employee"
-#~ msgstr "בחר עובד/קבלן"
-
-#~ msgid "Work order"
-#~ msgstr "פקודת אחזקה"
