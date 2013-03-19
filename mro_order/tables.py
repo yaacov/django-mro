@@ -25,25 +25,6 @@ from mro_order.models import Order
 from mro_system.models import System, Maintenance
 from mro_contact.models import Employee
 
-class OrderTable(tables.Table):
-    name = tables.TemplateColumn(
-        '<a href="/order/fracture/{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>')
-    name.verbose_name = _('Description')
-    name.orderable = False
-
-    class Meta:
-        model = Order
-        template = 'mro/table.html'
-        attrs = {'class': 'table table-striped'}
-        fields = (
-            'work_order_state', 
-            #'priority', 
-            'assign_to', 
-            'created', 
-            'assigned',
-            'completed',
-            'work_time', )
-
 class AllOrderTable(tables.Table):
     name = tables.TemplateColumn(
         '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
@@ -58,6 +39,17 @@ class AllOrderTable(tables.Table):
     order_type.verbose_name = _('Order type')
     order_type.orderable = False
 
+    estimated_time_diff = tables.TemplateColumn(
+        '''{% if record.maintenance %}
+                {% if record.estimated_time_diff > 0 %}
+                    <span class="positive">{{ record.estimated_time_diff }}</span>
+                {% else %}
+                    <span class="negative">{{ record.estimated_time_diff }}</span>
+                {% endif %}
+            {% endif %}
+        ''', orderable = False)
+    estimated_time_diff.verbose_name = _('Work hours estimate differential')
+
     class Meta:
         model = Order
         template = 'mro/table.html'
@@ -65,27 +57,36 @@ class AllOrderTable(tables.Table):
         fields = (
             'system',
             'order_type',
-            'work_order_state', 
+            #'work_order_state', 
             #'priority', 
             'assign_to', 
             'created', 
             'assigned', 
             'completed',
-            'name',)
+            'name',
+            'work_time',
+            'estimated_time_diff', 
+            'completed_month', 'completed_year')
 
 class AssignTable(tables.Table):
-    name = tables.TemplateColumn(
+    system_name = tables.TemplateColumn(
+        '''{{ record.maintenance.system.name }}''')
+    system_name.verbose_name = _('System')
+    system_name.orderable = False
+
+    short_description = tables.TemplateColumn(
         '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
-    name.verbose_name = _('Work order')
-    name.orderable = False
+    short_description.verbose_name = _('Description')
+    short_description.orderable = False
 
-    order_type = tables.TemplateColumn(
-        '{% if record.maintenance %}<span class="maintenance">' + 
-            _('Maintenance') + '</span>{% else %}<span class="fracture">' + 
-            _('Fracture') + '</span>{% endif %}')
+    maintenance_work_type = tables.TemplateColumn('{{ record.maintenance.get_work_type_display }}')
+    maintenance_work_type.verbose_name = _('Work type')
+    maintenance_work_type.orderable = False
 
-    order_type.verbose_name = _('Order type')
-    order_type.orderable = False
+    department = tables.TemplateColumn(
+        '''{{ record.system.department }}''')
+    department.verbose_name = _('Department')
+    department.orderable = False
 
     selection = tables.CheckBoxColumn(accessor="pk", attrs = { "th__input": 
                                         {"onclick": "toggle(this)"}},
@@ -97,13 +98,69 @@ class AssignTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'selection',
-            'name',
-            'system',
-            'order_type',
-            'work_order_state', 
+            'system_name',
+            'department',
+            'maintenance_work_type',
+            #'work_order_state', 
             #'priority', 
             'assign_to', 
-            'created',)
+            'created',
+            'short_description',)
+
+class SimpleAssignTable(tables.Table):
+    system_name = tables.TemplateColumn(
+        '''{{ record.maintenance.system.name }}''')
+    system_name.verbose_name = _('System')
+    system_name.orderable = False
+
+    short_description = tables.TemplateColumn(
+        '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+    short_description.verbose_name = _('Description')
+    short_description.orderable = False
+
+    maintenance_work_type = tables.TemplateColumn('{{ record.maintenance.get_work_type_display }}')
+    maintenance_work_type.verbose_name = _('Work type')
+    maintenance_work_type.orderable = False
+
+    department = tables.TemplateColumn(
+        '''{{ record.system.department }}''')
+    department.verbose_name = _('Department')
+    department.orderable = False
+
+    selection = tables.CheckBoxColumn(accessor="pk", attrs = { "th__input": 
+                                        {"onclick": "toggle(this)"}},
+                                        orderable=False)
+
+    contract_number = tables.TemplateColumn('{{ record.maintenance.system.contract_number }}')
+    contract_number.verbose_name = _('Contract number')
+    contract_number.orderable = False
+
+    contract_include_parts = tables.TemplateColumn('''
+        {% if record.maintenance.system.contract_include_parts %}
+        <span class="true">✔</span>
+        {%else%}
+        <span class="false">✘</span>
+        {%endif%}''')
+    contract_include_parts.verbose_name = _('Contract include parts')
+    contract_include_parts.orderable = False
+
+    class Meta:
+        model = Order
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'selection',
+            'system_name',
+            'department',
+            #'system_assign_to',
+            'contract_number',
+            'contract_include_parts', 
+            'maintenance_work_type',
+            #'work_order_state', 
+            #'priority', 
+            #'assign_to', 
+            'created',
+            'short_description',)
 
 class MaintenanceOrderTable(tables.Table):
     name = tables.TemplateColumn(
@@ -167,7 +224,6 @@ class SystemTable(tables.Table):
             'department',
             'short_description',
             'last_maintenance',
-            
             #'card_number',
             #'contract_number',
             #'contract_include_parts', 
@@ -184,7 +240,7 @@ class MaintenanceTable(tables.Table):
     action.verbose_name = u'  '
 
     system = tables.TemplateColumn(
-        '{{ record }}')
+        '{{ record.system.name }}')
     system.verbose_name = _('Maintenance Instruction')
 
     class Meta:

@@ -22,6 +22,15 @@
     margin-bottom: 60px;
     margin-top: 10px;
 }
+.created, .maintenance_work_type, .system, .system_name {
+    width: 80px;
+}
+button {
+    margin-top: -12px;
+}
+form {
+    margin-bottom: 5px;
+}
 </style>
 {% endblock %}
 
@@ -36,9 +45,9 @@
     {{ search_form.employee }}
     {{ search_form.work_order_state }}
 
-    <div class="action-form">
-    <button type="submit" class="btn" >{% trans 'Update work order list' %}</button>
-    </div>
+    <!--div class="action-form"-->
+    <button type="submit" class="btn btn-success" >{% trans 'Update list' %}</button>
+    <!--/div-->
 
 </form>
 
@@ -47,8 +56,11 @@
 
 <h5>{% trans 'Print work orders' %}</h5>
 
+<input type="hidden" id="id_print" name="print" value=""/>
 <div class="action-form">
-<button type="submit" class="btn btn-success" >{% trans 'Print selected work orders' %}</button>
+<button type="submit" class="btn btn-success" onClick="$('#id_print').val('_show')" >{% trans 'Show selected work orders' %}</button>
+<button type="submit" class="btn btn-success" onClick="$('#id_print').val('_print')"  >{% trans 'Print' %}</button>
+<button type="submit" class="btn btn-success" onClick="$('#id_print').val('_pdf')"  >{% trans 'Print as PDF' %}</button>
 </div>
 
 {% render_table table %}

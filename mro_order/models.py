@@ -52,7 +52,7 @@ class Order(models.Model):
     maintenance = models.ForeignKey(Maintenance, null = True, blank = True)
     maintenance.verbose_name = _('Maintenance')
 
-    # estimated time to complete the job
+    # employee time it took complete the job
     work_time = models.FloatField(_('Work hours'), default = 0)
     
     # start and end times
@@ -96,6 +96,30 @@ class Order(models.Model):
     # documents for this job
     documents = models.ManyToManyField('OrderDocument', related_name = 'order_documents')
     documents.verbose_name = _('Documents')
+
+    def estimated_time_diff(self):
+        ''' estimated_time - work_time
+        '''
+        if self.maintenance:
+            return self.maintenance.estimated_work_time - self.work_time
+        return None
+    estimated_time_diff.verbose_name = _('Work hours estimate differential')
+
+    def completed_month(self):
+        ''' completed month
+        '''
+        if self.completed:
+            return self.completed.month
+        return None
+    completed_month.verbose_name = _('Completed month')
+
+    def completed_year(self):
+        ''' completed month
+        '''
+        if self.completed:
+            return self.completed.year
+        return None
+    completed_year.verbose_name = _('Completed year')
 
     def save(self, *args, **kwargs):
         

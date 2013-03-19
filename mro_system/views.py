@@ -18,6 +18,8 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir 2013) <kobi.zamir@gmail.com>
 
+from datetime import datetime, date, timedelta
+
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
@@ -30,7 +32,7 @@ from django.contrib import messages
 
 from django_tables2   import RequestConfig
 
-from mro_system.models import System, Maintenance, Item, MaintenanceItem
+from mro_system.models import System, Maintenance, Item, MaintenanceItem, SystemDocument
 from mro_contact.models import Department, Employee
 
 from mro_system.tables import SystemTable
@@ -109,6 +111,8 @@ def manage_system(request, system_pk = None):
 
     MaintenanceFormSet = inlineformset_factory(System, Maintenance, 
         extra = 1, can_delete=True, form=SystemMaintenanceForm)
+    DocumentFormSet = inlineformset_factory(System, SystemDocument, 
+        extra = 1, can_delete = True)
 
     queryset = Maintenance.objects.filter(system = system) 
 
@@ -131,10 +135,17 @@ def manage_system(request, system_pk = None):
     if request.method == "POST":
         systemform = SystemForm(request.POST, instance=system)
         maintenanceformset = MaintenanceFormSet(request.POST, request.FILES, instance=system)
-        
-        if systemform.is_valid() and maintenanceformset.is_valid():
+        documentformset = DocumentFormSet(request.POST, request.FILES, instance = system, prefix='documents')
+
+        if systemform.is_valid() and maintenanceformset.is_valid() and documentformset.is_valid():
             system = systemform.save()
             maintenanceformset.save()
+
+            documents = documentformset.save(commit=False)
+            for document in documents:
+
+                document.system = system
+                document.save()
 
             messages.success(request, _('Database updated.'))
 
@@ -146,8 +157,9 @@ def manage_system(request, system_pk = None):
         else:
             messages.error(request, _('Error updating database.'))
     else:
-        systemform = SystemForm(instance=system)
-        maintenanceformset = MaintenanceFormSet(instance=system, queryset=page_query)
+        systemform = SystemForm(instance = system)
+        maintenanceformset = MaintenanceFormSet(instance = system, queryset = page_query)
+        documentformset = DocumentFormSet(instance = system, prefix = 'documents')
 
     response_dict = {}
     response_dict['headers'] = {
@@ -157,6 +169,7 @@ def manage_system(request, system_pk = None):
     }
     response_dict['form'] = systemform
     response_dict['formset'] = maintenanceformset
+    response_dict['documentformset'] = documentformset
     response_dict['objects'] = objects
     response_dict['search'] = search
 
@@ -241,3 +254,55 @@ def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
     response_dict['search'] = search
 
     return render(request, 'mro_system/manage_system_maintenance.html', response_dict)
+
+from mro_system.management.commands.check_maintenance_schedual import Command as CheckCron
+from mro_system.management.commands.read_system_counter import Command as CheckReaders
+
+def run_cron(request):
+    '''
+    '''
+
+    # check for date
+    date_today_str = request.GET.get('date', None)
+    date_today = date.today()
+    run = False
+
+    if date_today_str:
+        try:
+            date_today = datetime.strptime(date_today_str, "%d/%m/%Y").date()
+        except Exception, e:
+            print e
+            pass
+
+        # chedk for new actions
+        check = CheckCron()
+        check.handle(date_today = date_today)
+
+        # read counters
+        check = CheckReaders()
+        check.handle()
+
+        run = True
+
+    response_dict = {}
+    response_dict['headers'] = {
+        'header': "",
+        'lead':  "",
+        'thumb': '/static/tango/48x48/status/flag-green-clock.png',
+    }
+    response_dict['content'] = '''
+    <div dir="ltr">
+    <p>Run daily reading of counters, and issue new work orders.</p>
+    <form>
+    date:<br>
+    <input id="id_date" type="text" name="date" value="%s" ></input><br>
+    <button type="submit">Run</button>
+    </form>
+    </div>
+    <script>
+    $('#id_date').datepicker({'format': 'dd/mm/yyyy'});
+    </script>
+    Success - %s''' % (date_today.strftime("%d/%m/%Y"), run)
+
+    return render(request, 'mro/base.html', response_dict)
+

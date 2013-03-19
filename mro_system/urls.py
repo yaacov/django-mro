@@ -32,6 +32,8 @@ urlpatterns = patterns('mro_system.views',
     url(r'^add/delete/$', 'manage_system_delete'),
 
     url(r'^(?P<system_pk>\d+)/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
+
+    url(r'^run/$', 'run_cron'),
 )
 
 # breadcrumbs translation guide

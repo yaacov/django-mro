@@ -33,7 +33,7 @@ class Department(models.Model):
     """
     
     # identification
-    name = models.CharField(_('Description'), max_length = 30, unique = True)
+    name = models.CharField(_('Name'), max_length = 30, unique = True)
     description = models.TextField(_('Description'))
     
     # image - profile image or logo

@@ -1,6 +1,8 @@
 {% load i18n %}
 {% load mro %}
 {% load mro_bootstrap %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -9,30 +11,57 @@
     {% add_header_css %}
     <style>
     body {
-        height: 842px;
+        {% if LANGUAGE_BIDI %}
+            direction: rtl;
+        {% endif %}
+        
         width: 595px;
         /* to centre page on screen*/
         margin-left: auto;
         margin-right: auto;
     }
     @media all {
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        th {
+            border: 1px solid black;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        td {
+            border: 1px solid black;
+            height: 18px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
         .page-break {
             border-bottom: 4px solid #eeeeee;
             height: 50px;
         }
     }
-
     @media print {
         .page-break { 
             display: block; 
             page-break-before: always; 
             border-bottom: none;
             height: 0px;
-        
+            
         }
     }
+    {% if post_print == '_pdf' %}
+    .page-break { 
+        display: block; 
+        page-break-before: always; 
+        border-bottom: none;
+        height: 0px;
+        
+    }
+    {% endif %}
 
     .order-form {
+        direction: rtl;
         margin: 20px;
     }
     table {
@@ -108,8 +137,8 @@
                     <th class="description">{% trans "Maintenance notes" %}</th>
                 </tr>
                 <tr>
-                    <td class="description">{{ order.work_description|linebreaks }}</td>
-                    <td class="description">{{ order.work_notes|linebreaks }}</td>
+                    <td class="description">{{ order.work_description|default:" "|linebreaks }}</td>
+                    <td class="description">{{ order.work_notes|default:" "|linebreaks }}</td>
                 </tr>
             </table>
 
@@ -170,5 +199,11 @@
         </div>
         <div class="page-break"></div>
     {% endfor %}
+
+    {% if post_print == '_print' %}
+    <script>
+        window.print();
+    </script>
+    {% endif %}
 </body>
 </html>

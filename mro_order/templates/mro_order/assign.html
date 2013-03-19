@@ -22,6 +22,33 @@
     margin-bottom: 60px;
     margin-top: 10px;
 }
+.selection {
+    width: 20px;
+}
+.system_name, .department, 
+.maintenance_work_type,
+.created {
+    width: 80px;
+}
+ 
+.contract_number {
+    width: 160px;
+}
+.contract_include_parts {
+    width: 30px;
+}
+td span.true {
+    color: green;
+}
+button {
+    margin-top: -12px;
+}
+#assign-form button {
+    margin-top: 0px;
+}
+form {
+    margin-top: 5px;
+}
 </style>
 {% endblock %}
 
@@ -36,23 +63,23 @@
     {{ search_form.employee }}
     {{ search_form.work_order_state }}
 
-    <div class="action-form">
-    <button type="submit" class="btn" >{% trans 'Update work order list' %}</button>
-    </div>
+    <!--div class="action-form"-->
+    <button type="submit" class="btn btn-success" >{% trans 'Update list' %}</button>
+    <!--/div-->
 
 </form>
+
+<h5>{% trans 'Assign work orders' %}</h5>
 
 <form method="post" id="assign-form" action="">
 {% csrf_token %}
 
-<h5>{% trans 'Assign work orders' %}</h5>
-
 {{ action_form.assign_to }}
 {{ action_form.selected_action }}
 
-<div class="action-form">
+<!--div class="action-form"-->
 <button type="submit" class="btn btn-success" >{% trans 'Applay action to selected rows' %}</button>
-</div>
+<!--/div-->
 
 {% render_table table %}
 </form>

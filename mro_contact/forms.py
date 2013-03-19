@@ -29,7 +29,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.forms import ModelForm
 
 from mro_theme.widgets import AdminImageWidget
-from mro_contact.models import Employee
+from mro_contact.models import Employee, Department
 
 class EmployeeForm(ModelForm):
     ''' form for editing employee

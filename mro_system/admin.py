@@ -23,7 +23,7 @@ from django import forms
 from django.contrib import admin
 
 from mro_system.models import Priority, System, Maintenance
-from mro_system.models import MaintenanceItem
+from mro_system.models import MaintenanceItem, SystemDocument
 
 class MaintenanceItemInline(admin.TabularInline):
     fields = ('item', 'amount')
@@ -36,6 +36,14 @@ class MaintenanceInline(admin.TabularInline):
     model = Maintenance
     extra = 0
 
+class SystemDocumentInline(admin.TabularInline):
+    fields = ('title', 'created',)
+    
+    model = SystemDocument
+    extra = 0
+
+admin.site.register(SystemDocument)
+
 class PriorityAdmin(admin.ModelAdmin):
     pass
 
@@ -43,7 +51,7 @@ admin.site.register(Priority, PriorityAdmin)
 
 class SystemAdmin(admin.ModelAdmin):
     
-    inlines = (MaintenanceInline,)
+    inlines = (MaintenanceInline, SystemDocumentInline,)
 
 admin.site.register(System, SystemAdmin)
 

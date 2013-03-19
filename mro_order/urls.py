@@ -22,6 +22,8 @@ from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView
 
+from mro_order.views import PrintOrders
+
 urlpatterns = patterns('mro_order.views',
     
     url(r'^issue/$', 'issue'),
@@ -38,7 +40,7 @@ urlpatterns = patterns('mro_order.views',
             'update_url': '/order/assign/'
         }),
 
-    url(r'^print/$', 'print_orders'),
+    url(r'^print/$', PrintOrders.as_view()),
     url(r'^print/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/print/')),
     url(r'^print/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
         {
@@ -54,8 +56,8 @@ urlpatterns = patterns('mro_order.views',
             'next_url': '/order/table/orders/',
             'update_url': '/order/table/orders/'
         }),
-    url(r'^$', 'order'),
 
+    url(r'^$', 'order'),
 )
 
 # breadcrumbs translation guide

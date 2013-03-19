@@ -32,7 +32,7 @@ from django.contrib import messages
 from django_tables2   import RequestConfig
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
-from mro_system.models import System, Maintenance, Item, MaintenanceItem
+from mro_system.models import System, Maintenance, Item, MaintenanceItem, SystemDocument
 from mro_order.models import OrderDocument, Order
 from mro_contact.models import Employee
 
@@ -178,9 +178,10 @@ def warehouse_log(request):
 def system_document_report(request, system_pk):
     '''
     '''
-    
-    # get the Maintenance data from the data base
+
     system = System.objects.get(pk = system_pk)
+
+    # get the Maintenance data from the data base
     objs = OrderDocument.objects.filter(order__system = system).order_by('-created')
     
     # filter employees using the search form
@@ -193,6 +194,17 @@ def system_document_report(request, system_pk):
     table = OrderDocumentTable(objs)
     RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
+    # get the system documants
+    objs = SystemDocument.objects.filter(system = system).order_by('-created')
+    
+    # filter employees using the search form
+    if search:
+        objs &= SystemDocument.objects.filter(title__icontains = search)
+        objs |= SystemDocument.objects.filter(description__icontains = search)
+    
+    # create a table object for the employee data
+    table_system = OrderDocumentTable(objs)
+
     response_dict = {
         'headers': {
             'header': _('Maintenance documentation  - %(name)s') % {'name': system.name},
@@ -202,11 +214,12 @@ def system_document_report(request, system_pk):
         'search': search,
         'filters': None,
         
+        'table_system': table_system,
         'table': table,
         'add_action': False,
     }
     
-    return render(request, 'mro_report/base_table.html', response_dict)
+    return render(request, 'mro_report/documents_table.html', response_dict)
 
 def system_maintenance_report(request, system_pk):
     '''

@@ -89,7 +89,7 @@ class System(models.Model):
     image.verbose_name = _('System Image')
     
     # more information about this equpment
-    description = models.TextField(_('System Description'))
+    description = models.CharField(_('System Description'), max_length = 255, null = True, blank = True)
     
     # install date
     installed = models.DateField(default=lambda: date.today())
@@ -106,6 +106,10 @@ class System(models.Model):
     # it is the responsibilty of the maintenanace model to update this form
     last_maintenance = models.DateField(null = True, blank = True)
     last_maintenance.verbose_name = _('Last Maintenance Date')
+
+    # documents for this job
+    documents = models.ManyToManyField('SystemDocument', related_name = 'system_documents')
+    documents.verbose_name = _('Documents')
 
     def has_hourly_maintenance(self):
         ''' True if the system has an hourly maintenance
@@ -285,3 +289,26 @@ class MaintenanceItem(models.Model):
         verbose_name = _('Maintenance Item')
         verbose_name_plural = _('Maintenance Items')
         ordering = ('maintenance',)
+
+class SystemDocument(models.Model):
+    ''' Documents used for the Order
+    '''
+    # connection
+    system = models.ForeignKey(System)
+    system.verbose_name = _('System')
+
+    # description
+    title = models.CharField(_('Document title'), max_length = 30)
+    description =  models.TextField(_('Document description'), blank = True, null = True)
+    created = models.DateField(default=lambda: date.today())
+    created.verbose_name = _('Created date')
+    
+    # the document
+    image = models.FileField(null=True, blank=True, upload_to='documents/%Y/%m/%d')
+    image.verbose_name = _('Document')
+
+    class Meta:
+        verbose_name = _('System Document')
+        verbose_name_plural = _('System Documents')
+        ordering = ('title',)
+        

@@ -23,6 +23,8 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from django.shortcuts import render
 from django.conf import settings
+from django.forms.models import modelformset_factory
+from django.contrib import messages
 
 from django_tables2   import RequestConfig
 
@@ -59,6 +61,12 @@ def contact(request):
                 'name': ugettext_noop('Employees'),
                 'description': ugettext_noop('Manage employees contact information. Add and edit employees.'), 
             },
+            {
+                'link': '/contact/department/',
+                'image_url': '/static/tango/48x48/emblems/function.png',
+                'name': ugettext_noop('Departments'),
+                'description': ugettext_noop('Manage departments. Edit and add departments information.'),
+            }
         ],
     }
     
@@ -147,3 +155,37 @@ def contact_employees_edit(request, num = None):
     }
     
     return render(request, 'mro_contact/base_form.html', response_dict)
+
+def manage_departments(request):
+    '''
+    '''
+
+    DepartmentFormSet = modelformset_factory(Department, 
+        fields=('name', 'description'),
+        can_delete=True)
+    queryset = Department.objects.all() 
+
+    formset = DepartmentFormSet(queryset = queryset)
+    if request.method == 'POST':
+        formset = DepartmentFormSet(request.POST)
+
+        if formset.is_valid():
+            formset.save()
+
+            messages.success(request, _('Database updated.'))
+
+            return HttpResponseRedirect('/contact/department/')
+        else:
+            messages.error(request, _('Error updating database.'))
+            
+    response_dict = {}
+    response_dict['headers'] = {
+        'header': _('Departments'),
+        'lead': _('Manage departments. Edit and add departments information.'),
+        'thumb': '/static/tango/48x48/emblems/function.png',
+    }
+    response_dict['formset'] = formset
+    response_dict['objects'] = queryset
+    response_dict['search'] = None
+
+    return render(request, 'mro_contact/base_formset.html', response_dict)

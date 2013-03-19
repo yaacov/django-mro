@@ -22,15 +22,19 @@ from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = patterns('mro_contact.views',
+    
+    url(r'^department/$', 'manage_departments'),
+
     url(r'^employees/$', 'contact_employees'),
     url(r'^employees/(?P<num>\d+)/$', 'contact_employees_edit'),
     url(r'^employees/add/$', 'contact_employees_edit'),
 
-    url(r'$', 'contact'),
+    url(r'^$', 'contact'),
 )
 
 # breadcrumbs translation guide
 breadcrumbs = (
+    _('department'),
     _('employees'),
     _('add'),
 )

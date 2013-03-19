@@ -31,6 +31,7 @@ from django.forms.models import inlineformset_factory
 
 from mro_theme.widgets import AdminImageWidget
 from mro_system.models import System, Maintenance
+from mro_contact.models import Employee
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
 class SystemForm(ModelForm):
@@ -48,6 +49,16 @@ class SystemForm(ModelForm):
         #self.fields['address'].widget.attrs.update({'class' : 'wide'})
         self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
 
+        instance = getattr(self, 'instance', None)
+        choices = [
+            ('', _('Select employee')),
+        ]
+        if instance and instance.department:
+            choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = [instance.department])]
+        else:
+            choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
+        self.fields['assign_to'].choices = choices
+        self.fields['assign_to'].required = False
     class Meta:
         model = System
         fields = ('name', 
@@ -56,8 +67,9 @@ class SystemForm(ModelForm):
             #'card_number', 
             'contract_number',
             'contract_include_parts',
-            'assign_to', 
             'department', 
+            'assign_to', 
+            
             #'image', 
             'description',)
 
@@ -69,7 +81,7 @@ class SystemMaintenanceForm(ModelForm):
 
     class Meta:
         model = Maintenance
-        exclude = ('items', 'priority', 'assign_to', 'counter_command')
+        exclude = ('items', 'priority', 'assign_to', 'counter_command', 'estimated_work_time', 'work_description')
 
 class MaintenanceForm(ModelForm):
     ''' form for editing MaintenanceInstructionForm
@@ -94,6 +106,6 @@ class MaintenanceForm(ModelForm):
 
     class Meta:
         model = Maintenance
-        fields = ('work_description', 'counter_command',)
+        fields = ('work_description', 'counter_command', 'estimated_work_time')
         #exclude = ('items', 'priority', 'assign_to',)
         

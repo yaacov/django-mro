@@ -26,6 +26,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 from django.db.models import Max
 
+from optparse import make_option
+
 from mro_contact.models import Department
 from mro_system.models import System, Maintenance, MaintenanceItem
 from mro_order.models import Order, OrderItem
@@ -37,7 +39,7 @@ except:
 
 class Command(BaseCommand):
     help = 'check maintenance schedual and create work orders'
-    
+
     def create_order(self, maintenance):
 
         # if a work order is pending do set a new work order
@@ -64,7 +66,7 @@ class Command(BaseCommand):
             work_description = maintenance.work_description,
             contract_number = maintenance.system.contract_number,
             contract_include_parts = maintenance.system.contract_include_parts,
-            assign_to = maintenance.system.assign_to,
+            #assign_to = maintenance.system.assign_to,
         )
 
         order.save()
@@ -80,11 +82,14 @@ class Command(BaseCommand):
 
         print '            new work order issued '
 
-    def handle(self, *args, **options):
+    def handle(self, date_today = None, *args, **options):
         ''' run the command
         '''
         
         print '\n\nCheck maintenance scheduals:\n'
+
+        if not date_today:
+            date_today = date.today()
 
         # daily 
         print "\nDaily maintenances"

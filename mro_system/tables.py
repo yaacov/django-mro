@@ -29,9 +29,9 @@ class SystemTable(tables.Table):
         '<a href="/system/{{ record.pk }}/" >{{ record.name }}</a>')
     name.verbose_name = _('System Name')
     
-    short_description = tables.TemplateColumn(
-        '{{ record }}', orderable=False)
-    short_description.verbose_name = _('Description')
+    #short_description = tables.TemplateColumn(
+    #    '{{ record }}', orderable=False)
+    #short_description.verbose_name = _('Description')
     
     has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance')
     has_hourly_maintenance.verbose_name = _('Hourly')
@@ -54,13 +54,13 @@ class SystemTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'name',
-            'assign_to',
             'department',
-            'short_description',
-            'last_maintenance',
+            'assign_to',
             #'card_number',
-            #'contract_number',
-            #'contract_include_parts', 
+            'contract_number',
+            'contract_include_parts', 
+            #'short_description',
+            'last_maintenance',
             'has_hourly_maintenance', 
             'has_daily_maintenance', 
             'has_weekly_maintenance', 

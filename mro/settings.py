@@ -17,6 +17,12 @@ ADMINS = (
     ('Yaacov Zamir', 'kobi.zamir@gmail.com'),
 )
 
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_HOST_USER="kobi.zamir@gmail.com"
+EMAIL_HOST_PASSWORD="PASSWORD!!"
+EMAIL_USE_TLS=True
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -137,6 +143,7 @@ INSTALLED_APPS = (
 
     'crispy_forms',
     'django_tables2',
+    'wkhtmltopdf',
 
     'mro',
     'mro_icons',
@@ -175,6 +182,9 @@ LOCALE_PATHS = (
 # USAGE:
 #   ./manage.py compile_less
 USE_MINIFY = True
+
+# path to binary wkhtmltopdf command line utility
+WKHTMLTOPDF_CMD = '%s/bin/wkhtmltopdf' % SITE_ROOT
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

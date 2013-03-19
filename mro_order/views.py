@@ -29,15 +29,20 @@ from django.forms.models import inlineformset_factory
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
 from django.db.models import Max
+from django.template import Template, Context
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
 
 from django_tables2 import RequestConfig
+from wkhtmltopdf.views import PDFTemplateView
 
 from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
 from mro_contact.models import Department, Employee
 from mro_order.models import Order, OrderItem, OrderDocument
 from mro_order.tables import SystemTable, MaintenanceOrderTable
-from mro_order.tables import MaintenanceTable, AllOrderTable, AssignTable
+from mro_order.tables import MaintenanceTable, AllOrderTable, AssignTable, SimpleAssignTable
 from mro_order.forms import OrderForm, SearchOrderForm, ActionOrderForm
+from mro_order.forms import SimpleSearchOrderForm, SimpleActionOrderForm
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -309,7 +314,6 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
     }
     response_dict['form'] = orderform
     response_dict['formset'] = itemformset
-    #response_dict['employeeformset'] = employeeformset
     response_dict['documentformset'] = documentformset
 
     return render(request, 'mro_order/manage_issue_order.html', response_dict)
@@ -395,12 +399,14 @@ def table_orders(request):
     
     return render(request, 'mro_order/table_orders.html', response_dict)
 
-def assign(request):
+def assign(request, simple_view = True):
     """
     """
     # get the employee data from the data base
     objs = Order.objects.all().order_by('-created','-assigned','-completed')
     
+    department = None
+
     # filter employees using the search form
     search = request.GET.get('search', '').strip()
     if search:
@@ -412,14 +418,27 @@ def assign(request):
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
 
-    searchform = SearchOrderForm(request.GET)
-    if searchform.is_valid():
-        employee = searchform.cleaned_data['employee']
-        system = searchform.cleaned_data['system']
-        work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
+    if simple_view:
+        searchform = SimpleSearchOrderForm(request.GET)
+    else:
+        searchform = SearchOrderForm(request.GET)
 
+    if searchform.is_valid():
+        if simple_view:
+            work_order_state = 'RE'
+            employee = ''
+        else:
+            work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
+            employee = searchform.cleaned_data['employee']
+
+        system = searchform.cleaned_data['system']
+        
         if system.startswith('DE-'):
+            
+
             department_pk = int(system[3:])
+            department = Department.objects.filter(pk = department_pk)
+
             objs &= Order.objects.filter(system__department__pk = department_pk)
 
         if system.startswith('SY-'):
@@ -435,20 +454,29 @@ def assign(request):
         # default is RE
         objs &= Order.objects.filter(work_order_state = 'RE')
 
-    table = AssignTable(objs)
+    if simple_view:
+        table = SimpleAssignTable(objs)
+    else:
+        table = AssignTable(objs)
 
     RequestConfig(request, paginate={"per_page": 40}).configure(table)
     
     if request.method == "POST":
-        actionfrom = ActionOrderForm(request.POST)
+        if simple_view:
+            actionfrom = SimpleActionOrderForm(request.POST)
+        else:
+            actionfrom = ActionOrderForm(request.POST)
 
         if actionfrom.is_valid():
             pks = request.POST.getlist("selection")
             selected_objects = Order.objects.filter(pk__in=pks)
 
-            selected_action = actionfrom.cleaned_data['selected_action']
-            
-            if selected_action == 'AS':
+            if simple_view:
+                selected_action = 'AS'
+            else:
+                selected_action = actionfrom.cleaned_data['selected_action']
+                
+            if not selected_action or selected_action == 'AS':
                 # assing to employee
                 assign_to = actionfrom.cleaned_data['assign_to']
                 if assign_to and selected_objects:
@@ -474,23 +502,32 @@ def assign(request):
                         order.save()
 
     # base_table.html response_dict rendering information
-    response_dict = {
-        'search_form': SearchOrderForm(request.GET),
-        'action_form': ActionOrderForm(request.POST),
-        'search': search,
-        'table': table,
-    }
+    if simple_view:
+        response_dict = {
+            'search_form': SimpleSearchOrderForm(request.GET),
+            'action_form': SimpleActionOrderForm(request.POST, department = department),
+            'search': search,
+            'table': table,
+        }
+    else:
+        response_dict = {
+            'search_form': SearchOrderForm(request.GET),
+            'action_form': ActionOrderForm(request.POST),
+            'search': search,
+            'table': table,
+        }
 
     response_dict['table'] = table
     response_dict['headers'] = {
         'thumb': '/static/tango/48x48/actions/add-participant.png',
         'header': _('Assing work orders to employees'),
         'lead': _('Manage work orders, assigne work orders to employees.'), 
+        'simple_view': simple_view,
     }
     
     return render(request, 'mro_order/assign.html', response_dict)
 
-def print_orders(request):
+def xprint_orders(request, simple_view = False):
     """
     """
     # get the employee data from the data base
@@ -507,15 +544,23 @@ def print_orders(request):
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
 
-    if 'work_order_state' not in request.GET:
-        searchform = SearchOrderForm(initial = {'work_order_state': 'AS'})
+    if simple_view:
+        searchform = SimpleSearchOrderForm(request.GET)
     else:
+        #if 'work_order_state' not in request.GET:
+        #    searchform = SearchOrderForm(initial = {'work_order_state': 'AS'})
+        #else:
         searchform = SearchOrderForm(request.GET)
 
     if searchform.is_valid():
-        employee = searchform.cleaned_data['employee']
+        work_order_state = 'AS'
+        employee = ''
+
+        if not simple_view:
+            #work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
+            employee = searchform.cleaned_data['employee']
+
         system = searchform.cleaned_data['system']
-        work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
 
         if system.startswith('DE-'):
             department_pk = int(system[3:])
@@ -541,7 +586,25 @@ def print_orders(request):
     if request.method == "POST":
         
         pks = request.POST.getlist("selection")
+        post_print = request.POST.get("print", "")
+
+        print post_print
         orders = Order.objects.filter(pk__in=pks)
+
+        t = get_template('mro_order/print_orders.html')
+
+        #for order in orders:
+        #    c = Context({'orders': orders})
+        #    html_content = t.render(c)
+        #    from_email = "kobi@ddc.co.il"
+        #    msg = EmailMessage("work", html_content, from_email, [order.assign_to.email])
+        #    msg.content_subtype = "html"  # Main content is now text/html
+        #    try:
+        #        if order.assign_to.email:
+        #            print "sending to", order.assign_to.email
+        #            msg.send()
+        #    except:
+        #        print "fail to send mail"
 
         return render(request, 'mro_order/print_orders.html', {'orders': orders})
 
@@ -560,3 +623,109 @@ def print_orders(request):
     }
     
     return render(request, 'mro_order/print.html', response_dict)
+
+class PrintOrders(PDFTemplateView):
+    
+    def get(self, request, *args, **kwargs):
+        post_print = request.POST.get("print", "")
+        response_class = self.response_class
+        try:
+            if post_print != '_pdf' or request.GET.get('as', '') == 'html':
+                # Use the html_response_class if HTML was requested.
+                self.response_class = self.html_response_class
+            return super(PrintOrders, self).get(request,
+                *args, **kwargs)
+        finally:
+            # Remove self.response_class
+            self.response_class = response_class
+
+    def post(self, request, *args, **kwargs):
+        post_print = request.POST.get("print", "")
+
+        response_class = self.response_class
+        try:
+            if post_print != '_pdf' or request.GET.get('as', '') == 'html':
+                # Use the html_response_class if HTML was requested.
+                self.response_class = self.html_response_class
+            return super(PrintOrders, self).get(request,
+                *args, **kwargs)
+        finally:
+            # Remove self.response_class
+            self.response_class = response_class
+
+    def get_context_data(self, **kwargs):
+        # get the employee data from the data base
+        objs = Order.objects.all().order_by('-created','-assigned','-completed')
+        request = self.request
+
+        # filter employees using the search form
+        search = request.GET.get('search', '').strip()
+        if search:
+            objs &= Order.objects.filter(assign_to__first_name__icontains = search)
+            objs |= Order.objects.filter(assign_to__last_name__icontains = search)
+            objs |= Order.objects.filter(system__name__icontains = search)
+            objs |= Order.objects.filter(system__description__icontains = search)
+            objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+            objs |= Order.objects.filter(work_description__icontains = search)
+            objs |= Order.objects.filter(work_notes__icontains = search)
+
+        #searchform = SimpleSearchOrderForm(request.GET)
+        searchform = SearchOrderForm(request.GET)
+
+        if searchform.is_valid():
+            work_order_state = 'AS'
+            employee = ''
+
+            #work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
+            employee = searchform.cleaned_data['employee']
+
+            system = searchform.cleaned_data['system']
+
+            if system.startswith('DE-'):
+                department_pk = int(system[3:])
+                objs &= Order.objects.filter(system__department__pk = department_pk)
+
+            if system.startswith('SY-'):
+                system_pk = int(system[3:])
+                objs &= Order.objects.filter(system__pk = system_pk)
+
+            if employee:
+                objs &= Order.objects.filter(assign_to__pk = employee)
+
+            if work_order_state not in ['AL',]:
+                objs &= Order.objects.filter(work_order_state = work_order_state)
+        else:
+            # default is RE
+            objs &= Order.objects.filter(work_order_state = 'AS')
+
+        table = AssignTable(objs)
+
+        RequestConfig(request, paginate={"per_page": 40}).configure(table)
+        
+        if request.method == "POST":
+            
+            pks = request.POST.getlist("selection")
+            post_print = request.POST.get("print", "")
+
+            orders = Order.objects.filter(pk__in=pks)
+
+            self.template_name = 'mro_order/print_orders.html'
+            response_dict = super(PrintOrders, self).get_context_data(**kwargs)
+            response_dict['orders'] = orders
+            response_dict['post_print'] = post_print
+            return response_dict
+
+        self.template_name = 'mro_order/print.html'
+        response_dict = super(PrintOrders, self).get_context_data(**kwargs)
+        response_dict['search_form']=searchform
+        response_dict['search']=search
+        response_dict['table']=table
+
+        response_dict['table'] = table
+        response_dict['headers'] = {
+            'thumb': '/static/tango/48x48/actions/manage-students.png',
+            'header': _('Print work orders for employees'),
+            'lead': _('Print work orders, print work orders assined to employees.'),
+        }
+
+        return response_dict
