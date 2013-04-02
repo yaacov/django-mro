@@ -558,14 +558,17 @@ class PrintOrders(PDFTemplateView):
             pks = request.POST.getlist("selection")
             post_print = request.POST.get("print", "")
             orders = Order.objects.filter(pk__in=pks)
-
-            if orders:
-                self.template_name = 'mro_order/print_orders.html'
-                response_dict['orders'] = orders
-                response_dict['post_print'] = post_print
-
-                return response_dict
-
+            self.template_name = 'mro_order/print_orders.html'
+            
+            response_dict['orders'] = orders
+            response_dict['post_print'] = post_print
+            
+            if not orders:
+                response_dict['post_print'] = ''
+                self.response_class = self.html_response_class
+                
+            return response_dict
+        
         # get the employee data from the data base
         objs = Order.objects.all().order_by('-created','-assigned','-completed')
 

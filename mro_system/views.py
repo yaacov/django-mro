@@ -238,8 +238,8 @@ def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
         else:
             messages.error(request, _('Error updating database.'))
     else:
-        systemform = MaintenanceForm(instance=maintenance)
-        maintenanceformset = ItemFormSet(instance=maintenance, queryset=page_query)
+        maintenanceform = MaintenanceForm(instance=maintenance)
+        itemformset = ItemFormSet(instance=maintenance, queryset=page_query)
 
     response_dict = {}
     response_dict['headers'] = {
@@ -248,8 +248,8 @@ def manage_system_maintenance(request, system_pk = None, maintenance_pk = None):
 
         'thumb': '/static/tango/48x48/status/flag-green-clock.png',
     }
-    response_dict['form'] = systemform
-    response_dict['formset'] = maintenanceformset
+    response_dict['form'] = maintenanceform
+    response_dict['formset'] = itemformset
     response_dict['objects'] = objects
     response_dict['search'] = search
 

@@ -32,6 +32,9 @@
 #search-form li {
     margin-right: 20px;
 }
+th.error, td.error {
+    color: red;
+}
 </style>
 {% endblock %}
 
@@ -80,9 +83,6 @@ django.jQuery(function(){
     </ul>
 </form-->
 
-{{ form.errors }}
-{{ form.non_field_errors }}
-
 <form method="post" id="formset" action="">
     {% csrf_token %}
 
@@ -98,7 +98,11 @@ django.jQuery(function(){
             {% endif %}
                 {{ field.label }}
             </th>
+            {% if field.errors %}
+            <td class="control-group {{ field.name }} error">
+            {% else %}
             <td class="control-group {{ field.name }}">
+            {% endif %}
                 {{field}}
             </td>
         {%else%}

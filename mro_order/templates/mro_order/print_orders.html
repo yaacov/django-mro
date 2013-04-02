@@ -61,7 +61,6 @@
     {% endif %}
 
     .order-form {
-        direction: rtl;
         margin: 20px;
     }
     table {
@@ -203,6 +202,11 @@
     {% if post_print == '_print' %}
     <script>
         window.print();
+    </script>
+    {% endif %}
+    {% if not orders %}
+    <script>
+        window.close();
     </script>
     {% endif %}
 </body>

@@ -9,6 +9,12 @@
 .table select, .table textarea {
     width: 95%;
 }
+th.error {
+    color: red;
+}
+td.error {
+    color: red;
+}
 </style>
 {% endblock %}
 
@@ -77,7 +83,11 @@ django.jQuery(function(){
             {% endif %}
                 {{ field.label }}
             </th>
+            {% if field.errors %}
+            <td class="control-group {{ field.name }} error">
+            {% else %}
             <td class="control-group {{ field.name }}">
+            {% endif %}
                 {{field}} <apan class="text-info">{{field.help_text}}</span>
             </td>
         {%else%}
@@ -115,7 +125,7 @@ django.jQuery(function(){
             {%for field in form %} 
                 {% if not field.is_hidden %}
                     {% if field.errors %}
-                    <td valign="bottom" class="control-group error">
+                    <td valign="bottom" class="control-group {{ field.name }} error">
                     {% else %}
                     <td valign="bottom" class="control-group {{ field.name }}">
                     {% endif %}

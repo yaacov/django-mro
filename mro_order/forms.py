@@ -83,7 +83,10 @@ class SearchOrderForm(forms.Form):
         ]
         
         if 'system' in self.data:
-            choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+            try:
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+            except:
+                choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         else:
             choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         self.fields['employee'].choices = choices

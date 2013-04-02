@@ -6,6 +6,7 @@ import sys
 import django.conf.global_settings as DEFAULT_SETTINGS
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+SITE_URL = "/mro/"
 
 # add the dist-packages path the the python path
 sys.path.insert(1,'%s/dist-packages' % SITE_ROOT)

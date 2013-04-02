@@ -57,7 +57,7 @@ def contract(request):
     if search:
         objs &= Contract.objects.filter(number__icontains = search)
         objs |= Contract.objects.filter(description__icontains = search)
-        objs |= Contract.objects.filter(buisness__name__icontains = search)
+        objs |= Contract.objects.filter(business__name__icontains = search)
     
     # create a table object for the employee data
     table = ContractTable(objs)
@@ -128,8 +128,6 @@ def manage_contract(request, contract_pk = None):
     }
     response_dict['form'] = contractform
     response_dict['documentformset'] = documentformset
-    #response_dict['objects'] = objects
-    #response_dict['search'] = search
 
     return render(request, 'mro_contract/manage_contract.html', response_dict)
 

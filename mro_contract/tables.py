@@ -31,7 +31,8 @@ class ContractTable(tables.Table):
     slug = tables.TemplateColumn(
         '''{{ record }}''')
     slug.verbose_name = _('Contract')
-
+    slug.orderable = False
+    
     class Meta:
         model = Contract
         template = 'mro/table.html'

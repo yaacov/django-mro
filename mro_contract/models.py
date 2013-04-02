@@ -40,7 +40,7 @@ class Contract(models.Model):
     include_parts = models.BooleanField(_('Include parts'), default = False)
     
     # description
-    description =  models.TextField(_('Document description'), blank = True, null = True)
+    description =  models.TextField(_('Description'), blank = True, null = True)
 
     # contract dates
     start = models.DateField(default = lambda: date.today())
