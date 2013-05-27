@@ -206,7 +206,6 @@ def contact_businesses(request):
     search = request.GET.get('search', '')
     if search:
         objs &= Business.objects.filter(name__icontains = search)
-        objs |= Business.objects.filter(contact_person_icontains = search)
         objs |= Business.objects.filter(email__icontains = search)
         objs |= Business.objects.filter(phone__icontains = search)
     

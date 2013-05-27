@@ -33,19 +33,19 @@ class SystemTable(tables.Table):
     #    '{{ record }}', orderable=False)
     #short_description.verbose_name = _('Description')
     
-    has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance')
+    has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance', orderable=False)
     has_hourly_maintenance.verbose_name = _('Hourly')
 
-    has_daily_maintenance = tables.BooleanColumn('has_daily_maintenance')
+    has_daily_maintenance = tables.BooleanColumn('has_daily_maintenance', orderable=False)
     has_daily_maintenance.verbose_name = _('Daily')
 
-    has_weekly_maintenance = tables.BooleanColumn('has_weekly_maintenance')
+    has_weekly_maintenance = tables.BooleanColumn('has_weekly_maintenance', orderable=False)
     has_weekly_maintenance.verbose_name = _('Weekly')
 
-    has_monthly_maintenance = tables.BooleanColumn('has_monthly_maintenance')
+    has_monthly_maintenance = tables.BooleanColumn('has_monthly_maintenance', orderable=False)
     has_monthly_maintenance.verbose_name = _('Monthly')
 
-    has_yearly_maintenance = tables.BooleanColumn('has_yearly_maintenance')
+    has_yearly_maintenance = tables.BooleanColumn('has_yearly_maintenance', orderable=False)
     has_yearly_maintenance.verbose_name = _('Yearly')
 
     class Meta:

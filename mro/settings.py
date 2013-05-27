@@ -59,6 +59,12 @@ USE_I18N = True
 # calendars according to the current locale.
 USE_L10N = True
 
+# Overide the USE_L10N defaults. If the system language (USE_L10N settings) 
+# is what you need, remove the DATE_INPUT_FORMATS overide
+DATE_INPUT_FORMATS = ('%d/%m/%Y', '%Y-%m-%d', '%d/%m/%y', '%b %d %Y',
+'%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
+'%B %d, %Y', '%d %B %Y', '%d %B, %Y')
+
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 

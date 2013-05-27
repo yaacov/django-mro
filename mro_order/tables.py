@@ -98,6 +98,7 @@ class AssignTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'selection',
+            'short_description',
             'system_name',
             'department',
             'maintenance_work_type',
@@ -105,7 +106,7 @@ class AssignTable(tables.Table):
             #'priority', 
             'assign_to', 
             'created',
-            'short_description',)
+            )
 
 class SimpleAssignTable(tables.Table):
     system_name = tables.TemplateColumn(
@@ -150,6 +151,7 @@ class SimpleAssignTable(tables.Table):
         attrs = {'class': 'table table-striped'}
         fields = (
             'selection',
+            'short_description',
             'system_name',
             'department',
             #'system_assign_to',
@@ -160,7 +162,7 @@ class SimpleAssignTable(tables.Table):
             #'priority', 
             #'assign_to', 
             'created',
-            'short_description',)
+            )
 
 class MaintenanceOrderTable(tables.Table):
     name = tables.TemplateColumn(

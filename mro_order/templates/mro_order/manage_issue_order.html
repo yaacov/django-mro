@@ -77,14 +77,14 @@ td.error {
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
-    django.jQuery('.created input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.started input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.assigned input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.completed input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.created input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.started input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.assigned input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.completed input').datepicker({'format': 'dd/mm/yyyy'});
 
-    django.jQuery('.issued input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.ordered input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.work_started input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.issued input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.ordered input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.work_started input').datepicker({'format': 'dd/mm/yyyy'});
 
     django.jQuery('#search-form').keypress(function (e){
         code = e.keyCode ? e.keyCode : e.which;

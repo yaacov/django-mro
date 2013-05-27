@@ -55,6 +55,7 @@ class WarehouseItemForm(ModelForm):
             
             # make the item widget none seateble
             self.fields['item'].widget.attrs['readonly'] = True
+            self.fields['item'].widget.attrs['disabled'] = 'disabled'
 
     class Meta:
         model = WarehouseItem

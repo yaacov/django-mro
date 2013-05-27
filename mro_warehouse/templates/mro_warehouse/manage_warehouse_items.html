@@ -49,9 +49,9 @@ span.amount-widget input {
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
-    django.jQuery('.entered input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('.expires input').datepicker({'format': 'yyyy-mm-dd'});
-    django.jQuery('input.expires').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.entered input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('.expires input').datepicker({'format': 'dd/mm/yyyy'});
+    django.jQuery('input.expires').datepicker({'format': 'dd/mm/yyyy'});
     
     django.jQuery('#search-form').keypress(function (e){
         code = e.keyCode ? e.keyCode : e.which;
@@ -168,6 +168,10 @@ django.jQuery(function() {
     django.jQuery('.paginators').on("click", function(event){
         django.jQuery('#form-page').val(django.jQuery(this).data('page'));
         django.jQuery('#search-form').submit();
+    });
+    
+    django.jQuery('form').bind('submit', function() {
+        django.jQuery(this).find(':input').removeAttr('disabled');
     });
 });
 </script>

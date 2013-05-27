@@ -41,6 +41,32 @@ class OrderForm(ModelForm):
         self.fields['system'].widget = forms.HiddenInput()
         self.fields['maintenance'].widget = forms.HiddenInput()
 
+    work_started_time = forms.CharField(required=False)
+    work_started_time.label=_('Work start time')
+    
+    def clean_work_started_time(self):
+        work_started_time = str(self.cleaned_data['work_started_time'])
+        if not work_started_time:
+            return None
+        
+        if work_started_time.find(':') == -1:
+            work_started_time = work_started_time[:2] + ':' + work_started_time[2:]
+        
+        return work_started_time
+    
+    work_end_time = forms.CharField(required=False)
+    work_end_time.label=_('Work end time')
+    
+    def clean_work_end_time(self):
+        work_end_time = str(self.cleaned_data['work_end_time'])
+        if not work_end_time:
+            return None
+        
+        if work_end_time.find(':') == -1:
+            work_end_time = work_end_time[:2] + ':' + work_end_time[2:]
+        
+        return work_end_time
+    
     class Meta:
         model = Order
         fields = ('work_number', 
@@ -150,3 +176,4 @@ class SimpleActionOrderForm(forms.Form):
         else:
             choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         self.fields['assign_to'].choices = choices
+        

@@ -29,7 +29,7 @@ input, select {
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
-    django.jQuery('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.dateinput').datepicker({'format': 'dd/mm/yyyy'});
 });
 </script>
 {% endblock %}
@@ -114,6 +114,11 @@ django.jQuery(function() {
         django.jQuery('#form-page').val(django.jQuery(this).data('page'));
         django.jQuery('#search-form').submit();
     });
+    
+    django.jQuery('form').bind('submit', function() {
+        django.jQuery(this).find(':input').removeAttr('disabled');
+    });
+    
 });
 </script>
 

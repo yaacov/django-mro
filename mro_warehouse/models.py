@@ -146,7 +146,7 @@ class WarehouseLog(models.Model):
     ACTIONS = (
         ('IN', ugettext('Store items')),
         ('OU', ugettext('Issue items')),
-        ('RE', ugettext('Reset amount, inventory count')),
+        #('RE', ugettext('Reset amount, inventory count')),
     )
 
     # connection

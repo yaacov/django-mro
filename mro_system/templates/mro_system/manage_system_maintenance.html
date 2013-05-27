@@ -46,7 +46,7 @@ th.error, td.error {
 <script>
 // use bootstrap datepicker for redering 
 django.jQuery(function(){
-    django.jQuery('.last_maintenance input').datepicker({'format': 'yyyy-mm-dd'});
+    django.jQuery('.last_maintenance input').datepicker({'format': 'dd/mm/yyyy'});
     
     django.jQuery('#search-form').keypress(function (e){
         code = e.keyCode ? e.keyCode : e.which;
