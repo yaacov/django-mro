@@ -102,10 +102,12 @@ class AssignTable(tables.Table):
             'system_name',
             'department',
             'maintenance_work_type',
-            #'work_order_state', 
-            #'priority', 
+            'work_order_state', 
+            'priority', 
             'assign_to', 
             'created',
+            'assigned',
+            'completed',
             )
 
 class SimpleAssignTable(tables.Table):

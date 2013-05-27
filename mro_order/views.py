@@ -399,7 +399,7 @@ def table_orders(request):
     
     return render(request, 'mro_order/table_orders.html', response_dict)
 
-def assign(request, simple_view = True):
+def assign(request, simple_view = False):
     """
     """
     # get the employee data from the data base
@@ -500,6 +500,13 @@ def assign(request, simple_view = True):
                     for order in selected_objects:
                         order.work_order_state = 'CA'
                         order.save()
+            
+            if selected_action == 'CO':
+                # cancel work
+                if selected_objects:
+                    for order in selected_objects:
+                        order.work_order_state = 'CO'
+                        order.save()
 
     # base_table.html response_dict rendering information
     if simple_view:
@@ -583,8 +590,8 @@ class PrintOrders(PDFTemplateView):
             objs |= Order.objects.filter(work_description__icontains = search)
             objs |= Order.objects.filter(work_notes__icontains = search)
 
-        #searchform = SimpleSearchOrderForm(request.GET)
-        searchform = SearchOrderForm(request.GET)
+        searchform = SimpleSearchOrderForm(request.GET)
+        #searchform = SearchOrderForm(request.GET)
 
         if searchform.is_valid():
             work_order_state = 'AS'

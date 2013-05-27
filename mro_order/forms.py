@@ -90,12 +90,28 @@ class SearchOrderForm(forms.Form):
     employee = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
         widget=forms.Select(attrs={'class':'selector'}))
 
-    #work_order_state = forms.ChoiceField(label=_("Work state"), required = False, choices=(),
-    #    widget=forms.Select(attrs={'class':'selector'}))
+    work_order_state = forms.ChoiceField(label=_("Work state"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
 
+    def clean_work_order_state(self):
+        work_order_state = str(self.cleaned_data['work_order_state'])
+        if not work_order_state:
+            return 'RE'
+        
+        return work_order_state
+    
     def __init__(self, *args, **kwargs):
         super(SearchOrderForm, self).__init__(*args, **kwargs)
-
+        
+        choices = [
+            ('AL', _('Select work state')),
+            ('', _('Waiting for assignment')), # RE
+            ('AS', _('Assigned')),
+            ('CO', _('Completed')),
+            ('CA', _('Canceled')),
+        ]
+        self.fields['work_order_state'].choices = choices
+        
         choices = [
             ('', _('Select department')),
         ]
@@ -110,11 +126,13 @@ class SearchOrderForm(forms.Form):
         
         if 'system' in self.data:
             try:
-                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in 
+                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
             except:
                 choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         else:
             choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
+        
         self.fields['employee'].choices = choices
         self.fields['employee'].required = False
         
@@ -126,6 +144,13 @@ class ActionOrderForm(forms.Form):
     selected_action = forms.ChoiceField(label=_("Action"), required = False, choices=(),
         widget=forms.Select(attrs={'class':'selector'}))
 
+    def clean_selected_action(self):
+        selected_action = str(self.cleaned_data['selected_action'])
+        if not selected_action:
+            return 'AS'
+        
+        return selected_action
+        
     def __init__(self, *args, **kwargs):
         super(ActionOrderForm, self).__init__(*args, **kwargs)
 
@@ -136,8 +161,9 @@ class ActionOrderForm(forms.Form):
         self.fields['assign_to'].choices = choices
 
         choices = [
-            ('', _('Select action')),
-            ('AS', _('Assign to employee')),
+            ('NONE', _('Select action')),
+            ('', _('Assign to employee')),
+            ('CO', _('Work completed')),
             ('CA', _('Cancel assignment')),
             ('CW', _('Cancel work order')),
         ]
@@ -147,6 +173,9 @@ class SimpleSearchOrderForm(forms.Form):
     system = forms.ChoiceField(label=_("Department and System"), required = False, choices=(),
         widget=forms.Select(attrs={'class':'selector'}))
 
+    employee = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
+        widget=forms.Select(attrs={'class':'selector'}))
+    
     def __init__(self, *args, **kwargs):
         super(SimpleSearchOrderForm, self).__init__(*args, **kwargs)
 
@@ -156,7 +185,23 @@ class SimpleSearchOrderForm(forms.Form):
         choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
         choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
         self.fields['system'].choices = choices
-
+        
+        choices = [
+            ('', _('Select employee')),
+        ]
+        
+        if 'system' in self.data:
+            try:
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in 
+                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+            except:
+                choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
+        else:
+            choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
+        
+        self.fields['employee'].choices = choices
+        self.fields['employee'].required = False
+        
 class SimpleActionOrderForm(forms.Form):
 
     assign_to = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
