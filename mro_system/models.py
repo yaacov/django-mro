@@ -252,12 +252,13 @@ class Maintenance(models.Model):
             pass
         
         # make work cycle compatible with the work type
-        if self.work_type == 'WH' and self.work_cycle != 'WH':
-            self.work_type = self.work_cycle
+        #if self.work_type == 'WH' and self.work_cycle != 'WH':
+        #    self.work_type = self.work_cycle
 
-        if self.work_type != 'WH' and self.work_cycle == 'WH':
-            self.work_type = self.work_cycle
-
+        #if self.work_type != 'WH' and self.work_cycle == 'WH':
+        #    self.work_type = self.work_cycle
+        self.work_type = self.work_cycle
+        
         # call the default save method
         super(Maintenance, self).save(*args, **kwargs)
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-27 11:23+0300\n"
+"POT-Creation-Date: 2013-06-09 08:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -437,19 +437,16 @@ msgid "Please log in again, because your session has expired."
 msgstr ""
 
 #: lib/python2.7/site-packages/django/contrib/admin/helpers.py:23
-#, fuzzy
 msgid "Action:"
-msgstr "פעולה"
+msgstr "פעולה:"
 
 #: lib/python2.7/site-packages/django/contrib/admin/models.py:24
-#, fuzzy
 msgid "action time"
-msgstr "חד פעמי"
+msgstr "זמן פעולה"
 
 #: lib/python2.7/site-packages/django/contrib/admin/models.py:27
-#, fuzzy
 msgid "object id"
-msgstr "פרויקט"
+msgstr "מספר אובייקט"
 
 #: lib/python2.7/site-packages/django/contrib/admin/models.py:28
 msgid "object repr"
@@ -506,9 +503,8 @@ msgstr ""
 #: lib/python2.7/site-packages/django/contrib/comments/templates/comments/preview.html:16
 #: lib/python2.7/site-packages/django/db/models/base.py:889
 #: lib/python2.7/site-packages/django/forms/models.py:593
-#, fuzzy
 msgid "and"
-msgstr "הוסף"
+msgstr "וגם"
 
 #: lib/python2.7/site-packages/django/contrib/admin/options.py:689
 #, python-format
@@ -575,9 +571,8 @@ msgid ""
 msgstr ""
 
 #: lib/python2.7/site-packages/django/contrib/admin/options.py:970
-#, fuzzy
 msgid "No action selected."
-msgstr "בצע פעולה"
+msgstr "לא נבחרה פעולה"
 
 #: lib/python2.7/site-packages/django/contrib/admin/options.py:1050
 #: lib/python2.7/site-packages/django_common/admin.py:118
@@ -641,9 +636,8 @@ msgid "Log in"
 msgstr ""
 
 #: lib/python2.7/site-packages/django/contrib/admin/sites.py:388
-#, fuzzy
 msgid "Site administration"
-msgstr "הוראות טיפול ואחזקה"
+msgstr "אחזקת אתר"
 
 #: lib/python2.7/site-packages/django/contrib/admin/sites.py:440
 #, python-format
@@ -7320,9 +7314,9 @@ msgstr "עבודה הושלמה"
 msgid "Canceled"
 msgstr "עבודה מבוטלת"
 
-#: mro_order/forms.py:116 mro_order/forms.py:183 mro_order/views.py:117
-msgid "Select department"
-msgstr "בחר מערכת"
+#: mro_order/forms.py:116 mro_order/forms.py:183
+msgid "Department/System"
+msgstr "מערכת וציוד"
 
 #: mro_order/forms.py:119 mro_order/forms.py:186 mro_order/models.py:49
 #: mro_order/tables.py:74 mro_order/tables.py:116
@@ -7573,6 +7567,10 @@ msgstr "נהל פקודות אחזקה, יצירה וניהול של פקודו�
 #: mro_order/views.py:82
 msgid "Work orders"
 msgstr "פקודות אחזקה"
+
+#: mro_order/views.py:117
+msgid "Select department"
+msgstr "בחר מערכת"
 
 #: mro_order/views.py:189
 #, python-format
@@ -8186,4 +8184,3 @@ msgstr "בצע פעולה במחסן"
 
 #~ msgid "Contract maintenance information"
 #~ msgstr "ערוך הוראות תחזוקה עבור ציוד"
-
