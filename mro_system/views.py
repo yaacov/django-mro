@@ -109,8 +109,8 @@ def manage_system(request, system_pk = None):
 
     MaintenanceFormSet = inlineformset_factory(System, Maintenance, 
         extra = 1, can_delete=True, form=SystemMaintenanceForm)
-    DocumentFormSet = inlineformset_factory(System, SystemDocument, 
-        extra = 1, can_delete = True)
+    #DocumentFormSet = inlineformset_factory(System, SystemDocument, 
+    #    extra = 1, can_delete = True)
 
     queryset = Maintenance.objects.filter(system = system) 
 
@@ -133,17 +133,17 @@ def manage_system(request, system_pk = None):
     if request.method == "POST":
         systemform = SystemForm(request.POST, instance=system)
         maintenanceformset = MaintenanceFormSet(request.POST, request.FILES, instance=system)
-        documentformset = DocumentFormSet(request.POST, request.FILES, instance = system, prefix='documents')
+        #documentformset = DocumentFormSet(request.POST, request.FILES, instance = system, prefix='documents')
 
-        if systemform.is_valid() and maintenanceformset.is_valid() and documentformset.is_valid():
+        if systemform.is_valid() and maintenanceformset.is_valid():
             system = systemform.save()
             maintenanceformset.save()
 
-            documents = documentformset.save(commit=False)
-            for document in documents:
+            #documents = documentformset.save(commit=False)
+            #for document in documents:
 
-                document.system = system
-                document.save()
+            #    document.system = system
+            #    document.save()
 
             messages.success(request, _('Database updated.'))
 
@@ -157,7 +157,7 @@ def manage_system(request, system_pk = None):
     else:
         systemform = SystemForm(instance = system)
         maintenanceformset = MaintenanceFormSet(instance = system, queryset = page_query)
-        documentformset = DocumentFormSet(instance = system, prefix = 'documents')
+        #documentformset = DocumentFormSet(instance = system, prefix = 'documents')
 
     response_dict = {}
     response_dict['headers'] = {
@@ -167,7 +167,7 @@ def manage_system(request, system_pk = None):
     }
     response_dict['form'] = systemform
     response_dict['formset'] = maintenanceformset
-    response_dict['documentformset'] = documentformset
+    #response_dict['documentformset'] = documentformset
     response_dict['objects'] = objects
     response_dict['search'] = search
 

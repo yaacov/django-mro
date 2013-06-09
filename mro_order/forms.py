@@ -113,7 +113,7 @@ class SearchOrderForm(forms.Form):
         self.fields['work_order_state'].choices = choices
         
         choices = [
-            ('', _('Select department')),
+            ('', _('Department/System')),
         ]
         choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
         choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
@@ -180,7 +180,7 @@ class SimpleSearchOrderForm(forms.Form):
         super(SimpleSearchOrderForm, self).__init__(*args, **kwargs)
 
         choices = [
-            ('', _('Select department')),
+            ('', _('Department/System')),
         ]
         choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
         choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
