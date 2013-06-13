@@ -48,6 +48,14 @@ urlpatterns = patterns('mro_order.views',
             'update_url': '/order/print/'
         }),
 
+    url(r'^status/$', 'status'),
+    url(r'^status/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/status/')),
+    url(r'^status/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+        {
+            'next_url': '/order/status/',
+            'update_url': '/order/status/'
+        }),
+    
     url(r'^table/$', 'table'),
     url(r'^table/orders/$', 'table_orders'),
     url(r'^table/orders/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/table/orders/')),
@@ -66,6 +74,7 @@ breadcrumbs = (
     _('add'),
     _('assign'),
     _('print'),
+    _('status'),
     _('table'),
     _('orders'),
 )
