@@ -70,6 +70,12 @@ def order(request):
             'description': _('Print work orders, print work orders assined to employees.'),
         },
         {
+            'link': '/order/status/',
+            'image_url': '/static/tango/48x48/actions/list-all-participants.png',
+            'name': ugettext_noop('View work order status'),
+            'description': _('View work orders, get status of work orders.'),
+        },
+        {
             'link': '/order/issue/',
             'image_url': '/static/tango/48x48/status/flag-red-clock.png',
             'name': ugettext_noop('Issue new work orders'),
@@ -533,6 +539,141 @@ def assign(request, simple_view = False):
     }
     
     return render(request, 'mro_order/assign.html', response_dict)
+
+def status(request, simple_view = False):
+    """
+    """
+    # get the employee data from the data base
+    objs = Order.objects.all().order_by('-created','-assigned','-completed')
+    
+    department = None
+
+    # filter employees using the search form
+    search = request.GET.get('search', '').strip()
+    if search:
+        objs &= Order.objects.filter(assign_to__first_name__icontains = search)
+        objs |= Order.objects.filter(assign_to__last_name__icontains = search)
+        objs |= Order.objects.filter(system__name__icontains = search)
+        objs |= Order.objects.filter(system__description__icontains = search)
+        objs |= Order.objects.filter(maintenance__work_description__icontains = search)
+        objs |= Order.objects.filter(work_description__icontains = search)
+        objs |= Order.objects.filter(work_notes__icontains = search)
+
+    if simple_view:
+        searchform = SimpleSearchOrderForm(request.GET)
+    else:
+        searchform = SearchOrderForm(request.GET)
+
+    if searchform.is_valid():
+        if simple_view:
+            work_order_state = 'RE'
+            employee = ''
+        else:
+            work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
+            employee = searchform.cleaned_data['employee']
+
+        system = searchform.cleaned_data['system']
+        
+        if system.startswith('DE-'):
+            
+
+            department_pk = int(system[3:])
+            department = Department.objects.filter(pk = department_pk)
+
+            objs &= Order.objects.filter(system__department__pk = department_pk)
+
+        if system.startswith('SY-'):
+            system_pk = int(system[3:])
+            objs &= Order.objects.filter(system__pk = system_pk)
+
+        if employee:
+            objs &= Order.objects.filter(assign_to__pk = employee)
+
+        if work_order_state not in ['AL',]:
+            objs &= Order.objects.filter(work_order_state = work_order_state)
+    else:
+        # default is RE
+        objs &= Order.objects.filter(work_order_state = 'RE')
+
+    if simple_view:
+        table = SimpleAssignTable(objs)
+    else:
+        table = AssignTable(objs)
+
+    RequestConfig(request, paginate={"per_page": 40}).configure(table)
+    
+    if request.method == "POST":
+        if simple_view:
+            actionfrom = SimpleActionOrderForm(request.POST)
+        else:
+            actionfrom = ActionOrderForm(request.POST)
+
+        if actionfrom.is_valid():
+            pks = request.POST.getlist("selection")
+            selected_objects = Order.objects.filter(pk__in=pks)
+
+            if simple_view:
+                selected_action = 'AS'
+            else:
+                selected_action = actionfrom.cleaned_data['selected_action']
+                
+            if not selected_action or selected_action == 'AS':
+                # assing to employee
+                assign_to = actionfrom.cleaned_data['assign_to']
+                if assign_to and selected_objects:
+                    for order in selected_objects:
+                        order.assign_to = Employee.objects.get(pk = assign_to)
+                        order.work_order_state = 'AS'
+                        order.save()
+
+            if selected_action == 'CA':
+                # cancel assing to employee
+                if selected_objects:
+                    for order in selected_objects:
+                        order.assign_to = None
+                        order.assigned = None
+                        order.work_order_state = 'RE'
+                        order.save()
+
+            if selected_action == 'CW':
+                # cancel work
+                if selected_objects:
+                    for order in selected_objects:
+                        order.work_order_state = 'CA'
+                        order.save()
+            
+            if selected_action == 'CO':
+                # cancel work
+                if selected_objects:
+                    for order in selected_objects:
+                        order.work_order_state = 'CO'
+                        order.save()
+
+    # base_table.html response_dict rendering information
+    if simple_view:
+        response_dict = {
+            'search_form': SimpleSearchOrderForm(request.GET),
+            'action_form': SimpleActionOrderForm(request.POST, department = department),
+            'search': search,
+            'table': table,
+        }
+    else:
+        response_dict = {
+            'search_form': SearchOrderForm(request.GET),
+            'action_form': ActionOrderForm(request.POST),
+            'search': search,
+            'table': table,
+        }
+        
+    response_dict['table'] = table
+    response_dict['headers'] = {
+        'thumb': '/static/tango/48x48/actions/list-all-participants.png',
+        'header': _('View work order status'),
+        'lead': _('View work orders, get status of work orders.'), 
+        'simple_view': simple_view,
+    }
+    
+    return render(request, 'mro_order/status.html', response_dict)
 
 class PrintOrders(PDFTemplateView):
 
