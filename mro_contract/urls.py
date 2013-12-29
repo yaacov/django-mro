@@ -18,9 +18,8 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
-from django.conf.urls.defaults import patterns, url
-
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url, include
+#from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = patterns('mro_contract.views',

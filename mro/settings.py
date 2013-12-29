@@ -191,6 +191,8 @@ LOCALE_PATHS = (
 #   ./manage.py compile_less
 USE_MINIFY = True
 
+CRISPY_TEMPLATE_PACK = 'bootstrap'
+
 # path to binary wkhtmltopdf command line utility
 WKHTMLTOPDF_CMD = '%s/bin/wkhtmltopdf' % SITE_ROOT
 
