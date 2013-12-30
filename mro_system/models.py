@@ -160,7 +160,7 @@ class System(models.Model):
         verbose_name = _('System')
         verbose_name_plural = _('System')
         ordering = ('name',)
-
+        
 class Maintenance(models.Model):
     ''' maintenance instructions
         
@@ -190,7 +190,7 @@ class Maintenance(models.Model):
     system.verbose_name = _('System')
     
     # is this a priority job
-    priority = models.ForeignKey(Priority, default = 1)
+    priority = models.ForeignKey(Priority, related_name = 'maintenance_priority', null = True, blank = True)
     priority.verbose_name = _('Priority')
     
     work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'WH')
@@ -289,106 +289,6 @@ class MaintenanceItem(models.Model):
     class Meta:
         verbose_name = _('Maintenance Item')
         verbose_name_plural = _('Maintenance Items')
-        ordering = ('maintenance',)
-
-class MaintenanceDescription(models.Model):
-    ''' maintenance instructions
-        
-        when and how to do a maintenance job
-    '''
-    
-    WORK_CYCLE = (
-        ('WH', _('Work hours')),
-        ('DA', _('Days')),
-        ('WE', _('Weeks')),
-        ('MO', _('Months')),
-        ('YE', _('Years')),
-        ('ON', _('Once')),
-    )
-    
-    WORK_TYPE = (
-        ('WH', _('Hourly')),
-        ('DA', _('Daily')),
-        ('WE', _('Weekly')),
-        ('MO', _('Monthly')),
-        ('YE', _('Yearly')),
-        ('ON', _('One time')),
-    )
-    
-    # this work is on this system
-    #system = models.ForeignKey(System)
-    #system.verbose_name = _('System')
-    
-    # is this a priority job
-    priority = models.ForeignKey(Priority, default = 1)
-    priority.verbose_name = _('Priority')
-    
-    work_type = models.CharField(max_length = 2, choices = WORK_TYPE, default = 'WH')
-    work_type.verbose_name = _('Maintenance type')
-    
-    # estimated time to complete the job
-    estimated_work_time = models.IntegerField(_('Estimated work hours'), default = 8)
-    
-    # what to do
-    work_description = models.TextField(_('Work description'))
-    
-    # items needed to complete this job
-    items = models.ManyToManyField(Item, related_name = 'maintenance_description_items', through = 'MaintenanceDescriptionItem', null = True, blank = True)
-    items.verbose_name = _('MaintenanceDescriptionItem Item')
-    
-    # when to do the job
-    work_cycle_count = models.IntegerField(_('Maintenance done every'), default = 1)
-    work_cycle = models.CharField(max_length = 2, choices = WORK_CYCLE, default = 'WH')
-    work_cycle.verbose_name = _('Time periods')
-    
-    def work_cycle_str(self):
-        ''' human readable text representing a work cycle
-        '''
-        cycle_as_string = "%d" % self.work_cycle_count
-
-        # print out the work cycle and work_count
-        if self.work_cycle_count == 1:
-            cycle_as_string = _('%(cycle)s') % {'cycle': self.get_work_type_display() }
-        else:
-            cycle_as_string = _('%(count)d %(cycle)s') % {'count': self.work_cycle_count, 'cycle': self.get_work_cycle_display() }
-        
-        return cycle_as_string
-
-    work_cycle_str.verbose_name = _('Work cycle')
-    
-    def save(self, *args, **kwargs):
-        self.work_type = self.work_cycle
-        
-        # call the default save method
-        super(MaintenanceDescription, self).save(*args, **kwargs)
-
-    # model overides
-    def __unicode__(self):
-        short_desc = self.work_description.split()[:5]
-        
-        return '%s' % (' '.join(short_desc))
-    
-    class Meta:
-        verbose_name = _('Maintenance Description')
-        verbose_name_plural = _('Maintenance Descriptions')
-        ordering = ('priority',)
-
-class MaintenanceDescriptionItem(models.Model):
-    ''' Items used for the maintenance
-    '''
-    
-    # connection
-    maintenance = models.ForeignKey(MaintenanceDescription)
-    maintenance.verbose_name = _('Maintenance Description')
-    item = models.ForeignKey(Item, related_name = 'maintenance_description_item')
-    item.verbose_name = _('Item')
-    
-    # amount of items used
-    amount = models.IntegerField(_('Amount'), default = 1)
-    
-    class Meta:
-        verbose_name = _('Maintenance Description Item')
-        verbose_name_plural = _('Maintenance Description Items')
         ordering = ('maintenance',)
 
 class SystemDocument(models.Model):
