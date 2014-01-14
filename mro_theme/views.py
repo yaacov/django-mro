@@ -47,11 +47,12 @@ def collect_thumbs():
         try:
             # try to import the module
             module = __import__('%s.views' % app, globals(), locals(), ['thumb'], -1)
-            
+            print "a cat:" , module, app
             # check for thumb dict
             if type(module.thumb) == type(dict()):
                 thumbs.append(module.thumb)
         except:
+            
             pass
     
     return thumbs

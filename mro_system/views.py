@@ -20,6 +20,7 @@
 
 from datetime import datetime, date, timedelta
 
+from django.shortcuts import redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
@@ -39,6 +40,7 @@ from mro_system.tables import SystemTable
 from mro_system.tables import MaintenanceTable
 
 from mro_system.forms import SystemForm, MaintenanceForm, SystemMaintenanceForm
+from mro_system_type.models import SystemType,SystemTypeMaintenance
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -54,6 +56,7 @@ def system(request):
     
     # get the employee data from the data base
     objs = System.objects.all()
+    
     
     # filter employees using the search form
     search = request.GET.get('search', '')
@@ -94,6 +97,41 @@ def system(request):
     }
     
     return render(request, 'mro_system/base_table.html', response_dict)
+
+def add_system_from_type(request,system_type_pk=None):
+    '''
+    '''
+    if system_type_pk!=None and system_type_pk!=0:
+    
+        try:
+            systemtype = SystemType.objects.get(id=system_type_pk)
+        except:
+            return manage_system(request)
+        
+        systemtype_maintenance = SystemTypeMaintenance.objects.filter(system_type = systemtype)
+    
+        system = System()
+        
+        system.name = "%s System" % systemtype.name
+        system.description = "A System that %s" % systemtype.description
+        system.contract_include_parts = False
+        system.department = systemtype.department
+        
+        system.save()
+        
+        for maintenance in systemtype_maintenance:
+            m = Maintenance()
+            m.system = system
+            m.work_cycle = maintenance.work_cycle
+            m.work_cycle_count = maintenance.work_cycle_count
+            
+            m.save()
+        
+        #return manage_system(request,system_pk = system.id)
+        return HttpResponseRedirect('/systemtype/%s' % system.pk)
+    else:
+        return HttpResponseRedirect('/add/' )
+    
 
 def manage_system(request, system_pk = None):
     '''

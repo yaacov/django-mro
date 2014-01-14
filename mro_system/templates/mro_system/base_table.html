@@ -62,7 +62,15 @@ td span.true {
 
 <div class="form-actions">
     {% if add_action %}
-    <a class="btn btn-primary btn-success pull-right" href="add/" >{% trans 'Add' %}</a>
+    <form method="GET" action="add/" id="add-form">
+    <input type="submit" class="btn btn-primary btn-success pull-right" value={% trans 'Add' %} />
+    <select name="system_type" id="system-type-select">
+        <option value="0">{% trans 'New System' %}</option>
+        {% for t in system_types %}
+            <option value="{{t.id}}">{{t.name}}</option>
+        {% endfor %}
+    </select>
+    </form>
     {% endif %}
 </div>
 
@@ -76,6 +84,10 @@ $(function() {
     $('.paginators').on("click", function(event){
         $('#form-page').val($(this).data('page'));
         $('#search-form').submit();
+    });
+    
+    $("#system-type-select").on("change", function(event){
+        $("#add-form").attr("action","add/" + event.val);
     });
 });
 </script>

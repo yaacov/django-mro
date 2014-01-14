@@ -48,6 +48,7 @@ class Priority(models.Model):
         verbose_name = _('Priority')
         verbose_name_plural = _('Priority')
         ordering = ('max_days_delay',)
+        
 
 class System(models.Model):
     ''' an system site
