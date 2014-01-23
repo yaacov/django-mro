@@ -26,7 +26,7 @@ urlpatterns = patterns('mro_system.views',
     
     url(r'^$', 'system'),
     url(r'^add/$', 'manage_system'),
-    url(r'^add/(?P<system_type_pk>\d+)/$', 'add_system_from_type'),
+    url(r'^import/$', 'add_system_from_type'),
     url(r'^(?P<system_pk>\d+)/$', 'manage_system'),
     url(r'^(?P<system_pk>\d+)/delete/$', 'manage_system_delete'),
     url(r'^add/delete/$', 'manage_system_delete'),

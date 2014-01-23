@@ -67,6 +67,8 @@ class Employee(models.Model):
         max_length = 30, blank = True, null = True)
     cell_phone = models.CharField(_('Cell Phone'), 
         max_length = 30, blank = True, null = True)
+    fax = models.CharField(_('Fax'), 
+        max_length = 30, blank = True, null = True)
     address = models.CharField(_('Address'), 
         max_length = 30, blank = True, null = True)
     email = models.EmailField(_('Email'), 

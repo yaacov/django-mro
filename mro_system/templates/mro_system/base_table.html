@@ -64,12 +64,12 @@ td span.true {
     {% if add_action %}
     <form method="GET" action="add/" id="add-form">
     <input type="submit" class="btn btn-primary btn-success pull-right" value={% trans 'Add' %} />
-    <select name="system_type" id="system-type-select">
+    <!--select name="system_type" id="system-type-select">
         <option value="0">{% trans 'New System' %}</option>
         {% for t in system_types %}
             <option value="{{t.id}}">{{t.name}}</option>
         {% endfor %}
-    </select>
+    </select-->
     </form>
     {% endif %}
 </div>
@@ -86,9 +86,10 @@ $(function() {
         $('#search-form').submit();
     });
     
-    $("#system-type-select").on("change", function(event){
-        $("#add-form").attr("action","add/" + event.val);
-    });
+/*    $("#system-type-select").on("change", function(event){
+        $("#add-form").attr("action","add/" + $("#system-type-select").val());
+        console.log(event);
+    });*/
 });
 </script>
 {% endblock %}

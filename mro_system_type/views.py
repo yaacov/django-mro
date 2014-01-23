@@ -175,7 +175,7 @@ def manage_system_type_maintenance(request, system_type_pk = None, maintenance_t
             maintenance = SystemTypeMaintenance()
 
     if request.method == "POST":
-        maintenanceform = MaintenanceForm(request.POST, instance=maintenance)
+        maintenanceform = SystemTypeMaintenanceForm(request.POST, instance=maintenance)
         
         if maintenanceform.is_valid():
             maintenance = maintenanceform.save()

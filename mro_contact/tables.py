@@ -37,6 +37,10 @@ class EmployeeTable(tables.Table):
         '<a href="tel:{{ value }}/" >{{ value }}</a>')
     phone.verbose_name = _('Phone')
     
+    fax = tables.TemplateColumn(
+        '<a href="tel:{{ value }}/" >{{ value }}</a>')
+    fax.verbose_name = _('Fax')
+    
     cell_phone = tables.TemplateColumn(
         '<a href="tel:{{ value }}/" >{{ value }}</a>')
     cell_phone.verbose_name = _('Cell phone')
@@ -50,6 +54,7 @@ class EmployeeTable(tables.Table):
             'department_list', 
             'phone', 
             'cell_phone', 
+            'fax', 
             'address', 
             'email')
 

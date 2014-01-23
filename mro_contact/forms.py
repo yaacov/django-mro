@@ -51,8 +51,9 @@ class EmployeeForm(ModelForm):
         
     class Meta:
         model = Employee
-        fields = ('last_name', 'first_name', 
-            'phone', 'cell_phone', 'address', 
+        fields = (
+            'last_name', 'first_name', 'phone', 
+            'cell_phone', 'fax', 'address', 
             'email', 'image', 'departments')
 
 class BusinessForm(ModelForm):
