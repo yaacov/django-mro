@@ -50,13 +50,20 @@ thumb = {
     'description': ugettext_noop('Manage systems for maintenance, edit and add systems and equipment for maintenance.'), 
 }
 
+#    <select name="system_type" id="system-type-select">
+#        <option value="0">{% trans 'New System' %}</option>
+#        {% for t in system_types %}
+#            <option value="{{t.id}}">{{t.name}}</option>
+#        {% endfor %}
+#    </select>
+
 def system(request):
     '''
     '''
     
     # get the employee data from the data base
     objs = System.objects.all()
-    
+    system_types = SystemType.objects.all()
     
     # filter employees using the search form
     search = request.GET.get('search', '')
@@ -89,6 +96,7 @@ def system(request):
     
     response_dict['table'] = table
     response_dict['add_action'] = True
+    response_dict['system_types'] = system_types
     
     response_dict['headers'] = {
         'header': _('System list'),
@@ -98,9 +106,13 @@ def system(request):
     
     return render(request, 'mro_system/base_table.html', response_dict)
 
-def add_system_from_type(request,system_type_pk=None):
+def add_system_from_type(request):
     '''
     '''
+    system_pk=request.GET.get('system_id', None)
+    system_type_pk=request.GET.get('system_type_id', None)
+    
+    
     if system_type_pk!=None and system_type_pk!=0:
     
         try:
@@ -109,15 +121,30 @@ def add_system_from_type(request,system_type_pk=None):
             return manage_system(request)
         
         systemtype_maintenance = SystemTypeMaintenance.objects.filter(system_type = systemtype)
-    
-        system = System()
         
-        system.name = "%s System" % systemtype.name
-        system.description = "A System that %s" % systemtype.description
-        system.contract_include_parts = False
-        system.department = systemtype.department
-        
-        system.save()
+        if system_pk == None:
+            system = System()
+            
+            system.name = request.GET.get("name") or "%s System" % systemtype.name
+            system.description = request.GET.get("description") or "A System that %s" % systemtype.description
+#            if system.department:
+            depart = request.GET.get("department") or None
+            if depart:
+              system.department = Department.objects.filter(id=depart).first()
+            else:
+              system.department = systemtype.department
+            system.contract_include_parts = request.GET.get("contract_include_parts") or False
+            system.location = request.GET.get("location") or ""
+            system.contract_number = request.GET.get("contract_number") or ""
+            
+            assign_to = request.GET.get("department") or None
+            if assign_to:
+              system.assign_to = Employee.objects.filter(id=depart).first()
+            
+                        
+            system.save()
+        else:
+            system = System.objects.get(id=system_pk)
         
         for maintenance in systemtype_maintenance:
             m = Maintenance()
@@ -128,7 +155,7 @@ def add_system_from_type(request,system_type_pk=None):
             m.save()
         
         #return manage_system(request,system_pk = system.id)
-        return HttpResponseRedirect('/systemtype/%s' % system.pk)
+        return HttpResponseRedirect('/system/%s' % system.pk)
     else:
         return HttpResponseRedirect('/add/' )
     
@@ -144,7 +171,9 @@ def manage_system(request, system_pk = None):
             system = System.objects.get(id = system_pk)
         except:
             system = System()
-
+            
+    system_types = SystemType.objects.all()
+    
     MaintenanceFormSet = inlineformset_factory(System, Maintenance, 
         extra = 1, can_delete=True, form=SystemMaintenanceForm)
     #DocumentFormSet = inlineformset_factory(System, SystemDocument, 
@@ -208,6 +237,8 @@ def manage_system(request, system_pk = None):
     #response_dict['documentformset'] = documentformset
     response_dict['objects'] = objects
     response_dict['search'] = search
+    response_dict['system_types'] = system_types
+    response_dict['system_id'] = system.id
 
     return render(request, 'mro_system/manage_system.html', response_dict)
 
