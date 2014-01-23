@@ -18,6 +18,8 @@
 # Copyright (C) 2013 Yaacov Zamir <kobi.zamir@gmail.com>
 # Author: Yaacov Zamir (2013) <kobi.zamir@gmail.com>
 
+from import_export.admin import ImportExportModelAdmin
+
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
@@ -49,13 +51,13 @@ class PriorityAdmin(admin.ModelAdmin):
 
 admin.site.register(Priority, PriorityAdmin)
 
-class SystemAdmin(admin.ModelAdmin):
+class SystemAdmin(ImportExportModelAdmin):
     
     inlines = (MaintenanceInline, SystemDocumentInline,)
 
 admin.site.register(System, SystemAdmin)
 
-class MaintenanceAdmin(admin.ModelAdmin):
+class MaintenanceAdmin(ImportExportModelAdmin):
     
     inlines = (MaintenanceItemInline,)
 

@@ -1,3 +1,6 @@
+
+from import_export.admin import ImportExportModelAdmin
+
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
@@ -9,7 +12,7 @@ class SystemTypeMaintenanceInline(admin.TabularInline):
     model = SystemTypeMaintenance
     extra = 1
 
-class SystemTypeAdmin(admin.ModelAdmin):
+class SystemTypeAdmin(ImportExportModelAdmin):
     
     inlines = (SystemTypeMaintenanceInline,)
     
