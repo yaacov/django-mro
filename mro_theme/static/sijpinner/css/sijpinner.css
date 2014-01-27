@@ -1,0 +1,22 @@
+.sijpinner-container{
+  display:inline-block;
+}
+.sijpinner-horizontal-layout{
+  width:28px;
+  vertical-align:top;
+  display:inline-block;
+  margin-left:-34px;
+  border-left:solid 1px #AAA;
+  margin-top:6px;
+  padding-left:2px;
+}
+
+.sijpinner-field{
+
+  width:64px;
+  padding-right:35px !important;
+}
+
+.sijpinner-arrow{
+  cursor: pointer;
+}
