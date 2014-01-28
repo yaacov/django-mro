@@ -28,9 +28,12 @@
        * overall container
        */
       var container = $("<div/>").addClass("sijpinner-container");
-      var upButton = $("<a/>").addClass("icon-chevron-up sijpinner-arrow");
-      var downButton = $("<a/>").addClass("icon-chevron-down sijpinner-arrow");
-      var buttonGroup = $("<div/>").addClass("sijpinner-horizontal-layout");
+      var upButton = $("<span/>").addClass("add-on")
+                                 .append( $("<i/>").addClass("icon-chevron-up")
+                                                   .addClass("sijpinner-arrow"));
+      var downButton = $("<span/>").addClass("add-on")
+                                 .append( $("<i/>").addClass("icon-chevron-down")
+                                                   .addClass("sijpinner-arrow"));
       var $this = $(this);
       
       /*** END OF LOCAL VARIABLES DEFINITIONS ***/
@@ -53,7 +56,6 @@
        * if it passed, it will be returned
        * otherwise a better value will be returned
        */
-      
       function _preprocess(val){
         if (val > settings.maximum){
           return settings.maximum;
@@ -68,7 +70,6 @@
        * sets the value of this sijpinner
        * and updates the input field
        */
-      
       function _setValue(val){
         value = _preprocess(val);
         $this.val(value);
@@ -79,7 +80,6 @@
        * returns the value of the input field
        * as an integer.
        */
-      
       function _getInputValue(){
         try{
           return parseInt($this.val());
@@ -92,13 +92,18 @@
       /*** END OF LOCAL FUNCTIONS DEFINITIONS ***/
       
        // layouts the elements in the DOM
-      $(this).parent().append(container);
+      $(this).replaceWith( container );
       container.append( $(this) );
-      $(this).addClass("sijpinner-field");
-      $(this).val(value);
+      _setValue(value);
       // adds the up and down buttons
-      buttonGroup.append(upButton).append(downButton);
-      container.append(buttonGroup);
+      if (container.css("direction") === "rtl"){
+        container.prepend(upButton).prepend(downButton);
+        container.addClass("input-append");
+      }
+      else{
+        container.append(upButton).append(downButton);
+        container.addClass("input-append");
+      }
 
       //assigns the callbacks for the up/down buttons
       upButton.click(function(ev){

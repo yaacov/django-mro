@@ -158,7 +158,27 @@ def add_system_from_type(request):
         return HttpResponseRedirect('/system/%s' % system.pk)
     else:
         return HttpResponseRedirect('/add/' )
-    
+
+def duplicate_system_maintenance(orig_system_pk, new_system):
+    '''
+    '''
+    maintenances = Maintenance.objects.filter(system = orig_system_pk)
+    for m in maintenances:
+        m.pk = None
+        m.system = new_system
+        m.save()
+
+def duplicate_system(system, number_of_dups):
+    '''
+    '''
+    orig_system_pk = system.pk
+    old_name = system.name
+    for i in xrange(number_of_dups):
+        new_system = system
+        new_system.pk = None
+        new_system.name = "%s (%d)" % (old_name, i+1)
+        new_system.save()
+        duplicate_system_maintenance(orig_system_pk, new_system)
 
 def manage_system(request, system_pk = None):
     '''
@@ -199,6 +219,8 @@ def manage_system(request, system_pk = None):
 
     if request.method == "POST":
         systemform = SystemForm(request.POST, instance=system)
+        subtract_diff = 1 if system_pk == None else 0
+        print (subtract_diff)
         maintenanceformset = MaintenanceFormSet(request.POST, request.FILES, instance=system)
         #documentformset = DocumentFormSet(request.POST, request.FILES, instance = system, prefix='documents')
 
@@ -217,6 +239,8 @@ def manage_system(request, system_pk = None):
             # Redirect to somewhere
             if '_continue' == request.POST.get('form-action', ''):
                 return HttpResponseRedirect('/system/%s' % system.pk)
+            if '_duplicate' == request.POST.get('form-action', ''):
+                duplicate_system(system, int(request.POST.get('duplicate', '1')) - subtract_diff )
 
             return HttpResponseRedirect('/system/')
         else:

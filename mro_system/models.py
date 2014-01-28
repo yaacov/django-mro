@@ -154,8 +154,10 @@ class System(models.Model):
 
     # model overides
     def __unicode__(self):
-        short_desc = self.description.split('\n')[0].split()[:8]
-        return '%s' % (' '.join(short_desc))
+        if self.description:
+          short_desc = self.description.split('\n')[0].split()[:8]
+          return '%s' % (' '.join(short_desc))
+        return 'System'
     
     class Meta:
         verbose_name = _('System')

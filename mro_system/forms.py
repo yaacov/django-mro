@@ -53,7 +53,8 @@ class SystemForm(ModelForm):
         ]
         if instance:
             try:
-                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__in = [instance.department])]
+                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__id = instance.department.id)]
+                print ("Instance: ", instance.department)
             except:
                 choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
         else:

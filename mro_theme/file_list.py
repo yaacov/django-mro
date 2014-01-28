@@ -32,6 +32,8 @@ css_files = [
     'bootstrap/less/bootstrap',
     'bootstrap/less/responsive',
     'datepicker/less/datepicker',
+    'datepicker/less/datepicker',
+    'sijpinner/css/sijpinner',
     'select2/select2',
     'mro/extra',
 ]
@@ -54,6 +56,7 @@ js_files = [
     'bootstrap/js/bootstrap-carousel',
     'bootstrap/js/bootstrap-typeahead',
     'datepicker/js/bootstrap-datepicker',
+    'sijpinner/js/sijpinner',
     'select2/select2'
 ]
 
