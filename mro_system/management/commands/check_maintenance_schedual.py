@@ -22,6 +22,8 @@
 import os
 from datetime import date, datetime, timedelta
 
+from dateutil import relativedelta
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 from django.db.models import Max
@@ -29,7 +31,7 @@ from django.db.models import Max
 from optparse import make_option
 
 from mro_contact.models import Department
-from mro_system.models import System, Maintenance, MaintenanceItem
+from mro_system.models import System, Maintenance, MaintenanceItem, Equipment
 from mro_order.models import Order, OrderItem
 
 try:
@@ -39,9 +41,103 @@ except:
 
 class Command(BaseCommand):
     help = 'check maintenance schedual and create work orders'
+    
+    def create_order(self, equipment, maintenance):
+        wait_before_new_order = 7
+        waiting_order = Order.objects.filter(maintenance = maintenance).exclude(work_order_state = 'CO').order_by('created')
+        if (waiting_order and 
+            waiting_order[0].created and
+            waiting_order[0].created > (date.today() - timedelta(days = wait_before_new_order))):
 
-    def create_order(self, maintenance):
+            print '            work order waiting ... '
+            return
+        
+        max_order = Order.objects.all().aggregate(Max('work_number'))
+        if max_order['work_number__max']:
+            work_number = max_order['work_number__max'] + 1
+        else:
+            work_number = 1
 
+        order = Order(
+            work_number = work_number,
+            maintenance = maintenance,
+            equipment = equipment,
+            priority = maintenance.priority,
+            work_description = maintenance.work_description,
+            contract_include_parts = False,
+            #assign_to = maintenance.system.assign_to,
+        )
+
+        order.save()
+        
+        for maintenanceitem in MaintenanceItem.objects.filter(maintenance = maintenance):
+            orderitem = OrderItem(
+                order = order, 
+                item = maintenanceitem.item,
+                amount = maintenanceitem.amount,
+                ordered = date.today(),
+            )
+            orderitem.save()
+
+        print '            new work order issued '
+    
+    def handle(self, date_today = None, *args, **options):
+        ''' run the command
+        '''
+        
+        work_cycles = {
+            'DA': {'desc': 'Daily maintenances', 'attr': 'days'},
+            'WE': {'desc':'Weekly maintenances', 'attr': 'weeks'},
+            'MO': {'desc':'Monthly maintenances', 'attr': 'months'},
+            'YE': {'desc':'Yearly maintenances', 'attr': 'years'},
+            'WH': {'desc':'Work hour maintenances', 'attr': 'hours'}
+        }
+
+        if not date_today:
+            date_today = date.today()
+
+        equipments = Equipment.objects.all()
+
+        for cycle_code in work_cycles:
+            print '\n%s' % work_cycles[cycle_code]
+            
+            for equipment in equipments:
+                maintenances = Maintenance.objects.filter(work_cycle=cycle_code,
+                                                          system=equipment.system)
+                print "Equipment: %s\n" % equipment.name
+                for maintenance in maintenances:
+                    last_order = Order.objects.filter(
+                                        maintenance=maintenance,
+                                        equipment=equipment,
+                                        work_order_state='CO').order_by('-completed').first()
+                    print "Maintenance Instructions: %s\n" % maintenance.work_description
+                    if last_order:
+                        last_maintenance = last_order.completed
+                        next_maintenance = (last_order.completed + 
+                                relativedelta(**{
+                                    work_cycle[cycle_code]['attr']: maintenance.work_cycle_count
+                                })
+                            )
+                        
+                        diff = (date.today() - last_maintenance)["days"]
+                        
+                        print '    last maintenance: %s' % last_maintenance
+                        print '    days since last maintenance - %d' % diff
+                        
+                        if datetime.today() > next_maintenance:
+                            # schedual work order
+                            print '        Issue new work order'
+                            self.create_order(equipment, maintenance)
+                    else:
+                        print '    never done'
+
+                        # schedual work order
+                        print '        Issue new work order'
+                        self.create_order(equipment, maintenance)
+                    
+            
+    def create_order_old(self, maintenance):
+        
         # if a work order is pending do set a new work order
         wait_before_new_order = 7
         waiting_order = Order.objects.filter(maintenance = maintenance).exclude(work_order_state = 'CO').order_by('created')
@@ -82,7 +178,7 @@ class Command(BaseCommand):
 
         print '            new work order issued '
 
-    def handle(self, date_today = None, *args, **options):
+    def handle_old(self, date_today = None, *args, **options):
         ''' run the command
         '''
         

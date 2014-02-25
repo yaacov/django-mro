@@ -158,7 +158,7 @@ INSTALLED_APPS = (
     'mro_theme',
     'mro_order',
     'mro_system',
-    'mro_system_type',
+    'mro_system_card',
     'mro_contact',
     'mro_warehouse',
     'mro_contract',

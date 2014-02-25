@@ -27,6 +27,8 @@ from django.utils.translation import ugettext_lazy as _
 from mro_contact.models import Department, Employee
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
+#from mro_system_type.models import SystemType
+
 class Priority(models.Model):
     ''' work/system priority
         
@@ -48,17 +50,17 @@ class Priority(models.Model):
         verbose_name = _('Priority')
         verbose_name_plural = _('Priority')
         ordering = ('max_days_delay',)
-        
 
-class System(models.Model):
-    ''' an system site
-    
-        the system and the system maintainer contact information
+class Equipment(models.Model):
     '''
     
+    '''
     # the system identification
-    name = models.CharField(_('System Name'), max_length = 30)
+    name = models.CharField(_('Equipment Name'), max_length = 30)
     serial_number = models.CharField(_('Serial number'), max_length = 30, blank = True, null = True)
+    
+    system = models.ForeignKey('System')
+    system.verbose_name = _('System Maintenance Card')
     
     # system location
     location = models.CharField(_('Location'), max_length = 30, blank = True, null = True)
@@ -66,14 +68,12 @@ class System(models.Model):
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
     assign_to.verbose_name = _('Maintenance employee')
 
-    card_number = models.CharField(_('Card number'), max_length = 30, null = True, blank = True)
-
-    contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
-    contract_include_parts = models.BooleanField(_('Contract include parts'), help_text = _('Check this box if the contract include parts'))
+#    contract_number = models.CharField(_('Contract number'), max_length = 30, null = True, blank = True)
+#    contract_include_parts = models.BooleanField(_('Contract include parts'), help_text = _('Check this box if the contract include parts'))
 
     # what department if responsible for this system
     department = models.ForeignKey(Department)
-    department.verbose_name = _('System Department')
+    department.verbose_name = _('Equipment\'s Department')
     
     # contact information
     phone = models.CharField(_('Phone'), 
@@ -87,10 +87,10 @@ class System(models.Model):
     
     # image - profile image or profile icon
     image = models.ImageField(null=True, blank=True, upload_to='system/')
-    image.verbose_name = _('System Image')
+    image.verbose_name = _('Equipment Image')
     
     # more information about this equpment
-    description = models.CharField(_('System Description'), max_length = 255, null = True, blank = True)
+    description = models.CharField(_('Equipment\'s Description'), max_length = 255, null = True, blank = True)
     
     # install date
     installed = models.DateField(default=lambda: date.today())
@@ -107,10 +107,72 @@ class System(models.Model):
     # it is the responsibilty of the maintenanace model to update this form
     last_maintenance = models.DateField(null = True, blank = True)
     last_maintenance.verbose_name = _('Last Maintenance Date')
+    
+    counter_command = models.CharField(_('Counter Command'), max_length = 60, null = True, blank = True)
+    
+    current_counter_value = models.IntegerField(_('Current Value'), null = True, blank = True)
+    
+    def has_hourly_maintenance(self):
+        return self.system.has_hourly_maintenance()
+        
+    def has_daily_maintenance(self):
+        return self.system.has_daily_maintenance()
+    
+    def has_weekly_maintenance(self):
+        return self.system.has_weekly_maintenance()
+        
+    def has_monthly_maintenance(self):
+        return self.system.has_monthly_maintenance()
+        
+    def has_yearly_maintenance(self):
+        return self.system.has_yearly_maintenance()
+        
+    # model overides
+    def __unicode__(self):
+        if self.description:
+          short_desc = self.description.split('\n')[0].split()[:8]
+          return '%s' % (' '.join(short_desc))
+        return 'System'
+    
+    class Meta:
+        verbose_name = _('Equipment')
+        verbose_name_plural = _('Equipments')
+        ordering = ('name',)
 
+class System(models.Model):
+    ''' an system site
+    
+        the system and the system maintainer contact information
+    '''
+    
+    # the system identification
+    name = models.CharField(_('System Card Name'), max_length = 30)
+    serial_number = models.CharField(_('Serial number'), max_length = 30, blank = True, null = True)
+    
+    # what department if responsible for this system
+    department = models.ForeignKey(Department, blank=True, null=True)
+    department.verbose_name = _('System Department')
+    
+    # more information about this equpment
+    description = models.CharField(_('System Description'), max_length = 255, null = True, blank = True)
+    
     # documents for this job
-    documents = models.ManyToManyField('SystemDocument', related_name = 'system_documents')
+    documents = models.ManyToManyField('SystemDocument', 
+                                       related_name = 'system_documents', 
+                                       null = True, 
+                                       blank = True)
     documents.verbose_name = _('Documents')
+    
+#    system_types = models.ManyToManyField(SystemType, 
+#                                          related_name = 'system_type', 
+#                                          null = True, 
+#                                          blank = True)
+#    system_types.verbose_name = _('System Type')
+    
+#    def system_types_list(self):
+#      '''
+#      '''
+#      return ','.join([st.name for st in self.system_types.all()])
 
     def has_hourly_maintenance(self):
         ''' True if the system has an hourly maintenance
@@ -160,8 +222,8 @@ class System(models.Model):
         return 'System'
     
     class Meta:
-        verbose_name = _('System')
-        verbose_name_plural = _('System')
+        verbose_name = _('System Maintenance Card')
+        verbose_name_plural = _('System Maintenance Cards')
         ordering = ('name',)
         
 class Maintenance(models.Model):
@@ -220,13 +282,13 @@ class Maintenance(models.Model):
 
     # last completed maintenance round
     # we use this information to calculate next maintenance time
-    last_maintenance = models.DateField(null = True, blank = True)
-    last_maintenance.verbose_name = _('Last Maintenance Date')
+#    last_maintenance = models.DateField(null = True, blank = True)
+#    last_maintenance.verbose_name = _('Last Maintenance Date')
     
     # command to read work hours
     counter_command = models.CharField(_('Counter Command'), max_length = 60, null = True, blank = True)
-    current_counter_value = models.FloatField(_('Current Counter Value'), default = 0.0, null = True, blank = True)
-    last_maintenance_counter_value = models.FloatField(_('Last Maintenance Counter Value'), default = 0.0, null = True, blank = True)
+#    current_counter_value = models.FloatField(_('Current Counter Value'), default = 0.0, null = True, blank = True)
+#    last_maintenance_counter_value = models.FloatField(_('Last Maintenance Counter Value'), default = 0.0, null = True, blank = True)
 
     def work_cycle_str(self):
         ''' human readable text representing a work cycle

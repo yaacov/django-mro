@@ -36,10 +36,12 @@ from django.template.loader import get_template
 from django_tables2 import RequestConfig
 from wkhtmltopdf.views import PDFTemplateView
 
-from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
+from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem, Equipment
+from mro_system.tables import EquipmentTable
+
 from mro_contact.models import Department, Employee
 from mro_order.models import Order, OrderItem, OrderDocument
-from mro_order.tables import SystemTable, MaintenanceOrderTable
+from mro_order.tables import EquipmentTable, MaintenanceOrderTable
 from mro_order.tables import MaintenanceTable, AllOrderTable, AssignTable, SimpleAssignTable
 from mro_order.forms import OrderForm, SearchOrderForm, ActionOrderForm
 from mro_order.forms import SimpleSearchOrderForm, SimpleActionOrderForm
@@ -102,28 +104,28 @@ def issue(request, action = None, work_type = None):
     '''
     
     # get the employee data from the data base
-    objs = System.objects.all()
+    objs = Equipment.objects.all()
     
     # filter employees using the search form
     search = request.GET.get('search', '').strip()
     if search:
-        objs &= System.objects.filter(name__icontains = search)
-        objs |= System.objects.filter(serial_number__icontains = search)
-        objs |= System.objects.filter(description__icontains = search)
-        objs |= System.objects.filter(contract_number__icontains = search)
-        objs |= System.objects.filter(card_number__icontains = search)
+        objs &= Equipment.objects.filter(name__icontains = search)
+#        objs |= System.objects.filter(serial_number__icontains = search)
+        objs |= Equipment.objects.filter(description__icontains = search)
+#        objs |= System.objects.filter(contract_number__icontains = search)
+#        objs |= System.objects.filter(card_number__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
     if filter_pk:
-        objs &= System.objects.filter(department = filter_pk)
+        objs &= Equipment.objects.filter(department = filter_pk)
         filter_string = Department.objects.get(pk = filter_pk)
     
     if not filter_string:
         filter_string = _('Select department')
     
     # create a table object for the employee data
-    table = SystemTable(objs)
+    table = EquipmentTable(objs)
     RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     # base_table.html response_dict rendering information
@@ -144,19 +146,19 @@ def issue(request, action = None, work_type = None):
 
     return render(request, 'mro_order/issue.html', response_dict)
 
-def issue_order(request, system_pk = None, order_id = None, action = None):
+def issue_order(request, equipment_pk = None, order_id = None, action = None):
     """
     """
     # get the employee data from the data base
-    system = System.objects.get(pk = system_pk)
-    objs = Order.objects.filter(system = system).order_by('-created','-assigned','-completed')
+    equipment = Equipment.objects.get(pk = equipment_pk)
+    objs = Order.objects.filter(equipment = equipment).order_by('-created','-assigned','-completed')
    
     # filter employees using the search form
     search = request.GET.get('search', '').strip()
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(system__name__icontains = search)
+        objs |= Order.objects.filter(equipment__name__icontains = search)
     
     filter_pk = request.GET.get('filter_pk', '')
     filter_string = None
@@ -184,7 +186,7 @@ def issue_order(request, system_pk = None, order_id = None, action = None):
     response_dict['table'] = table
 
     # get all maintenance instructions for this system
-    maintenance = Maintenance.objects.filter(system = system)
+    maintenance = Maintenance.objects.filter(system = equipment.system)
     maintenance_table = MaintenanceTable(maintenance)
     response_dict['maintenance_table'] = maintenance_table
 
@@ -192,13 +194,13 @@ def issue_order(request, system_pk = None, order_id = None, action = None):
 
     response_dict['headers'] = {
         'thumb': '/static/tango/48x48/status/flag-red-clock.png',
-        'header': _('Issue new work orders for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
-        'lead': _('Issue and edit new work orders for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+        'header': _('Issue new work orders for: %(department)s - %(name)s') % {'name': equipment.name, 'department': equipment.department.name},
+        'lead': _('Issue and edit new work orders for: %(department)s - %(name)s') % {'name': equipment.name, 'department': equipment.department.name},
     }
 
     return render(request, 'mro_order/issue_order.html', response_dict)
 
-def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_pk = None, next_url = None, update_url = None):
+def manage_issue_order(request, equipment_pk = None, order_pk = None, maintenance_pk = None, next_url = None, update_url = None):
     '''
     '''
 
@@ -207,10 +209,10 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
     else:
         order = None
 
-    system = System.objects.get(pk = system_pk)
+    equipment = Equipment.objects.get(pk = equipment_pk)
 
     if not next_url:
-        next_url = '/order/issue/%s/' % (system_pk)
+        next_url = '/order/issue/%s/' % (equipment_pk)
 
     if request.method == "POST":
         ItemFormSet = inlineformset_factory(Order, OrderItem, extra = 1, can_delete = True)
@@ -249,7 +251,7 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
                 if not update_url:
                     update_url = '/order/issue/'
 
-                return HttpResponseRedirect('%s%s' % (update_url, '%s/%s/' % (order.system.pk, order.pk)))
+                return HttpResponseRedirect('%s%s' % (update_url, '%s/%s/' % (order.equipment.pk, order.pk)))
 
             return HttpResponseRedirect(next_url)
         else:
@@ -271,13 +273,13 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
                 initial = {
                     'work_number': work_number,
                     'maintenance': maintenance.pk,
-                    'system': maintenance.system,
+                    'equipment': equipment,
                     'priority': maintenance.priority,
                     'work_description': maintenance.work_description,
                     #'assign_to': maintenance.assign_to,
-                    'contract_number': maintenance.system.contract_number,
-                    'contract_include_parts': maintenance.system.contract_include_parts,
-                    'assign_to': maintenance.system.assign_to,
+#                    'contract_number': maintenance.system.contract_number,
+#                    'contract_include_parts': maintenance.system.contract_include_parts,
+#                    'assign_to': maintenance.system.assign_to,
                 }
 
                 initial_items = []
@@ -291,11 +293,11 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
             else:
                 initial = {
                     'work_number': work_number,
-                    'system': system,
-                    'priority': Priority.objects.all().order_by('-max_days_delay')[0],
-                    'contract_number': system.contract_number,
-                    'contract_include_parts': system.contract_include_parts,
-                    'assign_to': system.assign_to,
+                    'equipment': equipment,
+                    'priority': Priority.objects.all().order_by('-max_days_delay').first(),
+#                    'contract_number': system.contract_number,
+#                    'contract_include_parts': system.contract_include_parts,
+                    'assign_to': equipment.assign_to,
                 }
                 initial_items = []
 
@@ -314,8 +316,8 @@ def manage_issue_order(request, system_pk = None, order_pk = None, maintenance_p
 
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('Work order for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
-        'lead': _('Edit work order for: %(department)s - %(name)s') % {'name': system.name, 'department': system.department.name},
+        'header': _('Work order for: %(department)s - %(name)s') % {'name': equipment.name, 'department': equipment.department.name},
+        'lead': _('Edit work order for: %(department)s - %(name)s') % {'name': equipment.name, 'department': equipment.department.name},
         'thumb': '/static/tango/48x48/status/flag-red-clock.png',
     }
     response_dict['form'] = orderform
@@ -418,8 +420,8 @@ def assign(request, simple_view = False):
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(system__name__icontains = search)
-        objs |= Order.objects.filter(system__description__icontains = search)
+        objs |= Order.objects.filter(equipment__name__icontains = search)
+        objs |= Order.objects.filter(equipment__description__icontains = search)
         objs |= Order.objects.filter(maintenance__work_description__icontains = search)
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
@@ -437,19 +439,19 @@ def assign(request, simple_view = False):
             work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
             employee = searchform.cleaned_data['employee']
 
-        system = searchform.cleaned_data['system']
+        equipment = searchform.cleaned_data['equipment']
         
-        if system.startswith('DE-'):
+        if equipment.startswith('DE-'):
             
 
-            department_pk = int(system[3:])
+            department_pk = int(equipment[3:])
             department = Department.objects.filter(pk = department_pk)
 
-            objs &= Order.objects.filter(system__department__pk = department_pk)
+            objs &= Order.objects.filter(equipment__department__pk = department_pk)
 
-        if system.startswith('SY-'):
-            system_pk = int(system[3:])
-            objs &= Order.objects.filter(system__pk = system_pk)
+        if equipment.startswith('EQ-'):
+            equipment_pk = int(equipment[3:])
+            objs &= Order.objects.filter(equipment__pk = equipment_pk)
 
         if employee:
             objs &= Order.objects.filter(assign_to__pk = employee)
@@ -553,8 +555,8 @@ def status(request, simple_view = False):
     if search:
         objs &= Order.objects.filter(assign_to__first_name__icontains = search)
         objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-        objs |= Order.objects.filter(system__name__icontains = search)
-        objs |= Order.objects.filter(system__description__icontains = search)
+#        objs |= Order.objects.filter(system__name__icontains = search)
+#        objs |= Order.objects.filter(system__description__icontains = search)
         objs |= Order.objects.filter(maintenance__work_description__icontains = search)
         objs |= Order.objects.filter(work_description__icontains = search)
         objs |= Order.objects.filter(work_notes__icontains = search)
@@ -572,19 +574,19 @@ def status(request, simple_view = False):
             work_order_state = searchform.cleaned_data['work_order_state'] or 'RE'
             employee = searchform.cleaned_data['employee']
 
-        system = searchform.cleaned_data['system']
+        equipment = searchform.cleaned_data['equipment']
         
-        if system.startswith('DE-'):
+        if equipment.startswith('DE-'):
             
 
-            department_pk = int(system[3:])
+            department_pk = int(equipment[3:])
             department = Department.objects.filter(pk = department_pk)
 
-            objs &= Order.objects.filter(system__department__pk = department_pk)
+            objs &= Order.objects.filter(equipment__department__pk = department_pk)
 
-        if system.startswith('SY-'):
-            system_pk = int(system[3:])
-            objs &= Order.objects.filter(system__pk = system_pk)
+        if equipment.startswith('EQ-'):
+            equipment_pk = int(equipment[3:])
+            objs &= Order.objects.filter(equipment__pk = equipment_pk)
 
         if employee:
             objs &= Order.objects.filter(assign_to__pk = employee)
@@ -725,8 +727,8 @@ class PrintOrders(PDFTemplateView):
         if search:
             objs &= Order.objects.filter(assign_to__first_name__icontains = search)
             objs |= Order.objects.filter(assign_to__last_name__icontains = search)
-            objs |= Order.objects.filter(system__name__icontains = search)
-            objs |= Order.objects.filter(system__description__icontains = search)
+            #objs |= Order.objects.filter(system__name__icontains = search)
+            #objs |= Order.objects.filter(system__description__icontains = search)
             objs |= Order.objects.filter(maintenance__work_description__icontains = search)
             objs |= Order.objects.filter(work_description__icontains = search)
             objs |= Order.objects.filter(work_notes__icontains = search)
@@ -741,24 +743,34 @@ class PrintOrders(PDFTemplateView):
             #work_order_state = searchform.cleaned_data['work_order_state'] or 'AS'
             employee = searchform.cleaned_data['employee']
 
-            system = searchform.cleaned_data['system']
+            equipment = searchform.cleaned_data['equipment']
 
-            if system.startswith('DE-'):
-                department_pk = int(system[3:])
-                objs &= Order.objects.filter(system__department__pk = department_pk)
+            if equipment.startswith('DE-'):
+                department_pk = int(equipment[3:])
+                objs &= Order.objects.filter(equipment__department__pk = department_pk)
+            
+            print objs
 
-            if system.startswith('SY-'):
-                system_pk = int(system[3:])
-                objs &= Order.objects.filter(system__pk = system_pk)
+            if equipment.startswith('EQ-'):
+                equipment_pk = int(equipment[3:])
+                objs &= Order.objects.filter(equipment__pk = equipment_pk)
+                
+            print objs
 
             if employee:
                 objs &= Order.objects.filter(assign_to__pk = employee)
+                
+            print objs
 
             if work_order_state not in ['AL',]:
                 objs &= Order.objects.filter(work_order_state = work_order_state)
+            
+            print objs
         else:
             # default is AS
             objs &= Order.objects.filter(work_order_state = 'AS')
+        
+        print objs
 
         table = AssignTable(objs)
         RequestConfig(request, paginate={"per_page": 40}).configure(table)

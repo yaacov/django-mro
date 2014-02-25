@@ -24,14 +24,20 @@ from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = patterns('mro_system.views',
     
-    url(r'^$', 'system'),
-    url(r'^add/$', 'manage_system'),
-    url(r'^import/$', 'add_system_from_type'),
-    url(r'^(?P<system_pk>\d+)/$', 'manage_system'),
-    url(r'^(?P<system_pk>\d+)/delete/$', 'manage_system_delete'),
-    url(r'^add/delete/$', 'manage_system_delete'),
+    url(r'^$', 'equipment'),
+    url(r'^system/$', 'system'),
+    url(r'^add/$', 'manage_equipment'),
+    url(r'^(?P<equipment_pk>\d+)/$', 'manage_equipment'),
+    url(r'^(?P<equipment_pk>\d+)/delete/$', 'manage_equipment_delete'),
+#    url(r'^(?P<equipment_pk>\d+)/delete/$', 'manage_equipment_delete'),
+    url(r'^system/add/$', 'manage_system'),
+#    url(r'^import/$', 'add_system_from_type'),
+#    url(r'^type/(?P<system_pk>\d+)/(?P<system_type_pk>\d+)/$', 'link_system_to_type'),
+    url(r'^system/(?P<system_pk>\d+)/$', 'manage_system'),
+    url(r'^system/(?P<system_pk>\d+)/delete/$', 'manage_system_delete'),
+    url(r'^system/add/delete/$', 'manage_system_delete'),
 
-    url(r'^(?P<system_pk>\d+)/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
+    url(r'^system/(?P<system_pk>\d+)/(?P<maintenance_pk>\d+)/$', 'manage_system_maintenance'),
 
     url(r'^run/$', 'run_cron'),
 )
@@ -39,6 +45,7 @@ urlpatterns = patterns('mro_system.views',
 # breadcrumbs translation guide
 breadcrumbs = (
     _('system'),
+    _('equipment'),
     _('maintenance'),
     _('delete'),
 )

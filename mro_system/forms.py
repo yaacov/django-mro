@@ -30,17 +30,17 @@ from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
 from mro_theme.widgets import AdminImageWidget
-from mro_system.models import System, Maintenance
+from mro_system.models import System, Maintenance, Equipment
 from mro_contact.models import Employee
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
 
-class SystemForm(ModelForm):
-    ''' form for editing employee
+class EquipmentForm(ModelForm):
+    ''' form for editing equipments
     '''
     
     def __init__(self, *args, **kwargs):
-        super(SystemForm, self).__init__(*args, **kwargs)
-        
+        super(EquipmentForm, self).__init__(*args, **kwargs)
+        print ("WHO AM I!!??",self.fields)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.help_text_inline = True
@@ -62,15 +62,58 @@ class SystemForm(ModelForm):
         self.fields['assign_to'].choices = choices
         self.fields['assign_to'].required = False
     class Meta:
-        model = System
+        model = Equipment
         fields = ('name', 
             'location',
             #'serial_number', 
             #'card_number', 
-            'contract_number',
-            'contract_include_parts',
+#            'contract_number',
+#            'contract_include_parts',
             'department', 
             'assign_to', 
+            
+            #'image', 
+            'description',
+            'counter_command',
+            'system',)
+
+class SystemForm(ModelForm):
+    ''' form for editing employee
+    '''
+    
+    def __init__(self, *args, **kwargs):
+        super(SystemForm, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.help_text_inline = True
+        
+        self.fields['description'].widget.attrs.update({'class': 'wide', 'rows': '6'})
+
+#        instance = getattr(self, 'instance', None)
+#        choices = [
+#            ('', _('Select employee')),
+#        ]
+#        if instance:
+#            try:
+#                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.filter(departments__id = instance.department.id)]
+#                print ("Instance: ", instance.department)
+#            except:
+#                choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
+#        else:
+#            choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
+#        self.fields['assign_to'].choices = choices
+#        self.fields['assign_to'].required = False
+    class Meta:
+        model = System
+        fields = ('name', 
+#            'location',
+            #'serial_number', 
+            #'card_number', 
+#            'contract_number',
+#            'contract_include_parts',
+            'department', 
+#            'assign_to', 
             
             #'image', 
             'description',)

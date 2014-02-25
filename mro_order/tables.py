@@ -22,12 +22,12 @@ from django.utils.translation import ugettext as _
 import django_tables2 as tables
 
 from mro_order.models import Order
-from mro_system.models import System, Maintenance
+from mro_system.models import System, Maintenance, Equipment
 from mro_contact.models import Employee
 
 class AllOrderTable(tables.Table):
     name = tables.TemplateColumn(
-        '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+        '''<a href="{{ record.equipment.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
     name.verbose_name = _('Description')
     name.orderable = False
 
@@ -55,7 +55,7 @@ class AllOrderTable(tables.Table):
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
-            'system',
+            'equipment',
             'order_type',
             #'work_order_state', 
             #'priority', 
@@ -69,13 +69,13 @@ class AllOrderTable(tables.Table):
             'completed_month', 'completed_year')
 
 class AssignTable(tables.Table):
-    system_name = tables.TemplateColumn(
-        '''{{ record.maintenance.system.name }}''')
-    system_name.verbose_name = _('System')
-    system_name.orderable = False
+    equipment_name = tables.TemplateColumn(
+        '''{{ record.equipment.name }}''')
+    equipment_name.verbose_name = _('Equipment')
+    equipment_name.orderable = False
 
     short_description = tables.TemplateColumn(
-        '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+        '''<a href="{{ record.equipment.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
     short_description.verbose_name = _('Description')
     short_description.orderable = False
 
@@ -84,7 +84,7 @@ class AssignTable(tables.Table):
     maintenance_work_type.orderable = False
 
     department = tables.TemplateColumn(
-        '''{{ record.system.department }}''')
+        '''{{ record.equipment.department }}''')
     department.verbose_name = _('Department')
     department.orderable = False
 
@@ -99,7 +99,7 @@ class AssignTable(tables.Table):
         fields = (
             'selection',
             'short_description',
-            'system_name',
+            'equipment_name',
             'department',
             'maintenance_work_type',
             'work_order_state', 
@@ -111,13 +111,13 @@ class AssignTable(tables.Table):
             )
 
 class SimpleAssignTable(tables.Table):
-    system_name = tables.TemplateColumn(
-        '''{{ record.maintenance.system.name }}''')
-    system_name.verbose_name = _('System')
-    system_name.orderable = False
+    equipment_name = tables.TemplateColumn(
+        '''{{ record.equipment.name }}''')
+    equipment_name.verbose_name = _('Equipment')
+    equipment_name.orderable = False
 
     short_description = tables.TemplateColumn(
-        '''<a href="{{ record.system.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
+        '''<a href="{{ record.equipment.pk }}/{{ record.pk }}/" >{{ record }}</a>''')
     short_description.verbose_name = _('Description')
     short_description.orderable = False
 
@@ -126,7 +126,7 @@ class SimpleAssignTable(tables.Table):
     maintenance_work_type.orderable = False
 
     department = tables.TemplateColumn(
-        '''{{ record.system.department }}''')
+        '''{{ record.equipment.department }}''')
     department.verbose_name = _('Department')
     department.orderable = False
 
@@ -134,12 +134,12 @@ class SimpleAssignTable(tables.Table):
                                         {"onclick": "toggle(this)"}},
                                         orderable=False)
 
-    contract_number = tables.TemplateColumn('{{ record.maintenance.system.contract_number }}')
-    contract_number.verbose_name = _('Contract number')
-    contract_number.orderable = False
+#    contract_number = tables.TemplateColumn('{{ record.maintenance.system.contract_number }}')
+#    contract_number.verbose_name = _('Contract number')
+#    contract_number.orderable = False
 
     contract_include_parts = tables.TemplateColumn('''
-        {% if record.maintenance.system.contract_include_parts %}
+        {% if record.equipment.contract_include_parts %}
         <span class="true">✔</span>
         {%else%}
         <span class="false">✘</span>
@@ -157,7 +157,7 @@ class SimpleAssignTable(tables.Table):
             'system_name',
             'department',
             #'system_assign_to',
-            'contract_number',
+#            'contract_number',
             'contract_include_parts', 
             'maintenance_work_type',
             #'work_order_state', 
@@ -194,6 +194,7 @@ class MaintenanceOrderTable(tables.Table):
             'completed',
             'name',)
 
+#deprecated
 class SystemTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
     name = tables.TemplateColumn(
@@ -227,7 +228,50 @@ class SystemTable(tables.Table):
             'name',
             'department',
             'short_description',
-            'last_maintenance',
+#            'last_maintenance',
+            #'card_number',
+            #'contract_number',
+            #'contract_include_parts', 
+            'has_hourly_maintenance', 
+            'has_daily_maintenance', 
+            'has_weekly_maintenance', 
+            'has_monthly_maintenance', 
+            'has_yearly_maintenance',)
+
+class EquipmentTable(tables.Table):
+    #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
+    name = tables.TemplateColumn(
+        '<a href="{{ record.pk }}/" >{{ record.name }}</a>')
+    name.verbose_name = _('Equipment Name')
+    
+    short_description = tables.TemplateColumn(
+        '{{ record }}', orderable=False)
+    short_description.verbose_name = _('Description')
+    
+    has_hourly_maintenance = tables.BooleanColumn('has_hourly_maintenance')
+    has_hourly_maintenance.verbose_name = _('Hourly')
+
+    has_daily_maintenance = tables.BooleanColumn('has_daily_maintenance')
+    has_daily_maintenance.verbose_name = _('Daily')
+
+    has_weekly_maintenance = tables.BooleanColumn('has_weekly_maintenance')
+    has_weekly_maintenance.verbose_name = _('Weekly')
+
+    has_monthly_maintenance = tables.BooleanColumn('has_monthly_maintenance')
+    has_monthly_maintenance.verbose_name = _('Monthly')
+
+    has_yearly_maintenance = tables.BooleanColumn('has_yearly_maintenance')
+    has_yearly_maintenance.verbose_name = _('Yearly')
+
+    class Meta:
+        model = Equipment
+        template = 'mro/table.html'
+        attrs = {'class': 'table table-striped'}
+        fields = (
+            'name',
+            'department',
+            'short_description',
+#            'last_maintenance',
             #'card_number',
             #'contract_number',
             #'contract_include_parts', 
@@ -256,7 +300,7 @@ class MaintenanceTable(tables.Table):
             'system', 
             #'priority', 
             'work_type', 
-            'last_maintenance',
+#            'last_maintenance',
             'current_counter_value',
-            'last_maintenance_counter_value',
+#            'last_maintenance_counter_value',
             'action',)

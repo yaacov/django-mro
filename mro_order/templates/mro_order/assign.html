@@ -59,7 +59,7 @@ form {
 <form id="search-form">
     <input type="hidden" id="form-page" name="page" value="{{ table.page.number }}">
     <input type="text" name="search" class="" value="{{ search }}" placeholder="Search">
-    {{ search_form.system }}
+    {{ search_form.equipment }}
     {{ search_form.employee }}
     {{ search_form.work_order_state }}
 
@@ -102,7 +102,7 @@ $(function() {
         $('#search-form').submit();
     });
 
-    $('#id_system').select2();
+    $('#id_equipment').select2();
     $('#id_employee').select2();
     $('#id_work_order_state').select2();
 

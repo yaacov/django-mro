@@ -26,7 +26,18 @@ from django.utils.translation import ugettext_lazy as _
 
 from mro_contact.models import Department, Employee
 from mro_warehouse.models import Item, Warehouse, WarehouseItem
-from mro_system.models import System, Priority, Maintenance
+from mro_system.models import System, Priority, Maintenance, Equipment
+
+def last_maintenance(equipment, maintenance):
+    last_order = Order.objects.filter(
+                      maintenance=maintenance,
+                      equipment=equipment,
+                      work_order_state='CO'
+                 ).order_by('-completed').first()
+    if last_order:
+        return last_order.completed
+    
+    return None
 
 class Order(models.Model):
     ''' work order
@@ -43,10 +54,15 @@ class Order(models.Model):
 
     # a number atached to this work
     work_number = models.IntegerField(_('Work number'), unique = True)
+    
+    # this work is on this equipment
+    equipment = models.ForeignKey(Equipment)
+    equipment.verbose_name = _('Equipment')
 
     # this work is on this system
-    system = models.ForeignKey(System)
-    system.verbose_name = _('System')
+    #deprecated
+#    system = models.ForeignKey(System)
+#    system.verbose_name = _('System')
     
     # for this maintenance information
     maintenance = models.ForeignKey(Maintenance, null = True, blank = True)
@@ -94,7 +110,10 @@ class Order(models.Model):
     items.verbose_name = _('Order item')
     
     # documents for this job
-    documents = models.ManyToManyField('OrderDocument', related_name = 'order_documents')
+    documents = models.ManyToManyField('OrderDocument', 
+                                       related_name = 'order_documents',
+                                       null=True,
+                                       blank=True)
     documents.verbose_name = _('Documents')
 
     def estimated_time_diff(self):
@@ -138,19 +157,20 @@ class Order(models.Model):
             self.assigned = date.today()
         if not self.completed and self.work_order_state == 'CO':
             self.completed = date.today()
-
+        
+        print "Saving Order"
         # check if order complete
-        if self.pk is not None:
-            orig = Order.objects.get(pk=self.pk)
-            if self.maintenance and orig.work_order_state != 'CO' and  self.work_order_state == 'CO':
-                self.maintenance.last_maintenance_counter_value = self.maintenance.current_counter_value
-                self.maintenance.save()
+#        if self.pk is not None:
+#            orig = Order.objects.get(pk=self.pk)
+#            if self.maintenance and orig.work_order_state != 'CO' and  self.work_order_state == 'CO':
+#                self.maintenance.last_maintenance_counter_value = self.maintenance.current_counter_value
+#                self.maintenance.save()
 
-        if (self.maintenance and self.completed and
-                (not self.maintenance.last_maintenance or 
-                    self.maintenance.last_maintenance < self.completed)):
-            self.maintenance.last_maintenance = self.completed
-            self.maintenance.save()
+#        if (self.maintenance and self.completed and
+#                (not self.maintenance.last_maintenance or 
+#                    self.maintenance.last_maintenance < self.completed)):
+#            self.maintenance.last_maintenance = self.completed
+#            self.maintenance.save()
 
         # call the default save method
         super(Order, self).save(*args, **kwargs)
@@ -163,7 +183,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
-        ordering = ('system',)
+        ordering = ('equipment',)
 
 class OrderItem(models.Model):
     ''' Items used for the Order

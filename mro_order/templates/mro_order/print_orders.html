@@ -119,11 +119,11 @@
 
             <table>
                 <tr>
-                    <th>{% trans "System" %}</th><td>{{ order.system }}</td>
-                    <th>{% trans "Department" %}</th><td>{{ order.system.department }}</td>
+                    <th>{% trans "System" %}</th><td>{{ order.equipment.name }}</td>
+                    <th>{% trans "Department" %}</th><td>{{ order.equipment.department }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans "Location" %}</th><td>{{ order.system.location }}</td>
+                    <th>{% trans "Location" %}</th><td>{{ order.equipment.location }}</td>
                     <th></td><th></td>
                 </tr>
             </table>

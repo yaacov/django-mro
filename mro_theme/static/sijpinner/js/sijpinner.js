@@ -12,7 +12,9 @@
   
     var settings = $.extend({
       minimum: 0,
-      maximum: 100
+      maximum: 100,
+      callback:function(){},
+      label:"submit"
     }, options );
   
     return this.each(function(){
@@ -34,6 +36,9 @@
       var downButton = $("<span/>").addClass("add-on")
                                  .append( $("<i/>").addClass("icon-chevron-down")
                                                    .addClass("sijpinner-arrow"));
+      var actionButton = $('<ahref="#">' + settings.label + '</a>')
+                         .addClass('btn btn-success btn-submit');
+                         
       var $this = $(this);
       
       /*** END OF LOCAL VARIABLES DEFINITIONS ***/
@@ -97,11 +102,11 @@
       _setValue(value);
       // adds the up and down buttons
       if (container.css("direction") === "rtl"){
-        container.prepend(upButton).prepend(downButton);
+        container.prepend(upButton).prepend(downButton).prepend(actionButton);
         container.addClass("input-append");
       }
       else{
-        container.append(upButton).append(downButton);
+        container.append(upButton).append(downButton).append(actionButton);
         container.addClass("input-append");
       }
 
@@ -113,6 +118,8 @@
       downButton.click(function(ev){
         _changeValue(-1);
       });
+      
+      actionButton.click(settings.callback);
       
       $(this).keypress(function(ev){
         ev = ev || window.event;

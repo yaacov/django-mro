@@ -30,7 +30,13 @@ from django.forms import ModelForm
 
 from mro_order.models import Order
 from mro_contact.models import Employee, Department
-from mro_system.models import Maintenance, System, Priority, Item, MaintenanceItem
+
+from mro_system.models import Maintenance
+from mro_system.models import System
+from mro_system.models import Priority
+from mro_system.models import Item
+from mro_system.models import MaintenanceItem
+from mro_system.models import Equipment
 
 class OrderForm(ModelForm):
     can_delete = True
@@ -38,7 +44,7 @@ class OrderForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
 
-        self.fields['system'].widget = forms.HiddenInput()
+        self.fields['equipment'].widget = forms.HiddenInput()
         self.fields['maintenance'].widget = forms.HiddenInput()
 
     work_started_time = forms.CharField(required=False)
@@ -70,7 +76,7 @@ class OrderForm(ModelForm):
     class Meta:
         model = Order
         fields = ('work_number', 
-            'system', 'maintenance', 
+            'equipment', 'maintenance', 
             'work_description', 'work_notes',
             'work_time',
             'priority', 
@@ -84,7 +90,7 @@ class OrderForm(ModelForm):
             'work_end_time',)
 
 class SearchOrderForm(forms.Form):
-    system = forms.ChoiceField(label=_("Department and System"), required = False, choices=(),
+    equipment = forms.ChoiceField(label=_("Department and Equipment"), required = False, choices=(),
         widget=forms.Select(attrs={'class':'selector'}))
 
     employee = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
@@ -113,21 +119,21 @@ class SearchOrderForm(forms.Form):
         self.fields['work_order_state'].choices = choices
         
         choices = [
-            ('', _('Department/System')),
+            ('', _('Department/Equipment')),
         ]
         choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
-        choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
-        self.fields['system'].choices = choices
+        choices += [('EQ-%d' % pt.id, '%s: %s' % (_('Equipment'), pt)) for pt in Equipment.objects.all()]
+        self.fields['equipment'].choices = choices
 
         instance = getattr(self, 'instance', None)
         choices = [
             ('', _('Select employee')),
         ]
         
-        if 'system' in self.data:
+        if 'equipment' in self.data:
             try:
                 choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in 
-                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['equipment'][3:]))]
             except:
                 choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         else:
@@ -170,7 +176,7 @@ class ActionOrderForm(forms.Form):
         self.fields['selected_action'].choices = choices
 
 class SimpleSearchOrderForm(forms.Form):
-    system = forms.ChoiceField(label=_("Department and System"), required = False, choices=(),
+    equipment = forms.ChoiceField(label=_("Department and Equipment"), required = False, choices=(),
         widget=forms.Select(attrs={'class':'selector'}))
 
     employee = forms.ChoiceField(label=_("Employee"), required = False, choices=(),
@@ -180,20 +186,20 @@ class SimpleSearchOrderForm(forms.Form):
         super(SimpleSearchOrderForm, self).__init__(*args, **kwargs)
 
         choices = [
-            ('', _('Department/System')),
+            ('', _('Department/Equipment')),
         ]
         choices += [('DE-%d' % pt.id, '%s: %s' % (_('Department'), pt)) for pt in Department.objects.all()]
-        choices += [('SY-%d' % pt.id, '%s: %s' % (_('System'), pt)) for pt in System.objects.all()]
-        self.fields['system'].choices = choices
+        choices += [('EQ-%d' % pt.id, '%s: %s' % (_('Equipment'), pt)) for pt in Equipment.objects.all()]
+        self.fields['equipment'].choices = choices
         
         choices = [
             ('', _('Select employee')),
         ]
         
-        if 'system' in self.data:
+        if 'equipment' in self.data:
             try:
                 choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in 
-                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['system'][3:]))]
+                    Employee.objects.filter(departments__in = Department.objects.filter(pk = self.data['equipment'][3:]))]
             except:
                 choices += [(pt.id, unicode(pt)) for pt in Employee.objects.all()]
         else:

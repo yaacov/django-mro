@@ -32,11 +32,11 @@ from django.contrib import messages
 from django_tables2   import RequestConfig
 
 from mro_warehouse.models import Item, Warehouse, WarehouseItem, WarehouseLog
-from mro_system.models import System, Maintenance, Item, MaintenanceItem, SystemDocument
+from mro_system.models import System, Maintenance, Item, MaintenanceItem, SystemDocument, Equipment
 from mro_order.models import OrderDocument, Order
 from mro_contact.models import Employee
 
-from mro_report.tables import WarehouseLogTable, SystemTable, MaintenanceTable, OrderDocumentTable
+from mro_report.tables import WarehouseLogTable, MaintenanceTable, OrderDocumentTable, EquipmentTable
 
 # a thumbnail button to show in the projects start page
 thumb = {
@@ -58,12 +58,12 @@ def report(request):
             'name': ugettext_noop('Warehouse action log report'),
             'description': ugettext_noop('Display warehouse action logs.'), 
         }, {
-            'link': '/report/system_maintenance/',
+            'link': '/report/equipment_maintenance/',
             'image_url': '/static/tango/48x48/actions/manage-students.png',
             'name': ugettext_noop('Maintenance information report'),
             'description': ugettext_noop('Display maintenance information for a system.'), 
         }, {
-            'link': '/report/system_document/',
+            'link': '/report/equipment_document/',
             'image_url': '/static/tango/48x48/status/maintenance-time.png',
             'name': ugettext_noop('Maintenance documentation report'),
             'description': ugettext_noop('Display maintenance documentation for a system.'), 
@@ -73,7 +73,7 @@ def report(request):
     response_dict = {}
     response_dict['headers'] = {
         'header': _('Reports'),
-        'lead': _('Syetem reports. View and export reports.'),
+        'lead': _('equipment reports. View and export reports.'),
         'thumb': '/static/tango/48x48/emblems/report-run.png',
     }
     
@@ -81,26 +81,26 @@ def report(request):
     
     return render(request, 'mro/base_list.html', response_dict)
 
-def system_document(request):
+def equipment_document(request):
     '''
     '''
     
     # get the WarehouseLog data from the data base
-    objs = System.objects.all().order_by('name')
+    objs = Equipment.objects.all().order_by('name')
     
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
-        objs &= System.objects.filter(name__icontains = search)
+        objs &= Equipment.objects.filter(name__icontains = search)
     
     # create a table object for the employee data
-    table = SystemTable(objs)
+    table = EquipmentTable(objs)
     RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     response_dict = {
         'headers': {
             'header': _('Maintenance documentation report'),
-            'lead': _('Display maintenance documentation for a system. Chose system.'),
+            'lead': _('Display maintenance documentation for an equipment. Chose equipment.'),
             'thumb': '/static/tango/48x48/status/maintenance-time.png',
         },
         'search': search,
@@ -112,20 +112,20 @@ def system_document(request):
     
     return render(request, 'mro_report/base_table.html', response_dict)
 
-def system_maintenance(request):
+def equipment_maintenance(request):
     '''
     '''
 
     # get the WarehouseLog data from the data base
-    objs = System.objects.all().order_by('name')
+    objs = Equipment.objects.all().order_by('name')
     
     # filter employees using the search form
     search = request.GET.get('search', '')
     if search:
-        objs &= System.objects.filter(name__icontains = search)
+        objs &= Equipment.objects.filter(name__icontains = search)
     
     # create a table object for the employee data
-    table = SystemTable(objs)
+    table = EquipmentTable(objs)
     RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     response_dict = {
@@ -175,14 +175,14 @@ def warehouse_log(request):
     
     return render(request, 'mro_report/base_table.html', response_dict)
 
-def system_document_report(request, system_pk):
+def equipment_document_report(request, equipment_pk):
     '''
     '''
 
-    system = System.objects.get(pk = system_pk)
+    equipment = Equipment.objects.get(pk = equipment_pk)
 
     # get the Maintenance data from the data base
-    objs = OrderDocument.objects.filter(order__system = system).order_by('-created')
+    objs = OrderDocument.objects.filter(order__equipment = equipment).order_by('-created')
     
     # filter employees using the search form
     search = request.GET.get('search', '')
@@ -195,7 +195,7 @@ def system_document_report(request, system_pk):
     RequestConfig(request, paginate={"per_page": 20}).configure(table)
     
     # get the system documants
-    objs = SystemDocument.objects.filter(system = system).order_by('-created')
+    objs = SystemDocument.objects.filter(system = equipment.system).order_by('-created')
     
     # filter employees using the search form
     if search:
@@ -207,8 +207,8 @@ def system_document_report(request, system_pk):
 
     response_dict = {
         'headers': {
-            'header': _('Maintenance documentation  - %(name)s') % {'name': system.name},
-            'lead': _('Display maintenance documentation for %(name)s') % {'name': system.name},
+            'header': _('Maintenance documentation  - %(name)s') % {'name': equipment.name},
+            'lead': _('Display maintenance documentation for %(name)s') % {'name': equipment.name},
             'thumb': '/static/tango/48x48/status/maintenance-time.png',
         },
         'search': search,
@@ -221,13 +221,13 @@ def system_document_report(request, system_pk):
     
     return render(request, 'mro_report/documents_table.html', response_dict)
 
-def system_maintenance_report(request, system_pk):
+def equipment_maintenance_report(request, equipment_pk):
     '''
     '''
     
     # get the Maintenance data from the data base
-    system = System.objects.get(pk = system_pk)
-    objs = Maintenance.objects.filter(system = system).order_by('-last_maintenance')
+    equipment = Equipment.objects.get(pk = equipment_pk)
+    objs = Maintenance.objects.filter(system = equipment.system)#.order_by('-last_maintenance')
     
     # filter employees using the search form
     search = request.GET.get('search', '')
@@ -240,8 +240,8 @@ def system_maintenance_report(request, system_pk):
     
     response_dict = {
         'headers': {
-            'header': _('Maintenance information  - %(name)s') % {'name': system.name},
-            'lead': _('Display maintenance information for %(name)s') % {'name': system.name},
+            'header': _('Maintenance information  - %(name)s') % {'name': equipment.name},
+            'lead': _('Display maintenance information for %(name)s') % {'name': equipment.name},
             'thumb': '/static/tango/48x48/actions/manage-students.png',
         },
         'search': search,

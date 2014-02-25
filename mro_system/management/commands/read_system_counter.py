@@ -24,7 +24,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
 from mro_contact.models import Department
-from mro_system.models import System, Maintenance
+from mro_system.models import System, Maintenance, Equipment
 
 try:
     from pyca.ca_com_utils import run_command
@@ -33,8 +33,36 @@ except:
 
 class Command(BaseCommand):
     help = 'read system counters'
-    
+
     def handle(self, *args, **options):
+        ''' run the command
+        '''
+
+        print '\n\nReading counters:\n'
+
+        equipments = Equipment.objects.exclude(Q(counter_command__isnull = True) | 
+                                               Q(counter_command__exact = ''))
+
+        for equipment in equipments:
+            print 'equipment - %s' % equipment.name
+            print '    system - %s' % equipment.system.name
+#            print '    last maintenance value - %f' % equipment.last_maintenance_counter_value
+#            print '    current value - %f' % equipment.current_counter_value
+            print '    command - %s' % equipment.counter_command
+
+            try:
+                command = equipment.counter_command
+                value = float(run_command(command).split(',')[0])
+                value = int(value * 100.0) / 100.0
+
+                equipment.current_counter_value = value
+                equipment.save()
+            except Exception, e:
+                print '        error running command', e
+
+#            print '        new value - %f' % maintenance.current_counter_value
+    
+    def handle_old(self, *args, **options):
         ''' run the command
         '''
         

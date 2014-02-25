@@ -24,7 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib import admin
 
-from mro_system.models import Priority, System, Maintenance
+from mro_system.models import Priority, System, Maintenance, Equipment
 from mro_system.models import MaintenanceItem, SystemDocument
 
 class MaintenanceItemInline(admin.TabularInline):
@@ -50,6 +50,12 @@ class PriorityAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Priority, PriorityAdmin)
+
+class EquipmentAdmin(ImportExportModelAdmin):
+    
+    pass
+
+admin.site.register(Equipment, EquipmentAdmin)
 
 class SystemAdmin(ImportExportModelAdmin):
     

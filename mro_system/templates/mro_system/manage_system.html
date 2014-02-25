@@ -140,12 +140,12 @@ function doImport(flag){
         doImport(false);
         django.jQuery('#form_action').val('_continue');
         django.jQuery('#formset').submit();" >{% trans 'Submit and continue to edit' %}</a>
-    <span class="vertical-separator">&nbsp;</span>
+    <!--<span class="vertical-separator">&nbsp;</span>
     <input id="dup-spinner" name="duplicate" type="text" />
     <a class="btn btn-success btn-submit" href="#" onClick="
         doImport(false);
         django.jQuery('#form_action').val('_duplicate');
-        django.jQuery('#formset').submit();" >{% trans 'Duplicate' %}</a>
+        django.jQuery('#formset').submit();" >{% trans 'Duplicate' %}</a>-->
 
     <a class="btn btn-primary btn-danger pull-right" href="delete">{% trans 'Delete this system' %}</a>
     </div>
@@ -247,18 +247,7 @@ function doImport(flag){
     </div>
 
 </div>
-    <div  >
-      <select name="system_type_id" id="system-type-select" >
-          {% for t in system_types %}
-              <option value="{{t.id}}">{{t.name}}</option>
-          {% endfor %}
-      </select> 
-      {% if system_id %}
-          <input type="hidden" value="{{ system_id }}" name="system_id" />
-      {% endif %}
-      <input type="submit" onclick="doImport(true);"
-             class="btn btn-inverse" value="{% trans 'Import from Type' %}" />
-    </div>
+
 </form>
 
 {% bootstrap_paginator objects %}

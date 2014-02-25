@@ -28,30 +28,30 @@ from mro_order.views import PrintOrders
 urlpatterns = patterns('mro_order.views',
     
     url(r'^issue/$', 'issue'),
-    url(r'^issue/(?P<system_pk>\d+)/$', 'issue_order'),
-    url(r'^issue/(?P<system_pk>\d+)/add/$', 'manage_issue_order'),
-    url(r'^issue/(?P<system_pk>\d+)/add/(?P<maintenance_pk>\d+)/$', 'manage_issue_order'),
-    url(r'^issue/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order'),
+    url(r'^issue/(?P<equipment_pk>\d+)/$', 'issue_order'),
+    url(r'^issue/(?P<equipment_pk>\d+)/add/$', 'manage_issue_order'),
+    url(r'^issue/(?P<equipment_pk>\d+)/add/(?P<maintenance_pk>\d+)/$', 'manage_issue_order'),
+    url(r'^issue/(?P<equipment_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order'),
 
     url(r'^assign/$', 'assign'),
-    url(r'^assign/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/assign/')),
-    url(r'^assign/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+    url(r'^assign/(?P<equipment_pk>\d+)/$', RedirectView.as_view(url='/order/assign/')),
+    url(r'^assign/(?P<equipment_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
         {
             'next_url': '/order/assign/',
             'update_url': '/order/assign/'
         }),
 
     url(r'^print/$', PrintOrders.as_view()),
-    url(r'^print/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/print/')),
-    url(r'^print/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+    url(r'^print/(?P<equipment_pk>\d+)/$', RedirectView.as_view(url='/order/print/')),
+    url(r'^print/(?P<equipment_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
         {
             'next_url': '/order/print/',
             'update_url': '/order/print/'
         }),
 
     url(r'^status/$', 'status'),
-    url(r'^status/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/status/')),
-    url(r'^status/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+    url(r'^status/(?P<equipment_pk>\d+)/$', RedirectView.as_view(url='/order/status/')),
+    url(r'^status/(?P<equipment_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
         {
             'next_url': '/order/status/',
             'update_url': '/order/status/'
@@ -59,8 +59,8 @@ urlpatterns = patterns('mro_order.views',
     
     url(r'^table/$', 'table'),
     url(r'^table/orders/$', 'table_orders'),
-    url(r'^table/orders/(?P<system_pk>\d+)/$', RedirectView.as_view(url='/order/table/orders/')),
-    url(r'^table/orders/(?P<system_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
+    url(r'^table/orders/(?P<equipment_pk>\d+)/$', RedirectView.as_view(url='/order/table/orders/')),
+    url(r'^table/orders/(?P<equipment_pk>\d+)/(?P<order_pk>\d+)/$', 'manage_issue_order', 
         {
             'next_url': '/order/table/orders/',
             'update_url': '/order/table/orders/'

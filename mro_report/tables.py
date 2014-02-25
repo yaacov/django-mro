@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 import django_tables2 as tables
 
 from mro_warehouse.models import WarehouseLog
-from mro_system.models import System, Maintenance
+from mro_system.models import System, Maintenance, Equipment
 from mro_order.models import OrderDocument, Order
 from mro_contact.models import Employee
 
@@ -37,7 +37,7 @@ class WarehouseLogTable(tables.Table):
             'shelve', 'batch', 'notes',
             'expires', 'log_date')
 
-class SystemTable(tables.Table):
+class EquipmentTable(tables.Table):
     #image = tables.TemplateColumn('<img src="{{ record.image.url }}" width="100" height="100" alt="value">')
    
     name = tables.TemplateColumn(
@@ -64,7 +64,7 @@ class SystemTable(tables.Table):
     has_yearly_maintenance.verbose_name = _('Yearly')
 
     class Meta:
-        model = System
+        model = Equipment
         template = 'mro/table.html'
         attrs = {'class': 'table table-striped'}
         fields = (
@@ -72,7 +72,7 @@ class SystemTable(tables.Table):
             'assign_to',
             'department',
             'short_description',
-            'last_maintenance',
+#            'last_maintenance',
             #'card_number',
             #'contract_number',
             #'contract_include_parts', 
@@ -102,9 +102,10 @@ class MaintenanceTable(tables.Table):
             'work_type',
             #'priority', 
             'work_cycle_str', 
-            'last_maintenance',
+#            'last_maintenance',
             'current_counter_value',
-            'last_maintenance_counter_value')
+#            'last_maintenance_counter_value'
+        )
 
 class OrderDocumentTable(tables.Table):
 
