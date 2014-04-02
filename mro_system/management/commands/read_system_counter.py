@@ -40,18 +40,29 @@ class Command(BaseCommand):
 
         print '\n\nReading counters:\n'
 
-        equipments = Equipment.objects.exclude(Q(counter_command__isnull = True) | 
-                                               Q(counter_command__exact = ''))
+        equipments = Equipment.objects.all()
+                                        #filter((Q(counter_command__isnull = True) | 
+                                        #       Q(counter_command__exact = '')) &
+                                        #       Q(counter_protocol__isnull = True))
 
         for equipment in equipments:
+            if equipment.counter_command:
+                command = equipment.counter_command
+            elif equipment.counter_protocol:
+                command = "%s://%s:%s/get_param=%s" % (equipment.counter_protocol,
+                                         equipment.counter_ip,
+                                         equipment.counter_cpu,
+                                         equipment.counter_parameter )
+            else:
+                continue
+        
             print 'equipment - %s' % equipment.name
             print '    system - %s' % equipment.system.name
 #            print '    last maintenance value - %f' % equipment.last_maintenance_counter_value
 #            print '    current value - %f' % equipment.current_counter_value
-            print '    command - %s' % equipment.counter_command
+            print '    command - %s' % command
 
             try:
-                command = equipment.counter_command
                 value = float(run_command(command).split(',')[0])
                 value = int(value * 100.0) / 100.0
 
@@ -60,7 +71,7 @@ class Command(BaseCommand):
             except Exception, e:
                 print '        error running command', e
 
-#            print '        new value - %f' % maintenance.current_counter_value
+            print '        new value - %f' % equipment.current_counter_value
     
     def handle_old(self, *args, **options):
         ''' run the command

@@ -27,6 +27,11 @@ from django.contrib import admin
 from mro_system.models import Priority, System, Maintenance, Equipment
 from mro_system.models import MaintenanceItem, SystemDocument
 
+try:
+    from pyca.ca_com_utils import run_command
+except:
+    run_command = lambda s: 0.0;
+
 class MaintenanceItemInline(admin.TabularInline):
     fields = ('item', 'amount')
     
@@ -51,9 +56,26 @@ class PriorityAdmin(admin.ModelAdmin):
 
 admin.site.register(Priority, PriorityAdmin)
 
+def reset_equipment(modeladmin, request, queryset):
+    for equipment in queryset:
+        if equipment.counter_reset_command:
+            command = equipment.counter_reset_command
+        elif (equipment.counter_protocol and 
+                equipment.counter_ip and 
+                equipment.counter_cpu and 
+                equipment.counter_reset_parameter):
+            command = "%s://%s:%s/set_param=%s,1" % (equipment.counter_protocol,
+                                         equipment.counter_ip,
+                                         equipment.counter_cpu,
+                                         equipment.counter_reset_parameter )
+        else:
+            continue
+        run_command(command)
+
+reset_equipment.short_description = _("Reset")
+
 class EquipmentAdmin(ImportExportModelAdmin):
-    
-    pass
+    actions = [reset_equipment]
 
 admin.site.register(Equipment, EquipmentAdmin)
 

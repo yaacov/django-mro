@@ -240,12 +240,14 @@ def manage_warehouse_actions(request, warehouse_id = 1):
     
     if  warehouse_id == None:
         warehouse = Warehouse()
+        warehouse.name = "Warehouse"
         warehouse.save()
     else:
         try:
             warehouse = Warehouse.objects.get(id = warehouse_id)
         except:
             warehouse = Warehouse()
+            warehouse.name = "Warehouse"
             warehouse.save()
 
     warehouselog = WarehouseLog(warehouse = warehouse)

@@ -64,6 +64,7 @@ class Equipment(models.Model):
     
     # system location
     location = models.CharField(_('Location'), max_length = 30, blank = True, null = True)
+    sublocation = models.CharField(_('Secondary Location'), max_length = 30, blank = True, null = True)
 
     assign_to = models.ForeignKey(Employee, null = True, blank = True)
     assign_to.verbose_name = _('Maintenance employee')
@@ -109,6 +110,26 @@ class Equipment(models.Model):
     last_maintenance.verbose_name = _('Last Maintenance Date')
     
     counter_command = models.CharField(_('Counter Command'), max_length = 60, null = True, blank = True)
+    counter_reset_command = models.CharField(_('Counter Reset Command'), max_length = 60, null = True, blank = True)
+    
+    counter_protocol = models.CharField(_('Counter Protocol'), 
+                                            max_length = 60, 
+                                            null = True, 
+                                            blank = True, 
+                                            choices=[('tcp','TCP'),
+                                                     ('tal','Serial over TCP')])
+
+    counter_ip = models.CharField(_('Counter IP Address'), max_length = 60, null = True, blank = True)
+    
+    cpus = [(str(i+1),str(i+1)) for i in xrange(31)]
+    counter_cpu = models.CharField(_('Counter CPU'), max_length = 60, null = True, blank = True, choices=cpus)
+    counter_com = models.CharField(_('Counter COM'), max_length = 2, null = True, blank = True)
+
+    counter_parameter = models.CharField(_('Counter Parameter'), max_length = 60, null = True, blank = True)
+    counter_file = models.IntegerField(_('Counter File'), null = True, blank = True)
+    counter_reset_parameter = models.CharField(_('Counter Reset Parameter'), max_length = 60, null = True, blank = True)
+    
+    counter_reset_file = models.IntegerField(_('Counter Reset File'), null = True, blank = True)
     
     current_counter_value = models.IntegerField(_('Current Value'), null = True, blank = True)
     
@@ -129,10 +150,12 @@ class Equipment(models.Model):
         
     # model overides
     def __unicode__(self):
-        if self.description:
+        if self.name:
+          return self.name
+        elif self.description:
           short_desc = self.description.split('\n')[0].split()[:8]
           return '%s' % (' '.join(short_desc))
-        return 'System'
+        return 'Equipment'
     
     class Meta:
         verbose_name = _('Equipment')
@@ -216,7 +239,9 @@ class System(models.Model):
 
     # model overides
     def __unicode__(self):
-        if self.description:
+        if self.name:
+          return self.name
+        elif self.description:
           short_desc = self.description.split('\n')[0].split()[:8]
           return '%s' % (' '.join(short_desc))
         return 'System'

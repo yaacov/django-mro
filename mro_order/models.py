@@ -115,6 +115,8 @@ class Order(models.Model):
                                        null=True,
                                        blank=True)
     documents.verbose_name = _('Documents')
+    
+    last_maintenance_counter_value = models.FloatField(_('Last Maintenance Counter Value'), default = 0.0, null = True, blank = True)
 
     def estimated_time_diff(self):
         ''' estimated_time - work_time

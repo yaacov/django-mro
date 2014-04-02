@@ -64,6 +64,7 @@ class EquipmentTable(tables.Table):
 #            'contract_number',
 #            'contract_include_parts', 
             #'short_description',
+            'current_counter_value',
             'last_maintenance',
             'has_hourly_maintenance', 
             'has_daily_maintenance', 

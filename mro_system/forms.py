@@ -40,7 +40,6 @@ class EquipmentForm(ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(EquipmentForm, self).__init__(*args, **kwargs)
-        print ("WHO AM I!!??",self.fields)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.help_text_inline = True
@@ -61,6 +60,7 @@ class EquipmentForm(ModelForm):
             choices += [(u'%d' % pt.id, u'%s' % (pt)) for pt in Employee.objects.all()]
         self.fields['assign_to'].choices = choices
         self.fields['assign_to'].required = False
+        
     class Meta:
         model = Equipment
         fields = ('name', 
@@ -74,8 +74,21 @@ class EquipmentForm(ModelForm):
             
             #'image', 
             'description',
-            'counter_command',
+            'counter_protocol',
+            'counter_ip',
+            'counter_cpu',
+            'counter_parameter',
+            'counter_reset_parameter',
             'system',)
+
+class AdvancedEquipmentForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AdvancedEquipmentForm, self).__init__(*args, **kwargs)
+    class Meta:
+        model = Equipment
+        fields = ('counter_com',
+            'counter_file',
+            'counter_reset_file',)
 
 class SystemForm(ModelForm):
     ''' form for editing employee
@@ -144,13 +157,13 @@ class MaintenanceForm(ModelForm):
 
         # if we have an item, we can set the amount unit widget,
         # on items we do not know, we do not set the amount unit widget
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            if instance.work_type != 'WH':
-                self.fields['counter_command'].widget.attrs['readonly'] = True
+#        instance = getattr(self, 'instance', None)
+#        if instance and instance.pk:
+#            if instance.work_type != 'WH':
+#                self.fields['counter_command'].widget.attrs['readonly'] = True
 
     class Meta:
         model = Maintenance
-        fields = ('work_description', 'counter_command', 'estimated_work_time')
+        fields = ('work_description', 'estimated_work_time')
         #exclude = ('items', 'priority', 'assign_to',)
         

@@ -22,7 +22,7 @@
 import os
 from datetime import date, datetime, timedelta
 
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
@@ -89,8 +89,7 @@ class Command(BaseCommand):
             'DA': {'desc': 'Daily maintenances', 'attr': 'days'},
             'WE': {'desc':'Weekly maintenances', 'attr': 'weeks'},
             'MO': {'desc':'Monthly maintenances', 'attr': 'months'},
-            'YE': {'desc':'Yearly maintenances', 'attr': 'years'},
-            'WH': {'desc':'Work hour maintenances', 'attr': 'hours'}
+            'YE': {'desc':'Yearly maintenances', 'attr': 'years'}
         }
 
         if not date_today:
@@ -115,16 +114,16 @@ class Command(BaseCommand):
                         last_maintenance = last_order.completed
                         next_maintenance = (last_order.completed + 
                                 relativedelta(**{
-                                    work_cycle[cycle_code]['attr']: maintenance.work_cycle_count
+                                    work_cycles[cycle_code]['attr']: maintenance.work_cycle_count
                                 })
                             )
                         
-                        diff = (date.today() - last_maintenance)["days"]
+                        diff = (date.today() - last_maintenance).days
                         
                         print '    last maintenance: %s' % last_maintenance
                         print '    days since last maintenance - %d' % diff
                         
-                        if datetime.today() > next_maintenance:
+                        if date.today() >= next_maintenance:
                             # schedual work order
                             print '        Issue new work order'
                             self.create_order(equipment, maintenance)
@@ -134,7 +133,42 @@ class Command(BaseCommand):
                         # schedual work order
                         print '        Issue new work order'
                         self.create_order(equipment, maintenance)
-                    
+
+        #check work hours
+        self.handle_work_hours(*args, **options)
+
+    def handle_work_hours(self, *args, **options):
+        print "\nWork hour maintenances"
+        equipments = Equipment.objects.all()
+        for equipment in equipments:
+            maintenances = Maintenance.objects.filter(work_cycle='WH',
+                                                      system=equipment.system)
+        print "Equipment: %s\n" % equipment.name
+        for maintenance in maintenances:
+            last_order = Order.objects.filter(
+                                        maintenance=maintenance,
+                                        equipment=equipment,
+                                        work_order_state='CO').order_by('-completed').first()
+            print "Maintenance Instructions: %s\n" % maintenance.work_description
+            if last_order:
+                diff = equipment.current_counter_value - last_order.last_maintenance_counter_value
+                cycle_count = maintenance.work_cycle_count
+
+                print '    last maintenance - %s' % last_order.completed
+                print '    current counter - %s' % equipment.current_counter_value
+                print '    last maintenance counter - %s' % last_order.last_maintenance_counter_value
+                print '    work hours since last maintenance - %d' % diff
+
+                if diff > cycle_count:
+                    # schedual work order
+                    print '        Issue new work order'
+                    self.create_order(equipment, maintenance)
+            else:
+                print '    never done'
+
+                # schedual work order
+                print '        Issue new work order'
+                self.create_order(equipment, maintenance)
             
     def create_order_old(self, maintenance):
         

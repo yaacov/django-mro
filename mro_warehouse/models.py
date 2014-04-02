@@ -206,6 +206,9 @@ class WarehouseLog(models.Model):
             # adjust dates
             warehouseitem.entered = self.log_date
             warehouseitem.expires = self.expires
+            warehouseitem.shelve = self.shelve
+            warehouseitem.batch = self.batch
+            warehouseitem.notes = self.notes
 
             # adjust amount
             if self.action in ['IN']:

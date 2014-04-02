@@ -87,7 +87,8 @@ class OrderForm(ModelForm):
             'assigned', 
             'completed',
             'work_started_time',
-            'work_end_time',)
+            'work_end_time',
+            'last_maintenance_counter_value',)
 
 class SearchOrderForm(forms.Form):
     equipment = forms.ChoiceField(label=_("Department and Equipment"), required = False, choices=(),

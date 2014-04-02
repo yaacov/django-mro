@@ -39,7 +39,12 @@ from mro_contact.models import Department, Employee
 from mro_system.tables import SystemTable, EquipmentTable
 from mro_system.tables import MaintenanceTable
 
-from mro_system.forms import SystemForm, MaintenanceForm, SystemMaintenanceForm, EquipmentForm
+from mro_system.management.commands.check_maintenance_schedual import Command as CheckCommand
+from mro_system.management.commands.read_system_counter import Command as ReadCommand
+
+from mro_system.forms import SystemForm, MaintenanceForm, SystemMaintenanceForm, EquipmentForm, AdvancedEquipmentForm
+
+from pyca.ca_com_utils import run_command
 #from mro_system_type.models import SystemType,SystemTypeMaintenance
 
 # a thumbnail button to show in the projects start page
@@ -173,10 +178,16 @@ def manage_equipment(request, equipment_pk = None):
             
     if request.method == "POST":
         equipmentform = EquipmentForm(request.POST, instance=equipment)
+        advanced_equipmentform = None
+        if request.POST.get('is_advanced', False):
+            advanced_equipmentform = AdvancedEquipmentForm(request.POST, instance=equipment)
         subtract_diff = 1 if equipment_pk == None else 0
 
-        if equipmentform.is_valid():
-            system = equipmentform.save()
+        if equipmentform.is_valid() and (advanced_equipmentform == None or advanced_equipmentform.is_valid()) :
+            equipment = equipmentform.save()
+
+            if advanced_equipmentform != None:
+                equipment = advanced_equipmentform.save()
 
             #documents = documentformset.save(commit=False)
             #for document in documents:
@@ -188,7 +199,7 @@ def manage_equipment(request, equipment_pk = None):
 
             # Redirect to somewhere
             if '_continue' == request.POST.get('form-action', ''):
-                return HttpResponseRedirect('/equipment/%s' % system.pk)
+                return HttpResponseRedirect('/equipment/%s' % equipment.pk)
             if '_duplicate' == request.POST.get('form-action', ''):
                 duplicate_equipment(equipment, int(request.POST.get('duplicate', '1')) - subtract_diff )
 
@@ -197,6 +208,7 @@ def manage_equipment(request, equipment_pk = None):
             messages.error(request, _('Error updating database.'))
     else:
         equipmentform = EquipmentForm(instance = equipment)
+        advanced_equipmentform = AdvancedEquipmentForm(instance=equipment)
         #maintenanceformset = MaintenanceFormSet(instance = system, queryset = page_query)
     
     try:
@@ -220,11 +232,12 @@ def manage_equipment(request, equipment_pk = None):
     
     response_dict = {}
     response_dict['headers'] = {
-        'header': _('System Card Maintenance Information'),
-        'lead': _('Edit system information.'),
+        'header': _('Equipment Information'),
+        'lead': _('Edit Equipment information.'),
         'thumb': '/static/tango/48x48/actions/run.png',
     }
     response_dict['form'] = equipmentform
+    response_dict['advancedform'] = advanced_equipmentform
     response_dict['maintenances'] = table
     #response_dict['documentformset'] = documentformset
     response_dict['objects'] = objects
@@ -333,6 +346,19 @@ def manage_equipment_delete(request, equipment_pk = None):
         pass
     
     return HttpResponseRedirect('/equipment/') # Redirect after POST
+
+def manage_equipment_reset(request, equipment_pk = None):
+    if equipment_pk != None:
+        equipment = Equipment.objects.get(pk=equipment_pk)
+        command = equipment.counter_reset_command
+        if not command:
+            command = "%s://%s:%s/set_param=%s,1" % (equipment.counter_protocol,
+                                         equipment.counter_ip,
+                                         equipment.counter_cpu,
+                                         equipment.counter_reset_parameter )
+        run_command(command)
+
+    return HttpResponseRedirect('/equipment/%s' % equipment_pk)
 
 def manage_system_delete(request, system_pk = None):
     '''
